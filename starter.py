@@ -20,6 +20,6 @@ if __name__ == "__main__":
         chosen_event = input()
         using_command = load_event(chosen_event)
         use_handler = handler(event = using_command, context=some_context)
-        print(use_handler['statusCode'])
+        print(use_handler['statusCode']) 
     except Exception:
         print("The event was entered incorrectly. Reload this script and try one more time.")
