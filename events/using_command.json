@@ -1,0 +1,56 @@
+{
+  "httpMethod": "POST",
+  "headers": {
+    "Accept-Encoding": "gzip, deflate",
+    "Content-Length": "332",
+    "Content-Type": "application/json",
+    "Host": "d5dgets2kpjdljre64ol.apigw.yandexcloud.net",
+    "Uber-Trace-Id": "064bee45b7914a53:b81760eec01147d0:524bbe1b377f10b1:1",
+    "X-Api-Gateway-Function-Id": "d4ejn05sf0625e21ikoc",
+    "X-Envoy-External-Address": "91.108.6.99",
+    "X-Envoy-Original-Path": "/tg_bot_new",
+    "X-Forwarded-For": "91.108.6.99",
+    "X-Forwarded-Proto": "https",
+    "X-Real-Remote-Address": "91.108.6.99:44912",
+    "X-Request-Id": "539dc82f-1c0e-465d-9b87-e436100bcc66",
+    "X-Serverless-Certificate-Ids": "{}",
+    "X-Serverless-Gateway-Id": "d5dgets2kpjdljre64ol",
+    "X-Trace-Id": "fc304f17-447e-4082-a45b-3f93a54743e9"
+  },
+  "url": "/tg_bot_new?",
+  "params": {},
+  "multiValueParams": {},
+  "pathParams": {},
+  "multiValueHeaders": {
+    "Accept-Encoding": [ "gzip, deflate" ],
+    "Content-Length": [ "332" ],
+    "Content-Type": [ "application/json" ],
+    "Host": [ "d5dgets2kpjdljre64ol.apigw.yandexcloud.net" ],
+    "Uber-Trace-Id": [ "064bee45b7914a53:b81760eec01147d0:524bbe1b377f10b1:1" ],
+    "X-Api-Gateway-Function-Id": [ "d4ejn05sf0625e21ikoc" ],
+    "X-Envoy-External-Address": [ "91.108.6.99" ],
+    "X-Envoy-Original-Path": [ "/tg_bot_new" ],
+    "X-Forwarded-For": [ "91.108.6.99" ],
+    "X-Forwarded-Proto": [ "https" ],
+    "X-Real-Remote-Address": [ "91.108.6.99:44912" ],
+    "X-Request-Id": [ "539dc82f-1c0e-465d-9b87-e436100bcc66" ],
+    "X-Serverless-Certificate-Ids": [ "{}" ],
+    "X-Serverless-Gateway-Id": [ "d5dgets2kpjdljre64ol" ],
+    "X-Trace-Id": [ "fc304f17-447e-4082-a45b-3f93a54743e9" ]
+  },
+  "queryStringParameters": {},
+  "multiValueQueryStringParameters": {},
+  "requestContext": {
+    "identity": {
+      "sourceIp": "91.108.6.99",
+      "userAgent": ""
+    },
+    "httpMethod": "POST",
+    "requestId": "539dc82f-1c0e-465d-9b87-e436100bcc66",
+    "requestTime": "28/Oct/2024:06:54:26 +0000",
+    "requestTimeEpoch": 1730098466
+  },
+  "body": "{\"update_id\":706391033,\n\"message\":{\"message_id\":257,\"from\":{\"id\":940985788,\"is_bot\":false,\"first_name\":\"Artem\",\"username\":\"morisdave\",\"language_code\":\"en\"},\"chat\":{\"id\":940985788,\"first_name\":\"Artem\",\"username\":\"morisdave\",\"type\":\"private\"},\"date\":1730098466,\"text\":\"/start\",\"entities\":[{\"offset\":0,\"length\":4,\"type\":\"bot_command\"}]}}",
+  "isBase64Encoded": "False",
+  "path": "/tg_bot_new"
+}
