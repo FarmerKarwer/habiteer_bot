@@ -15,10 +15,11 @@ some_context = "Sample context"
 
 if __name__ == "__main__":
     all_events = get_event_filenames()
-    print(f"Enter one of the events (without '.json'). The available events are: {all_events}")
+    #print(f"Enter one of the events (without '.json'). The available events are: {all_events}")
     try:
-        chosen_event = input()
-        using_command = load_event(chosen_event)
+        #chosen_event = input()
+        #using_command = load_event(chosen_event)
+        using_command = "events/using_command.json"
         use_handler = handler(event = using_command, context=some_context)
         print(use_handler['statusCode']) 
     except Exception:

@@ -1,0 +1,36 @@
+import os
+import requests
+import json
+
+"""
+There will be all the methods necessary for Telegram Bot
+"""
+
+TG_TOKEN=os.getenv('BOT_TOKEN')
+URL = f"https://api.telegram.org/bot{TG_TOKEN}/"
+
+# Sending Messages
+def send_text_message(reply, chat_id, disable_notification=None, protect_content=None, reply_parameters=None, keyboard=None):
+	data = {
+		'text':reply,
+		'chat_id':chat_id,
+		'parse_mode':'Markdown',
+		'disable_notification':disable_notification,
+		'protect_content':protect_content,
+		'reply_parameters':reply_parameters,
+		'reply_markup': keyboard
+	}
+	url = URL+"sendMessage"
+	requests.post(url, data=data)
+
+def send_picture():
+	pass
+
+# Utils
+def get_updates():
+	url = URL+"getUpdates"
+	update_array = requests.get(url)
+	return json.loads(update_array.content)
+
+if __name__ == "__main__":
+    print(get_updates())
