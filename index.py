@@ -27,7 +27,7 @@ def handler(event, context):
 		text = message['message']['text']
 		message_id = message['message']['message_id']
 		if text=="/start":
-			tg_methods.send_text_message(replies['/start'], chat_id, protect_content=True, keyboard=json.dumps(buttons['start']))
+			tg_methods.send_text_message(replies['3'], chat_id, protect_content=True, keyboard=json.dumps(buttons['start']))
 			tg_methods.delete_message(message_id, chat_id)
 	else:
 		chat_id = message['message']['chat']['id']
