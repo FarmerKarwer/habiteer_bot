@@ -1,6 +1,8 @@
 from index import handler
 import os
 import json
+import traceback
+
 
 def get_event_filenames(folder_path="events"):
     for filename in os.listdir(folder_path):
@@ -22,5 +24,6 @@ if __name__ == "__main__":
         using_command = "events/using_command.json"
         use_handler = handler(event = using_command, context=some_context)
         print(use_handler['statusCode']) 
-    except Exception:
-        print("The event was entered incorrectly. Reload this script and try one more time.")
+    except Exception as e:
+        print("Something Went Wrong", e)
+        traceback.print_exc()
