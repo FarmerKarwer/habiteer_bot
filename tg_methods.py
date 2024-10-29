@@ -26,6 +26,14 @@ def send_text_message(reply, chat_id, disable_notification=None, protect_content
 def send_picture():
 	pass
 
+def delete_message(message_id, chat_id):
+	data = {
+	'chat_id':chat_id,
+	'message_id':message_id
+	}
+	url = URL+"deleteMessage"
+	requests.post(url, data=data)
+
 # Utils
 def get_updates():
 	url = URL+"getUpdates"

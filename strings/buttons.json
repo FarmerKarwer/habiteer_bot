@@ -5,7 +5,9 @@
         {
           "text": "Подобрать привычку",
           "callback_data": "pick habit"
-        },
+        }
+      ],
+      [
         {
           "text": "Не сейчас",
           "callback_data": "menu"
