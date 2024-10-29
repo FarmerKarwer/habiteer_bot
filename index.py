@@ -25,6 +25,18 @@ def handler(event, context):
 		elif callback_data == "add_habit":
 			tg_methods.send_text_message(replies['2'], chat_id, protect_content=True, keyboard=json.dumps(buttons['add_habit']))
 			tg_methods.delete_message(message_id, chat_id)
+		elif callback_data == "view_habits":
+			tg_methods.send_text_message(replies['3'], chat_id, protect_content=True, keyboard=json.dumps(buttons['view_habits']))
+			tg_methods.delete_message(message_id, chat_id)
+		elif callback_data == "pick_habit":
+			tg_methods.send_text_message(replies['4'], chat_id, protect_content=True, keyboard=json.dumps(buttons['pick_habit']))
+			tg_methods.delete_message(message_id, chat_id)
+		elif callback_data == "stats":
+			tg_methods.send_text_message(replies['5'], chat_id, protect_content=True, keyboard=json.dumps(buttons['stats']))
+			tg_methods.delete_message(message_id, chat_id)
+		elif callback_data == "settings":
+			tg_methods.send_text_message(replies['6'], chat_id, protect_content=True, keyboard=json.dumps(buttons['settings']))
+			tg_methods.delete_message(message_id, chat_id)
 		else:
 			pass
 	elif 'message' in message and 'text' in message['message']:

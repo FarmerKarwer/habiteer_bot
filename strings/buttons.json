@@ -151,6 +151,58 @@
           }
       ]
     ]
+  },
+
+  "stats":{
+    "inline_keyboard":[
+        [
+          {
+            "text":"Назад",
+            "callback_data":"menu"
+          }
+      ]
+    ]
+  },
+
+  "settings":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Приостановить уведомления",
+          "callback_data": "scr_39"
+        }
+      ],
+      [
+        {
+          "text": "Мотивационные сообщения",
+          "callback_data": "scr_40"
+        }
+      ],
+      [
+        {
+          "text": "Отчетность",
+          "callback_data": "scr_41"
+        }
+      ],
+      [
+        {
+          "text": "Отправить отзыв",
+          "callback_data": "plug"
+        }
+      ],
+      [
+        {
+          "text": "Удалить все данные",
+          "callback_data": "scr_42"
+        }
+      ],
+      [
+        {
+          "text": "Назад",
+          "callback_data": "menu"
+        }
+      ]
+    ]
   }
 
 }
