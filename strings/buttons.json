@@ -60,6 +60,97 @@
           }
       ]
     ]
+  },
+
+  "view_habits":{
+    "inline_keyboard":[
+        [
+          {
+            "text":"Улучшить привычку",
+            "callback_data":"scr_3_1"
+          }
+      ],
+        [
+          {
+            "text":"Изменить привычку",
+            "callback_data":"scr_8"
+          }
+      ],
+
+        [
+          {
+            "text":"В главное меню",
+            "callback_data":"menu"
+          }
+      ],
+        [
+          {
+            "text":"Удалить привычку",
+            "callback_data":"scr_44"
+          }
+      ]
+    ]
+  },
+
+  "pick_habit":{
+    "inline_keyboard":[
+        [
+          {
+            "text":"1",
+            "callback_data":"hab_1"
+          },
+          {
+            "text":"2",
+            "callback_data":"hab_2"
+          },
+          {
+            "text":"3",
+            "callback_data":"hab_3"
+          },
+          {
+            "text":"4",
+            "callback_data":"hab_4"
+          },
+          {
+            "text":"5",
+            "callback_data":"hab_5"
+          }
+      ],
+       [
+          {
+            "text":"6",
+            "callback_data":"hab_6"
+          },
+          {
+            "text":"7",
+            "callback_data":"hab_7"
+          },
+          {
+            "text":"8",
+            "callback_data":"hab_8"
+          },
+          {
+            "text":"9",
+            "callback_data":"hab_9"
+          },
+          {
+            "text":"10",
+            "callback_data":"hab_10"
+          }
+      ], 
+       [
+          {
+            "text":"Ничего не подходит",
+            "callback_data":"scr_10"
+          }
+      ],
+       [
+          {
+            "text":"В главное меню",
+            "callback_data":"menu"
+          }
+      ]
+    ]
   }
 
 }
