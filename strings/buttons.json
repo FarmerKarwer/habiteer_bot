@@ -1,0 +1,16 @@
+{
+  "start": {
+    "inline_keyboard": [
+      [
+        {
+          "text": "Подобрать привычку",
+          "callback_data": "f\"pick habit\""
+        },
+        {
+          "text": "Не сейчас",
+          "callback_data": "f\"menu\""
+        }
+      ]
+    ]
+  }
+}
