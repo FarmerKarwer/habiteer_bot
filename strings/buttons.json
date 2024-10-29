@@ -4,7 +4,7 @@
       [
         {
           "text": "Подобрать привычку",
-          "callback_data": "pick habit"
+          "callback_data": "pick_habit"
         }
       ],
       [
@@ -21,19 +21,19 @@
       [
         {
           "text": "Добавить привычку",
-          "callback_data": "add habit"
+          "callback_data": "add_habit"
         }
       ],
       [
         {
           "text": "Мои привычки",
-          "callback_data": "view habits"
+          "callback_data": "view_habits"
         }
       ],
       [
         {
           "text": "Подобрать привычку",
-          "callback_data": "pick habit"
+          "callback_data": "pick_habit"
         }
       ],
       [
@@ -49,5 +49,17 @@
         }
       ]
     ]
+  },
+
+  "add_habit":{
+    "inline_keyboard":[
+        [
+          {
+            "text":"Назад",
+            "callback_data":"menu"
+          }
+      ]
+    ]
   }
+
 }

@@ -22,6 +22,12 @@ def handler(event, context):
 		if callback_data == "menu":
 			tg_methods.send_text_message(replies['/menu'], chat_id, protect_content=True, keyboard=json.dumps(buttons['main_menu']))
 			tg_methods.delete_message(message_id, chat_id)
+		elif callback_data == "add_habit":
+			print(callback_data)
+			tg_methods.send_text_message(replies['2'], chat_id, protect_content=True, keyboard=json.dumps(buttons['add_habit']))
+			tg_methods.delete_message(message_id, chat_id)
+		else:
+			pass
 	elif 'message' in message and 'text' in message['message']:
 		chat_id = message['message']['chat']['id']
 		text = message['message']['text']
