@@ -45,6 +45,16 @@ if __name__ == "__main__":
 
 
 def get_ai_response(habit): 
+	'''
+	Пример вызова:
+
+		import tg_methods
+
+		habit = 'Лучше справляться со стрессом'
+		response = tg_methods.get_ai_response(habit) 
+		print(response)
+
+	'''
 
 	api_token = os.getenv('API_TOKEN')
 
@@ -97,14 +107,6 @@ def get_ai_response(habit):
 				habit4 = habits['habit4']
 				habit5 = habits['habit5']
 
-
-				Пример вызова:
-
-				import tg_methods
-
-				habit = 'Лучше справляться со стрессом'
-				response = tg_methods.get_ai_response(habit) 
-				print(response)
 				'''
 				return habits
 
