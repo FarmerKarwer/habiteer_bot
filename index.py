@@ -12,13 +12,20 @@ with open(buttons_filepath, "r", encoding="utf-8") as file:
 
 def handler(event, context):
 	#Change it to json.loads(event['body']) when using it on Yandex Cloud
-	message = tg_methods.get_updates()['result'][0] 
+	message = tg_methods.get_updates()['result'][-1] 
+	print(message)
 
-	chat_id = message['message']['chat']['id']
-	text = message['message']['text']
-	
-	if text=="/start":
-		tg_methods.send_text_message(replies['/start'], chat_id, protect_content=True, keyboard=json.dumps(buttons['start']))
+	if 'callback_query' in message.keys():
+		callback_data = message['callback_query']['data']
+		print(callback_data)
+	elif 'message' in message and 'text' in message['message']:
+		chat_id = message['message']['chat']['id']
+		text = message['message']['text']
+		if text=="/start":
+			tg_methods.send_text_message(replies['/start'], chat_id, protect_content=True, keyboard=json.dumps(buttons['start']))
+	else:
+		chat_id = message['message']['chat']['id']
+		send_text('Это и не команда и не отзыв!', chat_id)
 	return {
 	'statusCode':200,
 	'body':event
