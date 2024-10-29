@@ -19,31 +19,31 @@
       [
         {
           "text": "Добавить привычку",
-          "callback_data": "f\"add habit\""
+          "callback_data": "add habit"
         }
       ],
       [
         {
           "text": "Мои привычки",
-          "callback_data": "f\"view habits\""
+          "callback_data": "view habits"
         }
       ],
       [
         {
           "text": "Подобрать привычку",
-          "callback_data": "f\"pick habit\""
+          "callback_data": "pick habit"
         }
       ],
       [
         {
           "text": "Статистика",
-          "callback_data": "f\"stats\""
+          "callback_data": "stats"
         }
       ],
       [
         {
           "text": "Настройки",
-          "callback_data": "f\"settings\""
+          "callback_data": "settings"
         }
       ]
     ]

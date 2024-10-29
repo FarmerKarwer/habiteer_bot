@@ -17,7 +17,9 @@ def handler(event, context):
 
 	if 'callback_query' in message.keys():
 		callback_data = message['callback_query']['data']
-		print(callback_data)
+		chat_id = message['callback_query']['message']['chat']['id']
+		if callback_data == "menu":
+			tg_methods.send_text_message(replies['/menu'], chat_id, protect_content=True, keyboard=json.dumps(buttons['main_menu']))
 	elif 'message' in message and 'text' in message['message']:
 		chat_id = message['message']['chat']['id']
 		text = message['message']['text']
