@@ -34,6 +34,11 @@ def delete_message(message_id, chat_id):
 	url = URL+"deleteMessage"
 	requests.post(url, data=data)
 
+def answer_callback_query(callback_query_id):
+	data = {"callback_query_id": callback_query_id}
+	url = URL+"answerCallbackQuery"
+	requests.post(url, data=data)
+
 # Utils
 def get_updates():
 	url = URL+"getUpdates"
