@@ -1,9 +1,10 @@
 import tg_methods
 import json
-from utils import load_json
+from utils import load_json, save_to_json, append_to_json
 
 replies_filepath = "./strings/replies.json"
 buttons_filepath = "./strings/buttons.json"
+cache_filepath = "./cache/callback_history.json"
 
 replies = load_json(replies_filepath)
 buttons = load_json(buttons_filepath)
@@ -32,6 +33,9 @@ def handle_callback_query(message):
 	elif callback_data == "add_habit":
 		tg_methods.send_text_message(replies['2'], chat_id, protect_content=True, keyboard=json.dumps(buttons['add_habit']))
 		tg_methods.delete_message(message_id, chat_id)
+		data = {"chat_id":chat_id, "message_id":message_id, "callback_data":callback_data}
+		newdata = append_to_json(filepath = cache_filepath, new_data=data)
+		save_to_json(filepath = cache_filepath, data = newdata)
 	elif callback_data == "view_habits":
 		tg_methods.send_text_message(replies['3'], chat_id, protect_content=True, keyboard=json.dumps(buttons['view_habits']))
 		tg_methods.delete_message(message_id, chat_id)
