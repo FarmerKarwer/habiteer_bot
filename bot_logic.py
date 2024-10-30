@@ -22,7 +22,7 @@ def use_logic(message):
 		message_id = message['message']['message_id']
 		previous_message_id = get_latest_messageid_from_cache(cache_filepath, chat_id)
 		print(previous_message_id)
-
+		print(message_id == previous_message_id+1)
 		if message_id == previous_message_id+1:
 			print('It works!')
 		else: 
