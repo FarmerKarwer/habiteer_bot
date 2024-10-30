@@ -20,6 +20,7 @@ def use_logic(message):
 		chat_id = message['message']['chat']['id']
 		text = message['message']['text']
 		message_id = message['message']['message_id']
+		user_id = message['message']['from']['id']
 		previous_message_id = get_latest_messageid_from_cache(cache_filepath, chat_id)
 		print(previous_message_id)
 		print(message_id == previous_message_id+1)
@@ -38,6 +39,7 @@ def handle_callback_query(message):
 	callback_data = message['callback_query']['data']
 	chat_id = message['callback_query']['message']['chat']['id']
 	message_id = message['callback_query']['message']['message_id']
+	user_id = message['callback_query']['from']['id']
 
 	## Actual logic
 	if callback_data == "scr_1":
