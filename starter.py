@@ -2,7 +2,7 @@ from index import handler
 import os
 import json
 import traceback
-
+from utils import load_json
 
 def get_event_filenames(folder_path="events"):
     for filename in os.listdir(folder_path):
@@ -10,8 +10,8 @@ def get_event_filenames(folder_path="events"):
             return filename
 
 def load_event(event_name):
-    with open(f'events/{event_name}.json', 'r') as f:
-        return json.load(f)
+    filepath = f'events/{event_name}.json'
+    return load_json(filepath)
 
 some_context = "Sample context"
 
