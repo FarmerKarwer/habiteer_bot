@@ -1,9 +1,6 @@
 import tg_methods
 import json
-
-def load_json(filepath):
-    with open(filepath, "r", encoding="utf-8") as file:
-        return json.load(file)
+from utils import load_json
 
 replies_filepath = "./strings/replies.json"
 buttons_filepath = "./strings/buttons.json"
@@ -21,10 +18,14 @@ def use_logic(message):
 		tg_methods.send_text_message('Я понимаю только текстовые сообщения и кнопки', chat_id)
 
 def handle_callback_query(message):
+
+	## Getting data
 	callback_query_id = message['callback_query']['id']
 	callback_data = message['callback_query']['data']
 	chat_id = message['callback_query']['message']['chat']['id']
 	message_id = message['callback_query']['message']['message_id']
+
+	## Actual logic
 	if callback_data == "menu":
 		tg_methods.send_text_message(replies['1'], chat_id, protect_content=True, keyboard=json.dumps(buttons['main_menu']))
 		tg_methods.delete_message(message_id, chat_id)
@@ -47,9 +48,13 @@ def handle_callback_query(message):
 		tg_methods.send_text_message("Error: unknown callback data", chat_id, protect_content=True)
 
 def handle_text_query(message):
+
+	## Getting data
 	chat_id = message['message']['chat']['id']
 	text = message['message']['text']
 	message_id = message['message']['message_id']
+
+	## Actual logic
 	if text=="/start":
 		tg_methods.send_text_message(replies['/start'], chat_id, protect_content=True, keyboard=json.dumps(buttons['start']))
 		tg_methods.delete_message(message_id, chat_id)
