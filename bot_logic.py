@@ -32,6 +32,7 @@ def handle_callback_query(message):
 	elif callback_data == "add_habit":
 		tg_methods.send_text_message(replies['2'], chat_id, protect_content=True, keyboard=json.dumps(buttons['add_habit']))
 		tg_methods.delete_message(message_id, chat_id)
+		message_list.append({"chat_id":chat_id, "callback_data":callback_data})
 	elif callback_data == "view_habits":
 		tg_methods.send_text_message(replies['3'], chat_id, protect_content=True, keyboard=json.dumps(buttons['view_habits']))
 		tg_methods.delete_message(message_id, chat_id)
