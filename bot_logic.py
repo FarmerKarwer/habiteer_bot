@@ -18,7 +18,7 @@ def use_logic(message):
 		handle_text_query(message)
 	else:
 		chat_id = message['message']['chat']['id']
-		send_text('Я понимаю только текстовые сообщения и кнопки', chat_id)
+		tg_methods.send_text_message('Я понимаю только текстовые сообщения и кнопки', chat_id)
 
 def handle_callback_query(message):
 	callback_query_id = message['callback_query']['id']
@@ -53,6 +53,9 @@ def handle_text_query(message):
 	if text=="/start":
 		tg_methods.send_text_message(replies['/start'], chat_id, protect_content=True, keyboard=json.dumps(buttons['start']))
 		tg_methods.delete_message(message_id, chat_id)
+
+
+# Checking for conditions
 
 def text_message_is_entered(message):
 	return 'message' in message and 'text' in message['message']
