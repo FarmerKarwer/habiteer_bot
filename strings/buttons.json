@@ -4,65 +4,64 @@
       [
         {
           "text": "Подобрать привычку",
-          "callback_data": "pick_habit"
+          "callback_data": "scr_4"
         }
       ],
       [
         {
           "text": "Не сейчас",
-          "callback_data": "menu"
+          "callback_data": "scr_1"
         }
       ]
     ]
   },
-
-  "main_menu":{
+  "scr_1":{
     "inline_keyboard": [
       [
         {
           "text": "Добавить привычку",
-          "callback_data": "add_habit"
+          "callback_data": "scr_2"
         }
       ],
       [
         {
           "text": "Мои привычки",
-          "callback_data": "view_habits"
+          "callback_data": "scr_3"
         }
       ],
       [
         {
           "text": "Подобрать привычку",
-          "callback_data": "pick_habit"
+          "callback_data": "scr_4"
         }
       ],
       [
         {
           "text": "Статистика",
-          "callback_data": "stats"
+          "callback_data": "scr_5"
         }
       ],
       [
         {
           "text": "Настройки",
-          "callback_data": "settings"
+          "callback_data": "scr_6"
         }
       ]
     ]
   },
 
-  "add_habit":{
+  "scr_2":{
     "inline_keyboard":[
         [
           {
             "text":"Назад",
-            "callback_data":"menu"
+            "callback_data":"scr_1"
           }
       ]
     ]
   },
 
-  "view_habits":{
+  "scr_3":{
     "inline_keyboard":[
         [
           {
@@ -80,7 +79,7 @@
         [
           {
             "text":"В главное меню",
-            "callback_data":"menu"
+            "callback_data":"scr_1"
           }
       ],
         [
@@ -92,7 +91,7 @@
     ]
   },
 
-  "pick_habit":{
+  "scr_4":{
     "inline_keyboard":[
         [
           {
@@ -116,7 +115,7 @@
             "callback_data":"hab_5"
           }
       ],
-       [
+        [
           {
             "text":"6",
             "callback_data":"hab_6"
@@ -138,33 +137,32 @@
             "callback_data":"hab_10"
           }
       ], 
-       [
+        [
           {
             "text":"Ничего не подходит",
             "callback_data":"scr_10"
           }
       ],
-       [
+        [
           {
             "text":"В главное меню",
-            "callback_data":"menu"
+            "callback_data":"scr_1"
           }
       ]
     ]
   },
 
-  "stats":{
+  "scr_5":{
     "inline_keyboard":[
         [
           {
             "text":"Назад",
-            "callback_data":"menu"
+            "callback_data":"scr_1"
           }
       ]
     ]
   },
-
-  "settings":{
+  "scr_6":{
     "inline_keyboard": [
       [
         {
@@ -199,10 +197,891 @@
       [
         {
           "text": "Назад",
-          "callback_data": "menu"
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_7":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Улучшить привычку",
+          "callback_data": "scr_21"
+        }
+      ],
+      [
+        {
+          "text": "Перейти в раздел привычки",
+          "callback_data": "scr_3"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_8":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_3"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_8_1":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Изменить название",
+          "callback_data": "scr_19"
+        }
+      ],
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_3"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_9":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Ничего не подходит",
+          "callback_data": "scr_12"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_4"
+        }
+      ]
+    ]
+  },
+  "scr_10":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_4"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_19"
+        }
+      ]
+    ]
+  },
+  "scr_11":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Да, хочу именно это",
+          "callback_data": "scr_12"
+        },
+        {
+          "text": "У меня другое стремление",
+          "callback_data": "scr_10"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_12":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_11"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_13":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_12"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_14":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_13"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_15":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "То что нужно !",
+          "callback_data": "scr_18"
+        }
+      ],
+      [
+        {
+          "text": "Мне нужно что-то другое",
+          "callback_data": "scr_16"
+        }
+      ]
+    ]
+  },
+  "scr_16":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Изменить приоритеты",
+          "callback_data": "scr_13"
+        }
+      ],
+      [
+        {
+          "text": "Добавить другие привычки",
+          "callback_data": "scr_17"
+        }
+      ],
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_15"
+        }
+      ]
+    ]
+  },
+  "scr_17":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_16"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_18":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Перейти в раздел",
+          "callback_data": "scr_3"
+        }
+      ],
+      [
+        {
+          "text": "Вернуться в меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_19":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_8_1"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_20":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_21":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Хочу ее привить",
+          "callback_data": "scr_22"
+        }
+      ],
+      [
+        {
+          "text": "Хочу от нее отказаться",
+          "callback_data": "scr_30"
+        }
+      ],
+      [
+        {
+          "text": "Хочу выполнить один раз",
+          "callback_data": "scr_38"
+        }
+      ],
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_8_1"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_22":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Другое поведение (рекомендуется)",
+          "callback_data": "scr_23_1"
+        }
+      ],
+      [
+        {
+          "text": "Уведомление в телефоне",
+          "callback_data": "scr_6"
+        }
+      ],
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_21"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_23":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_22"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_23_1":{
+    "inline_keyboard":[
+        [
+          {
+            "text":"1",
+            "callback_data":"beh_1"
+          },
+          {
+            "text":"2",
+            "callback_data":"beh_2"
+          },
+          {
+            "text":"3",
+            "callback_data":"beh_3"
+          },
+          {
+            "text":"4",
+            "callback_data":"beh_4"
+          },
+          {
+            "text":"5",
+            "callback_data":"beh_5"
+          }
+      ],
+        [
+          {
+            "text":"6",
+            "callback_data":"beh_6"
+          },
+          {
+            "text":"7",
+            "callback_data":"beh_7"
+          },
+          {
+            "text":"8",
+            "callback_data":"beh_8"
+          },
+          {
+            "text":"9",
+            "callback_data":"beh_9"
+          },
+          {
+            "text":"10",
+            "callback_data":"beh_10"
+          }
+      ], 
+        [
+          {
+            "text":"Ничего не подходит",
+            "callback_data":"scr_23"
+          }
+      ],
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_22"
+        }
+      ],
+        [
+          {
+            "text":"В главное меню",
+            "callback_data":"scr_1"
+          }
+      ]
+    ]
+  },
+  "scr_24":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Я отрепетировал",
+          "callback_data": "scr_20"
+        }
+      ],
+      [
+        {
+          "text": "Нет возможности",
+          "callback_data": "scr_25"
+        }
+      ],
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_23"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_25":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Сейчас не могу",
+          "callback_data": "scr_26"
+        }
+      ],
+      [
+        {
+          "text": "Не могу в принципе",
+          "callback_data": "scr_27"
+        }
+      ],
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_24"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_26":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_25"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_27":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Да",
+          "callback_data": "scr_28"
+        }
+      ],
+      [
+        {
+          "text": "Нет",
+          "callback_data": "scr_20"
+        }
+      ],
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_25"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_28":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_27"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_29":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Пока не знаю/пропустить",
+          "callback_data": "scr_29_1"
+        }
+      ],
+      [
+        {
+          "text": "Я не хочу заполнять отчет",
+          "callback_data": "scr_29_2"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_29_1":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Далее",
+          "callback_data": "scr_20"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_29_2":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Далее",
+          "callback_data": "scr_20"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_30":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Да",
+          "callback_data": "scr_31"
+        },
+        {
+          "text": "Нет",
+          "callback_data": "scr_32"
+        }
+      ],
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_21"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_30":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Да",
+          "callback_data": "scr_31"
+        },
+        {
+          "text": "Нет",
+          "callback_data": "scr_32"
+        }
+      ],
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_21"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_31":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_30"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_32":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Да",
+          "callback_data": "scr_33"
+        },
+        {
+          "text": "Нет",
+          "callback_data": "scr_34"
+        }
+      ],
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_30"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_33":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_32"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ],
+      [
+        {
+          "text": "Пропустить",
+          "callback_data": "scr_20"
+        }
+      ]
+    ]
+  },
+  "scr_34":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Да",
+          "callback_data": "scr_35"
+        },
+        {
+          "text": "Нет",
+          "callback_data": "scr_37"
+        }
+      ],
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_32"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_35":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_34"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ],
+      [
+        {
+          "text": "Пропустить",
+          "callback_data": "scr_20"
+        }
+      ]
+    ]
+  },
+  "scr_36":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_35"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ],
+      [
+        {
+          "text": "Пропустить",
+          "callback_data": "scr_20"
+        }
+      ]
+    ]
+  },
+  "scr_37":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_34"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_38":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_21"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_39":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_40":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_6"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_41":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_6"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_42":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_6"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_43":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_44":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_3"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_45":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
         }
       ]
     ]
   }
-
 }
