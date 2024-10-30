@@ -27,7 +27,7 @@ def use_logic(message):
 		if message_id == previous_message_id+1:
 			print('It works!')
 		else: 
-			handle_text_query(text, chat_id, message_id)
+			handle_text_query(text, chat_id, message_id, user_id)
 	else:
 		chat_id = message['message']['chat']['id']
 		tg_methods.send_text_message('Я понимаю только текстовые сообщения и кнопки', chat_id)
@@ -48,9 +48,6 @@ def handle_callback_query(message):
 	elif callback_data == "scr_2":
 		tg_methods.send_text_message(replies['2'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_2']))
 		tg_methods.delete_message(message_id, chat_id)
-		data = {"chat_id":chat_id, "message_id":message_id, "callback_data":callback_data}
-		newdata = append_to_json(filepath = cache_filepath, new_data=data)
-		save_to_json(filepath = cache_filepath, data = newdata)
 	elif callback_data == "scr_3":
 		tg_methods.send_text_message(replies['3'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_3']))
 		tg_methods.delete_message(message_id, chat_id)
@@ -66,12 +63,22 @@ def handle_callback_query(message):
 	else:
 		tg_methods.send_text_message("Error: unknown callback data", chat_id, protect_content=True)
 
-def handle_text_query(text, chat_id, message_id):
+	## Saving data
+	data = {"user_id":user_id,"chat_id":chat_id, "message_id":message_id, "callback_data":callback_data, "text":None}
+	newdata = append_to_json(filepath = cache_filepath, new_data=data)
+	save_to_json(filepath = cache_filepath, data = newdata)
+
+def handle_text_query(text, chat_id, message_id, user_id):
 
 	## Actual logic
 	if text=="/start":
 		tg_methods.send_text_message(replies['/start'], chat_id, protect_content=True, keyboard=json.dumps(buttons['start']))
 		tg_methods.delete_message(message_id, chat_id)
+
+	## Saving data
+	data = {"user_id":user_id,"chat_id":chat_id, "message_id":message_id, "callback_data":None, "text":text}
+	newdata = append_to_json(filepath = cache_filepath, new_data=data)
+	save_to_json(filepath = cache_filepath, data = newdata)
 
 def get_latest_messageid_from_cache(filepath, chat_id):
 	
