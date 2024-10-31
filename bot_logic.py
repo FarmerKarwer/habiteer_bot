@@ -1,5 +1,6 @@
 import tg_methods
 import json
+import os
 from utils import load_json, save_to_json, append_to_json
 
 replies_filepath = "./strings/replies.json"
@@ -9,11 +10,9 @@ cache_filepath = "./cache/callback_history.json"
 replies = load_json(replies_filepath)
 buttons = load_json(buttons_filepath)
 
-
-
 def use_logic(message):
 	if button_is_pressed(message):
-		handle_callback_query(message)
+		message_info = handle_callback_query(message)
 	elif text_message_is_entered(message):
 
 		## Getting data
@@ -21,16 +20,20 @@ def use_logic(message):
 		text = message['message']['text']
 		message_id = message['message']['message_id']
 		user_id = message['message']['from']['id']
-		previous_message_id = get_latest_messageid_from_cache(cache_filepath, chat_id)
-		print(previous_message_id)
-		print(message_id == previous_message_id+1)
-		if message_id == previous_message_id+1:
-			print('It works!')
-		else: 
-			handle_text_query(text, chat_id, message_id, user_id)
+
+		if get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_2':
+			tg_methods.send_text_message(replies['7'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_7']))
+			print(text)
+		message_info = handle_text_query(text, chat_id, message_id, user_id)
 	else:
 		chat_id = message['message']['chat']['id']
+		message_id = message['message']['message_id']
+		user_id = message['message']['from']['id']
+
 		tg_methods.send_text_message('Я понимаю только текстовые сообщения и кнопки', chat_id)
+		message_info = {"user_id":user_id,"chat_id":chat_id, "message_id":message_id, "callback_data":None, "text":None}
+	newdata = append_to_json(filepath = cache_filepath, new_data = message_info)
+	save_to_json(filepath = cache_filepath, new_data = newdata)
 
 def handle_callback_query(message):
 
@@ -65,8 +68,7 @@ def handle_callback_query(message):
 
 	## Saving data
 	data = {"user_id":user_id,"chat_id":chat_id, "message_id":message_id, "callback_data":callback_data, "text":None}
-	newdata = append_to_json(filepath = cache_filepath, new_data=data)
-	save_to_json(filepath = cache_filepath, data = newdata)
+	return data
 
 def handle_text_query(text, chat_id, message_id, user_id):
 
@@ -77,8 +79,7 @@ def handle_text_query(text, chat_id, message_id, user_id):
 
 	## Saving data
 	data = {"user_id":user_id,"chat_id":chat_id, "message_id":message_id, "callback_data":None, "text":text}
-	newdata = append_to_json(filepath = cache_filepath, new_data=data)
-	save_to_json(filepath = cache_filepath, data = newdata)
+	return data
 
 def get_latest_messageid_from_cache(filepath, chat_id):
 	
@@ -86,7 +87,10 @@ def get_latest_messageid_from_cache(filepath, chat_id):
 
 	# Load data from the JSON file
 	with open(filepath, "r") as json_file:
-	    data = json.load(json_file)
+		try:
+			data = json.load(json_file)
+		except json.JSONDecodeError:
+			data = {}
 
 	# Filter the list to get items matching the target chat_id
 	filtered_data = [item for item in data if item["chat_id"] == target_chat_id]
@@ -97,6 +101,28 @@ def get_latest_messageid_from_cache(filepath, chat_id):
 	    return latest_message_id
 	else:
 	    return None
+
+def get_cached_data(filepath, user_id, chat_id, property):
+    # Check if file exists and read data if so
+	if os.path.exists(filepath):
+		with open(filepath, "r") as json_file:
+			try:
+				data = json.load(json_file)
+			except json.JSONDecodeError:
+				print("Error: JSON file is empty or corrupted.")
+				return None
+	else:
+		print("Error: File does not exist.")
+		return None
+
+    # Find the entry that matches the specified user_id and chat_id
+	for entry in data:
+		if entry.get("user_id") == user_id and entry.get("chat_id") == chat_id:
+			return entry.get(property)
+
+    # Return None if no matching entry is found
+	print("No matching entry found for the given user_id and chat_id.")
+	return None
 
 # Checking for conditions
 

@@ -2,15 +2,9 @@
     {
         "user_id": 940985788,
         "chat_id": 940985788,
-        "message_id": 185,
+        "message_id": 249,
         "callback_data": null,
-        "text": "hello"
-    },
-    {
-        "user_id": 940985788,
-        "chat_id": 940985788,
-        "message_id": 185,
-        "callback_data": null,
-        "text": "hello"
+        "text": "test",
+        "id": 10
     }
 ]
