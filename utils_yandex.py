@@ -10,18 +10,14 @@ s3 = boto3.client(
 )
 bucket_name = os.getenv('BUCKET')
 
-def load_json():
+    
+def update_callback_history(new_data):
     try:
         obj = s3.get_object(Bucket=bucket_name, Key="callback_history.json")
         file_content = obj['Body'].read().decode('utf-8')
         users_data = json.loads(file_content) if file_content else []
-        return users_data
     except s3.exceptions.NoSuchKey:
         users_data = []
-        return users_data
-    
-def append_to_json(new_data):
-    users_data = load_json()
 
     # Check if user already exists
     found = False
