@@ -1100,5 +1100,15 @@
         }
       ]
     ]
+  },
+  "plug":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
   }
 }

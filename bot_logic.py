@@ -228,6 +228,9 @@ def handle_callback_query(message):
 	elif callback_data == "scr_44": 
 		tg_methods.send_text_message(replies['44'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_44']))
 		tg_methods.delete_message(message_id, chat_id)
+	elif callback_data == "plug": 
+		tg_methods.send_text_message(replies['plug'], chat_id, protect_content=True, keyboard=json.dumps(buttons['plug']))
+		tg_methods.delete_message(message_id, chat_id)
 	else:
 		tg_methods.send_text_message("Error: unknown callback data", chat_id, protect_content=True)
 
