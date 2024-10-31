@@ -27,10 +27,13 @@ def use_logic(message):
 		if get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_2':
 			tg_methods.send_text_message(replies['7'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_7']))
 			print(text)
+		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_3_1':
+			tg_methods.send_text_message(replies['21'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_21']))
+			print(text)
 		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_8':
 			tg_methods.send_text_message(replies['8.1'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_8_1']))
 			print(text)
-		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_9':
+		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")in ("hab_1", "hab_2", "hab_3", "hab_4", "hab_5", "hab_6", "hab_7", "hab_8", "hab_9", "hab_10"):
 			tg_methods.send_text_message(replies['18'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_18']))
 			print(text)
 		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_10':
@@ -50,6 +53,50 @@ def use_logic(message):
 		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_17':
 			tg_methods.send_text_message(replies['13'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_13']))
 			message_info["callback_data"]="scr_13"
+			print(text)
+		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_19':
+			tg_methods.send_text_message(replies['20'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_20']))
+			print(text)
+		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_23':
+			tg_methods.send_text_message(replies['24'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_24']))
+			print(text)
+		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_26':
+			tg_methods.send_text_message(replies['20'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_20']))
+			print(text)
+		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_28':
+			tg_methods.send_text_message(replies['20'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_20']))
+			print(text)
+		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_31':
+			tg_methods.send_text_message(replies['7'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_7']))
+			print(text)
+		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_33':
+			tg_methods.send_text_message(replies['36'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_36']))
+			message_info["callback_data"]="scr_36"
+			print(text)
+		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_35':
+			tg_methods.send_text_message(replies['36'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_36']))
+			message_info["callback_data"]="scr_36"
+			print(text)
+		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_36':
+			tg_methods.send_text_message(replies['20'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_20']))
+			print(text)
+		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_37':
+			tg_methods.send_text_message(replies['20'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_20']))
+			print(text)
+		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_38':
+			tg_methods.send_text_message(replies['20'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_20']))
+			print(text)
+		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_40':
+			tg_methods.send_text_message(replies['43'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_43']))
+			print(text)
+		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_41':
+			tg_methods.send_text_message(replies['43'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_43']))
+			print(text)
+		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_42':
+			tg_methods.send_text_message(replies['/start'], chat_id, protect_content=True, keyboard=json.dumps(buttons['start']))
+			print(text)
+		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_44':
+			tg_methods.send_text_message(replies['45'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_45']))
 			print(text)
 		else:
 			handle_text_query(text, chat_id, message_id, user_id)
@@ -82,8 +129,14 @@ def handle_callback_query(message):
 	elif callback_data == "scr_3":
 		tg_methods.send_text_message(replies['3'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_3']))
 		tg_methods.delete_message(message_id, chat_id)
+	elif callback_data == "scr_3_1":
+		tg_methods.send_text_message(replies['3.1'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_3_1']))
+		tg_methods.delete_message(message_id, chat_id)
 	elif callback_data == "scr_4":
 		tg_methods.send_text_message(replies['4'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_4']))
+		tg_methods.delete_message(message_id, chat_id)
+	elif callback_data in ("hab_1", "hab_2", "hab_3", "hab_4", "hab_5", "hab_6", "hab_7", "hab_8", "hab_9", "hab_10"):
+		tg_methods.send_text_message(replies['9'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_9']))
 		tg_methods.delete_message(message_id, chat_id)
 	elif callback_data == "scr_5":
 		tg_methods.send_text_message(replies['5'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_5']))
@@ -93,9 +146,6 @@ def handle_callback_query(message):
 		tg_methods.delete_message(message_id, chat_id)
 	elif callback_data == "scr_8":
 		tg_methods.send_text_message(replies['8'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_8']))
-		tg_methods.delete_message(message_id, chat_id)
-	elif callback_data == "scr_9":
-		tg_methods.send_text_message(replies['9'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_9']))
 		tg_methods.delete_message(message_id, chat_id)
 	elif callback_data == "scr_10":
 		tg_methods.send_text_message(replies['10'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_10']))
@@ -111,6 +161,72 @@ def handle_callback_query(message):
 		tg_methods.delete_message(message_id, chat_id)
 	elif callback_data == "scr_18": 
 		tg_methods.send_text_message(replies['18'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_18']))
+		tg_methods.delete_message(message_id, chat_id)
+	elif callback_data == "scr_19": 
+		tg_methods.send_text_message(replies['19'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_19']))
+		tg_methods.delete_message(message_id, chat_id)
+	elif callback_data == "scr_21": 
+		tg_methods.send_text_message(replies['21'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_21']))
+		tg_methods.delete_message(message_id, chat_id)
+	elif callback_data == "scr_22": 
+		tg_methods.send_text_message(replies['22'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_22']))
+		tg_methods.delete_message(message_id, chat_id)
+	elif callback_data == "scr_23_1": 
+		tg_methods.send_text_message(replies['23.1'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_23_1']))
+		tg_methods.delete_message(message_id, chat_id)
+	elif callback_data == "scr_23": 
+		tg_methods.send_text_message(replies['23'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_23']))
+		tg_methods.delete_message(message_id, chat_id)
+	elif callback_data == "scr_25": 
+		tg_methods.send_text_message(replies['25'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_25']))
+		tg_methods.delete_message(message_id, chat_id)
+	elif callback_data == "scr_26": 
+		tg_methods.send_text_message(replies['26'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_26']))
+		tg_methods.delete_message(message_id, chat_id)
+	elif callback_data == "scr_27": 
+		tg_methods.send_text_message(replies['27'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_27']))
+		tg_methods.delete_message(message_id, chat_id)
+	elif callback_data == "scr_28": 
+		tg_methods.send_text_message(replies['28'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_28']))
+		tg_methods.delete_message(message_id, chat_id)
+	elif callback_data == "scr_30": 
+		tg_methods.send_text_message(replies['30'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_30']))
+		tg_methods.delete_message(message_id, chat_id)
+	elif callback_data == "scr_31": 
+		tg_methods.send_text_message(replies['31'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_31']))
+		tg_methods.delete_message(message_id, chat_id)
+	elif callback_data == "scr_32": 
+		tg_methods.send_text_message(replies['32'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_32']))
+		tg_methods.delete_message(message_id, chat_id)
+	elif callback_data == "scr_33": 
+		tg_methods.send_text_message(replies['33'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_33']))
+		tg_methods.delete_message(message_id, chat_id)
+	elif callback_data == "scr_34": 
+		tg_methods.send_text_message(replies['34'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_34']))
+		tg_methods.delete_message(message_id, chat_id)
+	elif callback_data == "scr_35": 
+		tg_methods.send_text_message(replies['35'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_35']))
+		tg_methods.delete_message(message_id, chat_id)
+	elif callback_data == "scr_37": 
+		tg_methods.send_text_message(replies['37'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_37']))
+		tg_methods.delete_message(message_id, chat_id)
+	elif callback_data == "scr_38": 
+		tg_methods.send_text_message(replies['38'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_38']))
+		tg_methods.delete_message(message_id, chat_id)
+	elif callback_data == "scr_39": 
+		tg_methods.send_text_message(replies['39'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_39']))
+		tg_methods.delete_message(message_id, chat_id)
+	elif callback_data == "scr_40": 
+		tg_methods.send_text_message(replies['40'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_40']))
+		tg_methods.delete_message(message_id, chat_id)
+	elif callback_data == "scr_41": 
+		tg_methods.send_text_message(replies['41'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_41']))
+		tg_methods.delete_message(message_id, chat_id)
+	elif callback_data == "scr_42": 
+		tg_methods.send_text_message(replies['42'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_42']))
+		tg_methods.delete_message(message_id, chat_id)
+	elif callback_data == "scr_44": 
+		tg_methods.send_text_message(replies['44'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_44']))
 		tg_methods.delete_message(message_id, chat_id)
 	else:
 		tg_methods.send_text_message("Error: unknown callback data", chat_id, protect_content=True)

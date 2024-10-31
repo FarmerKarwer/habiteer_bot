@@ -91,6 +91,23 @@
     ]
   },
 
+  "scr_3_1":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_3"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+
   "scr_4":{
     "inline_keyboard":[
         [
@@ -272,7 +289,7 @@
       ],
       [
         {
-          "text": "В главное меню",
+          "text": "Назад",
           "callback_data": "scr_4"
         }
       ]
