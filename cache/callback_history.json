@@ -1,18 +1,26 @@
 [
     {
+        "user_id": 1569325763,
+        "chat_id": 1569325763,
+        "message_id": 267,
+        "callback_data": "scr_1",
+        "text": null,
+        "id": 4
+    },
+    {
         "user_id": 310596650,
         "chat_id": 310596650,
-        "message_id": 31,
-        "callback_data": "menu",
-        "text": null,
-        "id": 2
+        "message_id": 273,
+        "callback_data": null,
+        "text": "\u0437\u0430\u043a\u0440\u044b\u0442\u044c \u0437\u0430\u043d\u0430\u0432\u0435\u0441\u043a\u0438",
+        "id": 7
     },
     {
         "user_id": 940985788,
         "chat_id": 940985788,
-        "message_id": 261,
-        "callback_data": null,
-        "text": "/start",
-        "id": 18
+        "message_id": 262,
+        "callback_data": "scr_1",
+        "text": null,
+        "id": 19
     }
 ]
