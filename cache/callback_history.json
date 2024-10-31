@@ -1,10 +1,18 @@
 [
     {
+        "user_id": 310596650,
+        "chat_id": 310596650,
+        "message_id": 31,
+        "callback_data": "menu",
+        "text": null,
+        "id": 2
+    },
+    {
         "user_id": 940985788,
         "chat_id": 940985788,
-        "message_id": 249,
+        "message_id": 261,
         "callback_data": null,
-        "text": "test",
-        "id": 10
+        "text": "/start",
+        "id": 18
     }
 ]
