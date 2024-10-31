@@ -21,10 +21,38 @@ def use_logic(message):
 		message_id = message['message']['message_id']
 		user_id = message['message']['from']['id']
 
+		message_info = {"user_id":user_id,"chat_id":chat_id, "message_id":message_id, "callback_data":None, "text":text}
+
+		### Possible problems when a user types command '/start'
 		if get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_2':
 			tg_methods.send_text_message(replies['7'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_7']))
 			print(text)
-		message_info = handle_text_query(text, chat_id, message_id, user_id)
+		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_8':
+			tg_methods.send_text_message(replies['8.1'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_8_1']))
+			print(text)
+		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_9':
+			tg_methods.send_text_message(replies['18'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_18']))
+			print(text)
+		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_10':
+			tg_methods.send_text_message(replies['11'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_11']))
+			print(text)
+		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_12':
+			tg_methods.send_text_message(replies['13'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_13']))
+			message_info["callback_data"]="scr_13"
+			print(text)
+		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_13':
+			tg_methods.send_text_message(replies['14'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_14']))
+			message_info["callback_data"]="scr_14"
+			print(text)
+		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_14':
+			tg_methods.send_text_message(replies['15'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_15']))
+			print(text)
+		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_17':
+			tg_methods.send_text_message(replies['13'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_13']))
+			message_info["callback_data"]="scr_13"
+			print(text)
+		else:
+			handle_text_query(text, chat_id, message_id, user_id)
 	else:
 		chat_id = message['message']['chat']['id']
 		message_id = message['message']['message_id']
@@ -62,6 +90,27 @@ def handle_callback_query(message):
 		tg_methods.delete_message(message_id, chat_id)
 	elif callback_data == "scr_6":
 		tg_methods.send_text_message(replies['6'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_6']))
+		tg_methods.delete_message(message_id, chat_id)
+	elif callback_data == "scr_8":
+		tg_methods.send_text_message(replies['8'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_8']))
+		tg_methods.delete_message(message_id, chat_id)
+	elif callback_data == "scr_9":
+		tg_methods.send_text_message(replies['9'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_9']))
+		tg_methods.delete_message(message_id, chat_id)
+	elif callback_data == "scr_10":
+		tg_methods.send_text_message(replies['10'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_10']))
+		tg_methods.delete_message(message_id, chat_id)
+	elif callback_data == "scr_12": 
+		tg_methods.send_text_message(replies['12'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_12']))
+		tg_methods.delete_message(message_id, chat_id)
+	elif callback_data == "scr_16": 
+		tg_methods.send_text_message(replies['16'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_16']))
+		tg_methods.delete_message(message_id, chat_id)
+	elif callback_data == "scr_17": 
+		tg_methods.send_text_message(replies['17'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_17']))
+		tg_methods.delete_message(message_id, chat_id)
+	elif callback_data == "scr_18": 
+		tg_methods.send_text_message(replies['18'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_18']))
 		tg_methods.delete_message(message_id, chat_id)
 	else:
 		tg_methods.send_text_message("Error: unknown callback data", chat_id, protect_content=True)

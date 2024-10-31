@@ -1,13 +1,5 @@
 [
     {
-        "user_id": 1569325763,
-        "chat_id": 1569325763,
-        "message_id": 267,
-        "callback_data": "scr_1",
-        "text": null,
-        "id": 4
-    },
-    {
         "user_id": 310596650,
         "chat_id": 310596650,
         "message_id": 273,
@@ -16,11 +8,19 @@
         "id": 7
     },
     {
+        "user_id": 1569325763,
+        "chat_id": 1569325763,
+        "message_id": 290,
+        "callback_data": null,
+        "text": "/motivational_message",
+        "id": 5
+    },
+    {
         "user_id": 940985788,
         "chat_id": 940985788,
-        "message_id": 262,
+        "message_id": 366,
         "callback_data": "scr_1",
         "text": null,
-        "id": 19
+        "id": 69
     }
 ]
