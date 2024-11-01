@@ -2,6 +2,7 @@ import tg_methods
 import json
 import os
 from utils import load_json, save_to_json, append_to_json
+from recommender import get_ai_response
 
 replies_filepath = "./strings/replies.json"
 buttons_filepath = "./strings/buttons.json"
@@ -95,7 +96,9 @@ def handle_callback_query(message):
 		tg_methods.send_text_message(replies['12'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_12']))
 		tg_methods.delete_message(message_id, chat_id)
 	elif callback_data == "scr_12_1":
-		tg_methods.send_text_message(replies['ai_warn'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_12_1']))
+		habits = get_ai_response(aspiration="Лучше справляться со стрессом")
+		numbered_habits = "\n".join([f"{i+1}. {habit}" for i, habit in enumerate(habits.values())])
+		tg_methods.send_text_message("Возможно, вам подойдут эти варианты:\n\n"+numbered_habits+'\n\n---\n\n'+replies['ai_warn'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_12_1']))
 		tg_methods.delete_message(message_id, chat_id)
 	elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=="scr_16" and callback_data=="scr_13":
 		tg_methods.send_text_message(replies['13'], chat_id, protect_content=True, keyboard=json.dumps(buttons['16_scr_13']))
