@@ -344,6 +344,12 @@
           "text": "В главное меню",
           "callback_data": "scr_1"
         }
+      ],
+      [
+        {
+          "text": "У меня нет идей...",
+          "callback_data": "scr_12_1"
+        }
       ]
     ]
   },
@@ -353,6 +359,28 @@
         {
           "text": "Назад",
           "callback_data": "scr_9"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_12_1":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Выбрать предложенные",
+          "callback_data": "scr_13"
+        }
+      ],
+      [
+        {
+          "text": "Не подходят/лучше сам",
+          "callback_data": "scr_12"
         }
       ],
       [

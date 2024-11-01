@@ -94,6 +94,9 @@ def handle_callback_query(message):
 	elif callback_data == "scr_12":
 		tg_methods.send_text_message(replies['12'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_12']))
 		tg_methods.delete_message(message_id, chat_id)
+	elif callback_data == "scr_12_1":
+		tg_methods.send_text_message(replies['ai_warn'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_12_1']))
+		tg_methods.delete_message(message_id, chat_id)
 	elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=="scr_16" and callback_data=="scr_13":
 		tg_methods.send_text_message(replies['13'], chat_id, protect_content=True, keyboard=json.dumps(buttons['16_scr_13']))
 		tg_methods.delete_message(message_id, chat_id)
