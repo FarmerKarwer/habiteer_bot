@@ -347,12 +347,44 @@
       ]
     ]
   },
+  "9_scr_12":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_9"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
   "scr_13":{
     "inline_keyboard": [
       [
         {
           "text": "Назад",
           "callback_data": "scr_12"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "16_scr_13":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_16"
         }
       ],
       [
