@@ -94,16 +94,20 @@ def handle_callback_query(message):
 		tg_methods.send_text_message(replies['10'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_10']))
 		tg_methods.delete_message(message_id, chat_id)
 	elif callback_data == "scr_11":
-		tg_methods.send_text_message(replies['11'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_11']))
+		aspiration = get_cached_data(cache_pickhabit_filepath, user_id, chat_id, property="aspiration")
+		reply = replies['11'].replace("[aspiration]", aspiration)
+		tg_methods.send_text_message(reply, chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_11']))
 		tg_methods.delete_message(message_id, chat_id)
 	elif callback_data == "scr_12":
 		tg_methods.send_text_message(replies['12'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_12']))
 		tg_methods.delete_message(message_id, chat_id)
 	elif callback_data == "scr_12_1":
-		habits = get_ai_response(aspiration="Лучше справляться со стрессом")
+		aspiration = get_cached_data(cache_pickhabit_filepath, user_id, chat_id, property="aspiration")
+		habits = get_ai_response(aspiration=aspiration)
 		numbered_habits = "\n".join([f"{i+1}. {habit}" for i, habit in enumerate(habits.values())])
+		behavior_options_list = [habit for habit in habits.values()]
 		tg_methods.send_text_message("Возможно, вам подойдут эти варианты:\n\n"+numbered_habits+'\n\n---\n\n'+replies['ai_warn'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_12_1']))
-		tg_methods.delete_message(message_id, chat_id)
+		update_user_value(cache_pickhabit_filepath, user_id, "behavior_options", behavior_options_list)
 	elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=="scr_16" and callback_data=="scr_13":
 		tg_methods.send_text_message(replies['13'], chat_id, protect_content=True, keyboard=json.dumps(buttons['16_scr_13']))
 		tg_methods.delete_message(message_id, chat_id)
@@ -120,6 +124,9 @@ def handle_callback_query(message):
 		tg_methods.send_text_message(replies['17'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_17']))
 		tg_methods.delete_message(message_id, chat_id)
 	elif callback_data == "scr_18": 
+		habits = get_cached_data(cache_pickhabit_filepath, user_id, chat_id, property="habits")
+		print(habits)
+		delete_user_records(cache_pickhabit_filepath, user_id)
 		tg_methods.send_text_message(replies['18'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_18']))
 		tg_methods.delete_message(message_id, chat_id)
 	elif callback_data == "scr_19": 
@@ -226,23 +233,89 @@ def handle_text_input(text, chat_id, message_id, user_id, message_info):
 			tg_methods.send_text_message(replies['18'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_18']))
 			print(text)
 		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_10':
-			tg_methods.send_text_message(replies['11'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_11']))
+			new_data = {"user_id":user_id,"chat_id":chat_id, "aspiration":text, "habits":None, "behavior_options":None, "suitability":None, "effectiveness":None}
+			new_data = append_to_json(filepath = cache_pickhabit_filepath, new_data=new_data)
+			save_to_json(cache_pickhabit_filepath, new_data)
+			reply = replies['11'].replace("[aspiration]", text)
+			tg_methods.send_text_message(reply, chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_11']))
 			print(text)
 		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_12':
-			tg_methods.send_text_message(replies['13'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_13']))
-			message_info["callback_data"]="scr_13"
+			try:
+				behaviors = [line.split('. ')[1] for line in text.strip().split('\n') if line]
+				check_minimum_length(behaviors)
+				update_user_value(cache_pickhabit_filepath, user_id, "behavior_options", behaviors)
+				tg_methods.send_text_message(replies['13'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_13']))
+				message_info["callback_data"]="scr_13"
+			except IndexError:
+				tg_methods.send_text_message("Данные были введены некорректно.\n\nПожалуйста, введите в формате:\n 1. <поведение1>\n 2. <поведение2>\n...", chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_13']))
+				message_info["callback_data"]="scr_12"
+			except ListTooShortError:
+				tg_methods.send_text_message("Вариантов поведения должно быть, как минимум, 5.\n\nПожалуйста, введите в формате:\n 1. <поведение1>\n 2. <поведение2>\n...", chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_13']))
+				message_info["callback_data"]="scr_12"
 			print(text)
 		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_13':
-			tg_methods.send_text_message(replies['14'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_14']))
-			message_info["callback_data"]="scr_14"
+			try:
+				suitability_ratings = [int(line.split('. ')[1]) for line in text.strip().split('\n')]
+				check_all_in_range(suitability_ratings)
+				behaviors = get_cached_data(cache_pickhabit_filepath, user_id, chat_id, property="behavior_options")
+				check_matching_lengths(suitability_ratings, behaviors)
+				update_user_value(cache_pickhabit_filepath, user_id, "suitability", suitability_ratings)
+				tg_methods.send_text_message(replies['14'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_14']))
+				message_info["callback_data"]="scr_14"
+			except ValueError:
+				tg_methods.send_text_message("Оценки должны быть числовыми, от 1 до 10.\n\nПожалуйста, введите в формате:\n1. <оценка числом от 1 до 10>\n2. <оценка числом от 1 до 10>\n", chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_13']))
+				message_info["callback_data"]="scr_13"
+			except ValueOutOfRangeError:
+				tg_methods.send_text_message("Оценки должны быть от 1 до 10.\n\nПожалуйста, введите в формате:\n1. <оценка числом от 1 до 10>\n2. <оценка числом от 1 до 10>\n", chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_13']))
+				message_info["callback_data"]="scr_13"
+			except ListLengthMismatchError:
+				tg_methods.send_text_message("Оценок должно быть столько же, сколько и вариантов поведения.\n\nПожалуйста, введите в формате:\n1. <оценка числом от 1 до 10>\n2. <оценка числом от 1 до 10>\n", chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_13']))
+				message_info["callback_data"]="scr_13"
+			except IndexError:
+				tg_methods.send_text_message("Данные были введены некорректно.\n\nПожалуйста, введите в формате:\n1. <оценка числом от 1 до 10>\n2. <оценка числом от 1 до 10>\n", chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_13']))
+				message_info["callback_data"]="scr_13"
 			print(text)
 		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_14':
-			tg_methods.send_text_message(replies['15'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_15']))
+			try:
+				effectiveness_ratings = [int(line.split('. ')[1]) for line in text.strip().split('\n')]
+				check_all_in_range(effectiveness_ratings)
+				behaviors = get_cached_data(cache_pickhabit_filepath, user_id, chat_id, property="behavior_options")
+				check_matching_lengths(effectiveness_ratings, behaviors)
+				update_user_value(cache_pickhabit_filepath, user_id, "effectiveness", effectiveness_ratings)
+				suitability_ratings = get_cached_data(cache_pickhabit_filepath, user_id, chat_id, property="suitability")
+				
+				habit_grades = sum_arrays(suitability_ratings, effectiveness_ratings)
+				top_habits = [habit for _, habit in sorted(zip(habit_grades, behaviors), reverse=True)[:3]]
+				top_habits_str = "\n".join([f"{i+1}. {habit}" for i, habit in enumerate(top_habits)])
+
+				reply = replies['15'].replace("[habits]", top_habits_str)
+				update_user_value(cache_pickhabit_filepath, user_id, "habits", top_habits)
+				tg_methods.send_text_message(reply, chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_15']))
+				message_info["callback_data"]="scr_14"
+			except ValueError:
+				tg_methods.send_text_message("Оценки должны быть числовыми, от 1 до 10.\n\nПожалуйста, введите в формате:\n1. <оценка числом от 1 до 10>\n2. <оценка числом от 1 до 10>\n", chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_13']))
+				message_info["callback_data"]="scr_14"
+			except ValueOutOfRangeError:
+				tg_methods.send_text_message("Оценки должны быть от 1 до 10.\n\nПожалуйста, введите в формате:\n1. <оценка числом от 1 до 10>\n2. <оценка числом от 1 до 10>\n", chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_13']))
+				message_info["callback_data"]="scr_14"
+			except ListLengthMismatchError:
+				tg_methods.send_text_message("Оценок должно быть столько же, сколько и вариантов поведения.\n\nПожалуйста, введите в формате:\n1. <оценка числом от 1 до 10>\n2. <оценка числом от 1 до 10>\n", chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_13']))
+				message_info["callback_data"]="scr_14"
+			except IndexError:
+				tg_methods.send_text_message("Данные были введены некорректно.\n\nПожалуйста, введите в формате:\n1. <оценка числом от 1 до 10>\n2. <оценка числом от 1 до 10>\n", chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_13']))
+				message_info["callback_data"]="scr_14"
 			print(text)
-		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_17':
-			tg_methods.send_text_message(replies['13'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_13']))
-			message_info["callback_data"]="scr_13"
-			print(text)
+		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_17': 
+			try:
+				behaviours = get_cached_data(cache_pickhabit_filepath, user_id, chat_id, property="behavior_options")
+				new_behaviors = [line.split('. ')[1] for line in text.strip().split('\n') if line]
+				behaviours.extend(new_behaviors)
+				update_user_value(cache_pickhabit_filepath, user_id, "behavior_options", behaviours)
+				tg_methods.send_text_message(replies['13'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_13']))
+				message_info["callback_data"]="scr_13"
+			except IndexError:
+				tg_methods.send_text_message("Данные были введены некорректно.\n\nПожалуйста, введите в формате:\n 1. <поведение1>\n 2. <поведение2>\n...", chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_13']))
+				message_info["callback_data"]="scr_17"
 		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_19':
 			tg_methods.send_text_message(replies['20'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_20']))
 			print(text)
@@ -314,7 +387,7 @@ def get_latest_messageid_from_cache(filepath, chat_id):
 def get_cached_data(filepath, user_id, chat_id, property):
     # Check if file exists and read data if so
 	if os.path.exists(filepath):
-		with open(filepath, "r") as json_file:
+		with open(filepath, "r", encoding="utf-8") as json_file:
 			try:
 				data = json.load(json_file)
 			except json.JSONDecodeError:
@@ -340,3 +413,28 @@ def text_message_is_entered(message):
 
 def button_is_pressed(message):
 	return 'callback_query' in message.keys()
+
+class ValueOutOfRangeError(Exception):
+    """Custom exception for values out of range."""
+    pass
+
+def check_all_in_range(input_list):
+    # Check if all items are between 1 and 10
+    if not all(1 <= item <= 10 for item in input_list):
+        raise ValueOutOfRangeError("All items must be between 1 and 10.")
+
+class ListLengthMismatchError(Exception):
+    """Custom exception for list length mismatch errors."""
+    pass
+
+def check_matching_lengths(list1, list2):
+    if len(list1) != len(list2):
+        raise ListLengthMismatchError("The lengths of the lists do not match.")
+
+class ListTooShortError(Exception):
+    """Custom exception for lists with fewer than 5 entries."""
+    pass
+
+def check_minimum_length(input_list, min_length=5):
+    if len(input_list) < min_length:
+        raise ListTooShortError(f"The list has fewer than {min_length} entries.")

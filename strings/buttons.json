@@ -443,7 +443,7 @@
     "inline_keyboard": [
       [
         {
-          "text": "То что нужно !",
+          "text": "То, что нужно!",
           "callback_data": "scr_18"
         }
       ],

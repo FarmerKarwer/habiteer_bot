@@ -78,6 +78,14 @@ def delete_user_records(file_path, user_id):
     else:
         print(f"No records found for user_id {user_id}.")
 
+def sum_arrays(arr1, arr2):
+    # Check if arrays have the same length
+    if len(arr1) != len(arr2):
+        raise ValueError("Arrays must be of the same length")
+
+    # Sum elements at corresponding positions
+    return [a + b for a, b in zip(arr1, arr2)]
+
 # def update_user_data_while_picking_habit(filepath, new_data):
 #     """
 #     Updates a specific key for a user within a JSON file.
