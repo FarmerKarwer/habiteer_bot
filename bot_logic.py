@@ -1,12 +1,13 @@
 import tg_methods
 import json
 import os
-from utils import load_json, save_to_json, append_to_json
+from utils import *
 from recommender import get_ai_response
 
 replies_filepath = "./strings/replies.json"
 buttons_filepath = "./strings/buttons.json"
 cache_filepath = "./cache/callback_history.json"
+cache_pickhabit_filepath = "./cache/picking_habit.json"
 
 replies = load_json(replies_filepath)
 buttons = load_json(buttons_filepath)
@@ -63,6 +64,9 @@ def handle_callback_query(message):
 		tg_methods.send_text_message(replies['4'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_4']))
 		tg_methods.delete_message(message_id, chat_id)
 	elif callback_data in ("hab_1", "hab_2", "hab_3", "hab_4", "hab_5", "hab_6", "hab_7", "hab_8", "hab_9", "hab_10"):
+		new_data = {"user_id":user_id,"chat_id":chat_id, "aspiration":"Правильно питаться", "habits":None, "behavior_options":None, "suitability":None, "effectiveness":None}
+		new_data = append_to_json(filepath = cache_pickhabit_filepath, new_data=new_data)
+		save_to_json(cache_pickhabit_filepath, new_data)
 		tg_methods.send_text_message(replies['9'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_9']))
 		tg_methods.delete_message(message_id, chat_id)
 	elif callback_data == "scr_5":
@@ -217,6 +221,8 @@ def handle_text_input(text, chat_id, message_id, user_id, message_info):
 			tg_methods.send_text_message(replies['8.1'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_8_1']))
 			print(text)
 		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")in ("hab_1", "hab_2", "hab_3", "hab_4", "hab_5", "hab_6", "hab_7", "hab_8", "hab_9", "hab_10"):
+			update_user_value(cache_pickhabit_filepath, user_id, "habits", ["Выпить стакан воды", "Есть медленнее"])
+			delete_user_records(cache_pickhabit_filepath, user_id)
 			tg_methods.send_text_message(replies['18'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_18']))
 			print(text)
 		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_10':
