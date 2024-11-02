@@ -3,6 +3,8 @@ import json
 import os
 from utils import *
 from recommender import get_ai_response
+import random
+import re
 
 replies_filepath = "./strings/replies.json"
 buttons_filepath = "./strings/buttons.json"
@@ -12,7 +14,8 @@ cache_pickhabit_filepath = "./cache/picking_habit.json"
 
 replies = load_json(replies_filepath)
 buttons = load_json(buttons_filepath)
-aspirations = list(load_json(premade_habits_filepath).keys())
+premade_habits = load_json(premade_habits_filepath)
+aspirations = list(premade_habits.keys())
 
 def use_logic(message):
 	if button_is_pressed(message):
@@ -68,10 +71,18 @@ def handle_callback_query(message):
 		tg_methods.send_text_message(reply, chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_4']))
 		tg_methods.delete_message(message_id, chat_id)
 	elif callback_data in ("hab_1", "hab_2", "hab_3", "hab_4", "hab_5", "hab_6", "hab_7", "hab_8", "hab_9", "hab_10"):
-		new_data = {"user_id":user_id,"chat_id":chat_id, "aspiration":"Правильно питаться", "habits":None, "behavior_options":None, "suitability":None, "effectiveness":None}
+		aspiration_idx = int(callback_data.split('_')[-1])-1
+		aspiration = aspirations[aspiration_idx]
+		habits = list(premade_habits[aspiration])
+		random_habits = random.sample(habits, k=10)
+		random_habits_str = "\n".join([f"{i+1}. {habit.capitalize()}" for i, habit in enumerate(random_habits)])
+		reply = replies['9'].replace("[habits]", random_habits_str)
+
+		new_data = {"user_id":user_id,"chat_id":chat_id, "aspiration":aspiration, "habits":None, "behavior_options":random_habits, "suitability":None, "effectiveness":None}
 		new_data = append_to_json(filepath = cache_pickhabit_filepath, new_data=new_data)
 		save_to_json(cache_pickhabit_filepath, new_data)
-		tg_methods.send_text_message(replies['9'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_9']))
+
+		tg_methods.send_text_message(reply, chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_9']))
 		tg_methods.delete_message(message_id, chat_id)
 	elif callback_data == "scr_5":
 		tg_methods.send_text_message(replies['5'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_5']))
@@ -231,10 +242,34 @@ def handle_text_input(text, chat_id, message_id, user_id, message_info):
 		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_8':
 			tg_methods.send_text_message(replies['8.1'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_8_1']))
 			print(text)
-		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")in ("hab_1", "hab_2", "hab_3", "hab_4", "hab_5", "hab_6", "hab_7", "hab_8", "hab_9", "hab_10"):
-			update_user_value(cache_pickhabit_filepath, user_id, "habits", ["Выпить стакан воды", "Есть медленнее"])
-			delete_user_records(cache_pickhabit_filepath, user_id)
-			tg_methods.send_text_message(replies['18'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_18']))
+		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data") in ("hab_1", "hab_2", "hab_3", "hab_4", "hab_5", "hab_6", "hab_7", "hab_8", "hab_9", "hab_10") or get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=="scr_9":
+			try:
+				pattern = r"\b\d{1,2}\b"
+				if ", " in text:
+					entered_numbers = [int(num) for num in text.split(', ')]
+				elif "," in text:
+					entered_numbers = [int(num) for num in text.split(',')]
+				elif re.findall(pattern, text):
+					entered_numbers = [int(text)]
+				else:
+					raise IndexError
+				habit_options = get_cached_data(cache_pickhabit_filepath, user_id, chat_id, property="behavior_options")	
+				filtered_habits = [i-1 for i in entered_numbers if i < len(habit_options)+1]
+				selected_habits = [habit_options[i] for i in filtered_habits]
+				filtered_habits_str = "\n".join([f"{i+1}. {habit.capitalize()}" for i, habit in enumerate(selected_habits)])
+				check_minimum_length(selected_habits, min_length=1)
+				update_user_value(cache_pickhabit_filepath, user_id, "habits", selected_habits)
+				delete_user_records(cache_pickhabit_filepath, user_id)
+				tg_methods.send_text_message(replies['18']+f"\n\nСохраненные привычки:\n{filtered_habits_str}", chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_18']))
+			except ValueError:
+				tg_methods.send_text_message("Введенный текст должен содержать числа, введеные через запятую. Возможно, у вас лишние пробелы. Попробуйте ввести еще раз.", chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_9']))
+				message_info["callback_data"]="scr_9"
+			except IndexError:
+				tg_methods.send_text_message("Введенный текст должен содержать 1-3 привычки, введеные через запятую. Попробуйте ввести еще раз.", chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_9']))
+				message_info["callback_data"]="scr_9"
+			except ListTooShortError:
+				tg_methods.send_text_message("Введенный текст должен содержать хотя бы одну привычку из списка. Возможно, вы ввели слишком маленькое или большое число. Попробуйте ввести еще раз.", chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_9']))
+				message_info["callback_data"]="scr_9"
 			print(text)
 		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_10':
 			new_data = {"user_id":user_id,"chat_id":chat_id, "aspiration":text, "habits":None, "behavior_options":None, "suitability":None, "effectiveness":None}
@@ -422,9 +457,9 @@ class ValueOutOfRangeError(Exception):
     """Custom exception for values out of range."""
     pass
 
-def check_all_in_range(input_list):
+def check_all_in_range(input_list, min=1, max=10):
     # Check if all items are between 1 and 10
-    if not all(1 <= item <= 10 for item in input_list):
+    if not all(min <= item <= max for item in input_list):
         raise ValueOutOfRangeError("All items must be between 1 and 10.")
 
 class ListLengthMismatchError(Exception):
