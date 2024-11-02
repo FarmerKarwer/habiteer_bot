@@ -5,7 +5,7 @@ from utils import *
 from recommender import get_ai_response
 import random
 import re
-from database import execute_query
+from database import add_habit
 
 replies_filepath = "./strings/replies.json"
 buttons_filepath = "./strings/buttons.json"
@@ -28,6 +28,8 @@ def use_logic(message):
 		text = message['message']['text']
 		message_id = message['message']['message_id']
 		user_id = message['message']['from']['id']
+		unix_timestamp = message['message']['date']
+		timestamp = unix_to_timestamp(unix_timestamp)
 
 		message_info = {"user_id":user_id,"chat_id":chat_id, "message_id":message_id, "callback_data":None, "text":text}
 
