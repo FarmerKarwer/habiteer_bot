@@ -61,6 +61,29 @@
     ]
   },
 
+  "scr_3_no_habits": {
+    "inline_keyboard": [
+      [
+        {
+          "text": "Добавить привычку",
+          "callback_data": "scr_2"
+        }
+      ],
+      [
+        {
+          "text": "Подобрать привычку",
+          "callback_data": "scr_4"
+        }
+      ],
+      [
+        {
+          "text": "Не сейчас",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+
   "scr_3":{
     "inline_keyboard":[
         [

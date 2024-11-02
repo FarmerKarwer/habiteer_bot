@@ -66,9 +66,15 @@ def handle_callback_query(message):
 		tg_methods.delete_message(message_id, chat_id)
 	elif callback_data == "scr_3":
 		user_habits = view_habits(user_id)
-		print(user_habits)
-		print(type(user_habits))
-		tg_methods.send_text_message(replies['3'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_3']))
+		if len(user_habits)==0:
+			reply = "У вас пока нет привычек. Создайте новую привычку или давайте их подберем"
+			tg_methods.send_text_message(reply, chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_3_no_habits']))
+			tg_methods.delete_message(message_id, chat_id)
+		else:
+			habit_names = [item['name'] for item in user_habits]
+			habit_names_str = "\n".join([f"{i+1}. {habit_name.capitalize()}" for i, habit_name in enumerate(habit_names)])
+			reply = replies['3'].replace('[habits]', habit_names_str)
+			tg_methods.send_text_message(reply, chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_3']))
 	elif callback_data == "scr_3_1":
 		tg_methods.send_text_message(replies['3.1'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_3_1']))
 		tg_methods.delete_message(message_id, chat_id)
