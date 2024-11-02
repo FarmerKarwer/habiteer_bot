@@ -33,7 +33,7 @@ def use_logic(message):
 
 		message_info = {"user_id":user_id,"chat_id":chat_id, "message_id":message_id, "callback_data":None, "text":text}
 
-		handle_text_input(text, chat_id, message_id, user_id, message_info)
+		handle_text_input(text, chat_id, message_id, user_id, timestamp, message_info)
 	else:
 		chat_id = message['message']['chat']['id']
 		message_id = message['message']['message_id']
@@ -234,9 +234,10 @@ def handle_text_query(text, chat_id, message_id, user_id):
 	data = {"user_id":user_id,"chat_id":chat_id, "message_id":message_id, "callback_data":None, "text":text}
 	return data
 
-def handle_text_input(text, chat_id, message_id, user_id, message_info):
+def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_info):
 	### Possible problems when a user types command '/start'
 		if get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_2':
+			add_habit(habit=text, creation_datetime=timestamp, user_id=user_id)
 			tg_methods.send_text_message(replies['7'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_7']))
 			print(text)
 		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_3_1':
