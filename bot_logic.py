@@ -5,7 +5,7 @@ from utils import *
 from recommender import get_ai_response
 import random
 import re
-from database import add_habit
+from database import add_habit, generate_unique_uuid
 
 replies_filepath = "./strings/replies.json"
 buttons_filepath = "./strings/buttons.json"
@@ -52,6 +52,8 @@ def handle_callback_query(message):
 	chat_id = message['callback_query']['message']['chat']['id']
 	message_id = message['callback_query']['message']['message_id']
 	user_id = message['callback_query']['from']['id']
+	unix_timestamp = message['callback_query']['message']['date']
+	timestamp = unix_to_timestamp(unix_timestamp)
 
 	print(get_cached_data(cache_filepath, user_id, chat_id, property="callback_data"))
 
@@ -131,7 +133,6 @@ def handle_callback_query(message):
 		tg_methods.delete_message(message_id, chat_id)
 	elif callback_data == "scr_13":
 		tg_methods.send_text_message(replies['13'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_13']))
-		tg_methods.delete_message(message_id, chat_id)
 	elif callback_data == "scr_15":
 		tg_methods.send_text_message(replies['15'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_15']))
 		tg_methods.delete_message(message_id, chat_id)
@@ -143,9 +144,12 @@ def handle_callback_query(message):
 		tg_methods.delete_message(message_id, chat_id)
 	elif callback_data == "scr_18": 
 		habits = get_cached_data(cache_pickhabit_filepath, user_id, chat_id, property="habits")
-		print(habits)
+		habits_str = "\n".join([f"{i+1}. {habit.capitalize()}" for i, habit in enumerate(habits)])
+		for habit in habits:
+			unique_id = generate_unique_uuid()
+			add_habit(habit=habit, creation_datetime=timestamp, user_id=user_id, unique_id=unique_id)	
 		delete_user_records(cache_pickhabit_filepath, user_id)
-		tg_methods.send_text_message(replies['18'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_18']))
+		tg_methods.send_text_message(replies['18']+f"\n\nСохраненные привычки:\n{habits_str}", chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_18']))
 		tg_methods.delete_message(message_id, chat_id)
 	elif callback_data == "scr_19": 
 		tg_methods.send_text_message(replies['19'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_19']))
@@ -263,6 +267,10 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 				filtered_habits_str = "\n".join([f"{i+1}. {habit.capitalize()}" for i, habit in enumerate(selected_habits)])
 				check_minimum_length(selected_habits, min_length=1)
 				update_user_value(cache_pickhabit_filepath, user_id, "habits", selected_habits)
+				### Save to DB
+				for habit in selected_habits:
+					unique_id = generate_unique_uuid()
+					add_habit(habit=habit, creation_datetime=timestamp, user_id=user_id, unique_id=unique_id)
 				delete_user_records(cache_pickhabit_filepath, user_id)
 				tg_methods.send_text_message(replies['18']+f"\n\nСохраненные привычки:\n{filtered_habits_str}", chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_18']))
 			except ValueError:
