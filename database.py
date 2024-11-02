@@ -13,7 +13,7 @@ driver_config = ydb.DriverConfig(
     'grpcs://ydb.serverless.yandexcloud.net:2135', '/ru-central1/b1gg2cdr6pv9ip92ua8l/etnhfdk8dqldn3bmf07q',
     credentials=ydb.credentials.AccessTokenCredentials(f'Bearer {IAM['iamToken']}')
 )
-#print(driver_config)
+
 driver = ydb.Driver(driver_config)
 driver.wait(fail_fast=True, timeout=5)
 pool = ydb.SessionPool(driver)
