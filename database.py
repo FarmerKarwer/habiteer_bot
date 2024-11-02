@@ -27,5 +27,6 @@ def execute_query(query):
     ))[0].rows
 
 
-res = execute_query('select * from habits')
-print(res)
+if __name__=="__main__":
+	res = execute_query('select * from habits')
+	print(res)
