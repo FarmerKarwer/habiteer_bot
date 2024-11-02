@@ -91,6 +91,23 @@
     ]
   },
 
+  "scr_3_1":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_3"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+
   "scr_4":{
     "inline_keyboard":[
         [
@@ -272,7 +289,7 @@
       ],
       [
         {
-          "text": "В главное меню",
+          "text": "Назад",
           "callback_data": "scr_4"
         }
       ]
@@ -289,7 +306,7 @@
       [
         {
           "text": "В главное меню",
-          "callback_data": "scr_19"
+          "callback_data": "scr_1"
         }
       ]
     ]
@@ -327,6 +344,50 @@
           "text": "В главное меню",
           "callback_data": "scr_1"
         }
+      ],
+      [
+        {
+          "text": "У меня нет идей...",
+          "callback_data": "scr_12_1"
+        }
+      ]
+    ]
+  },
+  "9_scr_12":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_9"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_12_1":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Выбрать предложенные",
+          "callback_data": "scr_13"
+        }
+      ],
+      [
+        {
+          "text": "Не подходят/лучше сам",
+          "callback_data": "scr_12"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
       ]
     ]
   },
@@ -336,6 +397,22 @@
         {
           "text": "Назад",
           "callback_data": "scr_12"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "16_scr_13":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_16"
         }
       ],
       [
@@ -366,7 +443,7 @@
     "inline_keyboard": [
       [
         {
-          "text": "То что нужно !",
+          "text": "То, что нужно!",
           "callback_data": "scr_18"
         }
       ],
@@ -1075,6 +1152,16 @@
     ]
   },
   "scr_45":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "plug":{
     "inline_keyboard": [
       [
         {
