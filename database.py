@@ -51,9 +51,7 @@ def add_habit(habit, creation_datetime, user_id, unique_id = generate_unique_uui
 
 def view_habits(user_id):
 	query = f"""
-	SELECT name, creation_datetime, last_updated, type, trigger_type, 
-	trigger_action_desc, repetition_reminder_time, trigger_reminder_time, 
-	linked_habit, avoid_trigger_notif_time, ignore_trigger_notif_time, habit_hardening_desc, single_notif_time 
+	SELECT * 
 	FROM habits WHERE user_id={user_id}
 	"""
 	result = execute_query(query)[0].rows

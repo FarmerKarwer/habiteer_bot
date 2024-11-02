@@ -75,6 +75,7 @@ def handle_callback_query(message):
 			habit_names_str = "\n".join([f"{i+1}. {habit_name.capitalize()}" for i, habit_name in enumerate(habit_names)])
 			reply = replies['3'].replace('[habits]', habit_names_str)
 			tg_methods.send_text_message(reply, chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_3']))
+			tg_methods.delete_message(message_id, chat_id)
 	elif callback_data == "scr_3_1":
 		tg_methods.send_text_message(replies['3.1'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_3_1']))
 		tg_methods.delete_message(message_id, chat_id)
