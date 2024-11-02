@@ -5,7 +5,7 @@ from utils import *
 from recommender import get_ai_response
 import random
 import re
-from database import add_habit, generate_unique_uuid
+from database import add_habit, view_habits, generate_unique_uuid
 
 replies_filepath = "./strings/replies.json"
 buttons_filepath = "./strings/buttons.json"
@@ -65,8 +65,10 @@ def handle_callback_query(message):
 		tg_methods.send_text_message(replies['2'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_2']))
 		tg_methods.delete_message(message_id, chat_id)
 	elif callback_data == "scr_3":
+		user_habits = view_habits(user_id)
+		print(user_habits)
+		print(type(user_habits))
 		tg_methods.send_text_message(replies['3'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_3']))
-		tg_methods.delete_message(message_id, chat_id)
 	elif callback_data == "scr_3_1":
 		tg_methods.send_text_message(replies['3.1'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_3_1']))
 		tg_methods.delete_message(message_id, chat_id)
