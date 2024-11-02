@@ -18,15 +18,14 @@ driver = ydb.Driver(driver_config)
 driver.wait(fail_fast=True, timeout=5)
 pool = ydb.SessionPool(driver)
 
-def select_all(tablename):
+def execute_query(query):
     # create the transaction and execute query.
-    query = f"SELECT * FROM {tablename};"
     return pool.retry_operation_sync(lambda s: s.transaction().execute(
         query,
         commit_tx=True,
         settings=ydb.BaseRequestSettings().with_timeout(3).with_operation_timeout(2)
-    ))
+    ))[0].rows
 
 
-res = select_all('habits')[0].rows
+res = execute_query('select * from habits')
 print(res)

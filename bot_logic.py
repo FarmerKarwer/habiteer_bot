@@ -5,7 +5,7 @@ from utils import *
 from recommender import get_ai_response
 import random
 import re
-from database import select_all
+from database import execute_query
 
 replies_filepath = "./strings/replies.json"
 buttons_filepath = "./strings/buttons.json"
