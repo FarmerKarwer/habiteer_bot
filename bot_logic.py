@@ -6,11 +6,13 @@ from recommender import get_ai_response
 
 replies_filepath = "./strings/replies.json"
 buttons_filepath = "./strings/buttons.json"
+premade_habits_filepath = "./strings/premade_habits.json"
 cache_filepath = "./cache/callback_history.json"
 cache_pickhabit_filepath = "./cache/picking_habit.json"
 
 replies = load_json(replies_filepath)
 buttons = load_json(buttons_filepath)
+aspirations = list(load_json(premade_habits_filepath).keys())
 
 def use_logic(message):
 	if button_is_pressed(message):
@@ -61,7 +63,9 @@ def handle_callback_query(message):
 		tg_methods.send_text_message(replies['3.1'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_3_1']))
 		tg_methods.delete_message(message_id, chat_id)
 	elif callback_data == "scr_4":
-		tg_methods.send_text_message(replies['4'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_4']))
+		aspirations_str = "\n".join([f"{i+1}. {aspiration.capitalize()}" for i, aspiration in enumerate(aspirations)])
+		reply = replies['4'].replace("[aspirations]", aspirations_str)
+		tg_methods.send_text_message(reply, chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_4']))
 		tg_methods.delete_message(message_id, chat_id)
 	elif callback_data in ("hab_1", "hab_2", "hab_3", "hab_4", "hab_5", "hab_6", "hab_7", "hab_8", "hab_9", "hab_10"):
 		new_data = {"user_id":user_id,"chat_id":chat_id, "aspiration":"Правильно питаться", "habits":None, "behavior_options":None, "suitability":None, "effectiveness":None}

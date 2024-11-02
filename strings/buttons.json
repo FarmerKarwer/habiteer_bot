@@ -306,7 +306,7 @@
       [
         {
           "text": "В главное меню",
-          "callback_data": "scr_19"
+          "callback_data": "scr_1"
         }
       ]
     ]
