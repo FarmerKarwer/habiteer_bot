@@ -225,7 +225,6 @@ def handle_callback_query(message):
 		tg_methods.delete_message(message_id, chat_id)
 	elif callback_data == "scr_44": 
 		tg_methods.send_text_message(replies['44'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_44']))
-		tg_methods.delete_message(message_id, chat_id)
 	elif callback_data == "plug": 
 		tg_methods.send_text_message(replies['plug'], chat_id, protect_content=True, keyboard=json.dumps(buttons['plug']))
 		tg_methods.delete_message(message_id, chat_id)
@@ -438,8 +437,41 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 			tg_methods.send_text_message(replies['/start'], chat_id, protect_content=True, keyboard=json.dumps(buttons['start']))
 			print(text)
 		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_44':
-			tg_methods.send_text_message(replies['45'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_45']))
-			print(text)
+			try:
+				pattern = r"\b\d{1,2}\b"
+				if ", " in text:
+					entered_numbers = [int(num) for num in text.split(', ')]
+				elif "," in text:
+					entered_numbers = [int(num) for num in text.split(',')]
+				elif re.findall(pattern, text):
+					entered_numbers = [int(text)]
+				else:
+					raise IndexError
+				user_habits = view_habits(user_id)
+				for idx in entered_numbers:
+					unique_id = user_habits[idx-1].get("id")
+					delete_habit(unique_id)
+				updated_user_habits = view_habits(user_id)
+				if len(updated_user_habits)==0:
+					reply = "У вас пока нет привычек. Создайте новую привычку или давайте их подберем"
+					tg_methods.send_text_message(reply, chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_3_no_habits']))
+					tg_methods.delete_message(message_id, chat_id)
+				else:
+					habit_names = [item['name'] for item in updated_user_habits]
+					habit_names_str = "\n".join([f"{i+1}. {habit_name.capitalize()}" for i, habit_name in enumerate(habit_names)])
+					reply = replies['45'].replace('[updated_habits]', habit_names_str)
+					if len(entered_numbers)==1:
+						reply = reply.replace("[end1]","а")
+						reply = reply.replace("[end2]","а")
+					else:
+						reply = reply.replace("[end1]","и")
+						reply = reply.replace("[end2]","ы")
+					tg_methods.send_text_message(reply, chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_45']))
+					tg_methods.delete_message(message_id, chat_id)
+					print(text)
+			except IndexError:
+				tg_methods.send_text_message("Введенный текст должен содержать привычки, введеные через запятую. Попробуйте ввести еще раз.", chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_44']))
+				message_info["callback_data"]="scr_44"
 		else:
 			handle_text_query(text, chat_id, message_id, user_id)
 
