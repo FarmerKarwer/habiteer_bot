@@ -65,6 +65,18 @@ def view_habits(user_id):
 	result = execute_query(query)[0].rows
 	return result
 
+def delete_habit(unique_id):
+	query = f"""
+	DELETE FROM habits WHERE id={unique_id}
+	"""
+	execute_query(query)
+
+def delete_user_data(user_id):
+	query = f"""
+	DELETE FROM habits WHERE user_id={user_id}
+	"""
+	execute_query(query)
+
 if __name__=="__main__":
 	res = select_all("habits")
 	print(generate_unique_uuid())

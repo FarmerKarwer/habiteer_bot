@@ -5,7 +5,7 @@ from utils import *
 from recommender import get_ai_response
 import random
 import re
-from database import add_habit, update_habit, view_habits, generate_unique_uuid
+from database import add_habit, update_habit, view_habits, delete_habit, delete_user_data, generate_unique_uuid
 
 replies_filepath = "./strings/replies.json"
 buttons_filepath = "./strings/buttons.json"
