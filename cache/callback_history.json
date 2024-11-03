@@ -10,17 +10,17 @@
     {
         "user_id": 1569325763,
         "chat_id": 1569325763,
-        "message_id": 290,
+        "message_id": 1259,
         "callback_data": null,
-        "text": "/motivational_message",
-        "id": 5
+        "text": "/start",
+        "id": 6
     },
     {
         "user_id": 940985788,
         "chat_id": 940985788,
-        "message_id": 1257,
-        "callback_data": "scr_8",
+        "message_id": 1294,
+        "callback_data": "scr_1",
         "text": null,
-        "id": 809
+        "id": 824
     }
 ]

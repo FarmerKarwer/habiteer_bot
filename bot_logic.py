@@ -5,13 +5,15 @@ from utils import *
 from recommender import get_ai_response
 import random
 import re
-from database import add_habit, view_habits, generate_unique_uuid
+from database import add_habit, update_habit, view_habits, generate_unique_uuid
 
 replies_filepath = "./strings/replies.json"
 buttons_filepath = "./strings/buttons.json"
 premade_habits_filepath = "./strings/premade_habits.json"
+
 cache_filepath = "./cache/callback_history.json"
 cache_pickhabit_filepath = "./cache/picking_habit.json"
+cache_updatehabit_filepath = "./cache/updating_habit.json"
 
 replies = load_json(replies_filepath)
 buttons = load_json(buttons_filepath)
@@ -255,8 +257,20 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 			tg_methods.send_text_message(replies['21'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_21']))
 			print(text)
 		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_8':
-			tg_methods.send_text_message(replies['8.1'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_8_1']))
-			print(text)
+			habits = view_habits(user_id)
+			try:
+				habit_idx = int(text)-1
+				habit_name = habits[habit_idx].get("name")
+				new_data = {"user_id":user_id,"chat_id":chat_id, "habit_number":habit_idx, "habit_name":habit_name}
+				new_data = append_to_json(filepath = cache_updatehabit_filepath, new_data=new_data)
+				save_to_json(cache_updatehabit_filepath, new_data)
+				tg_methods.send_text_message(replies['8.1']+f"\n\nВы выбрали привычку: {habit_name}", chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_8_1']))
+			except ValueError:
+				tg_methods.send_text_message("Пожалуйста, введите номер привычки, которую вы хотите изменить числом.", chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_8']))
+				message_info["callback_data"]="scr_8"
+			except IndexError:
+				tg_methods.send_text_message("Такой привычки не существует. Попробуйте ещё раз.", chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_8']))
+				message_info["callback_data"]="scr_8"
 		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data") in ("hab_1", "hab_2", "hab_3", "hab_4", "hab_5", "hab_6", "hab_7", "hab_8", "hab_9", "hab_10") or get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=="scr_9":
 			try:
 				pattern = r"\b\d{1,2}\b"
@@ -375,8 +389,16 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 				tg_methods.send_text_message("Данные были введены некорректно.\n\nПожалуйста, введите в формате:\n 1. <поведение1>\n 2. <поведение2>\n...", chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_13']))
 				message_info["callback_data"]="scr_17"
 		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_19':
-			tg_methods.send_text_message(replies['20'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_20']))
-			print(text)
+			new_name = text
+			habit_idx = get_cached_data(cache_updatehabit_filepath, user_id, chat_id, property="habit_number")
+			unique_id = view_habits(user_id)[habit_idx].get("id")
+			print(unique_id)
+			update_habit(unique_id, "name", f"'{new_name}'")
+			updated_habits = view_habits(user_id)
+			habit_names = [item['name'] for item in updated_habits]
+			habit_names_str = "\n".join([f"{i+1}. {habit_name.capitalize()}" for i, habit_name in enumerate(habit_names)])
+			reply = replies['20'].replace("[updated_habits]", habit_names_str)
+			tg_methods.send_text_message(reply, chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_20']))
 		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_23':
 			tg_methods.send_text_message(replies['24'], chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_24']))
 			print(text)

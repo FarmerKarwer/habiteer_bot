@@ -49,6 +49,14 @@ def add_habit(habit, creation_datetime, user_id, unique_id = generate_unique_uui
 	"""
 	execute_query(query)
 
+def update_habit(unique_id, column, value):
+	query = f"""
+	UPDATE habits
+	SET {column} = {value}
+	WHERE id={unique_id};
+	"""
+	execute_query(query)
+
 def view_habits(user_id):
 	query = f"""
 	SELECT * 
