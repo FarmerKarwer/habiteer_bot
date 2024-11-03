@@ -392,8 +392,8 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 			new_name = text
 			habit_idx = get_cached_data(cache_updatehabit_filepath, user_id, chat_id, property="habit_number")
 			unique_id = view_habits(user_id)[habit_idx].get("id")
-			print(unique_id)
 			update_habit(unique_id, "name", f"'{new_name}'")
+			update_habit(unique_id, "last_updated", f"CAST('{timestamp}'AS Timestamp)")
 			updated_habits = view_habits(user_id)
 			habit_names = [item['name'] for item in updated_habits]
 			habit_names_str = "\n".join([f"{i+1}. {habit_name.capitalize()}" for i, habit_name in enumerate(habit_names)])
