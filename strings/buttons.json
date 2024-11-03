@@ -89,7 +89,7 @@
         [
           {
             "text":"Улучшить привычку",
-            "callback_data":"scr_3_1"
+            "callback_data":"plug"
           }
       ],
         [
@@ -207,19 +207,19 @@
       [
         {
           "text": "Приостановить уведомления",
-          "callback_data": "scr_39"
+          "callback_data": "plug"
         }
       ],
       [
         {
           "text": "Мотивационные сообщения",
-          "callback_data": "scr_40"
+          "callback_data": "plug"
         }
       ],
       [
         {
           "text": "Отчетность",
-          "callback_data": "scr_41"
+          "callback_data": "plug"
         }
       ],
       [
@@ -231,7 +231,7 @@
       [
         {
           "text": "Удалить все данные",
-          "callback_data": "scr_42"
+          "callback_data": "plug"
         }
       ],
       [
@@ -247,7 +247,7 @@
       [
         {
           "text": "Улучшить привычку",
-          "callback_data": "scr_21"
+          "callback_data": "plug"
         }
       ],
       [
