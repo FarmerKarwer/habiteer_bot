@@ -38,7 +38,7 @@
       [
         {
           "text": "Статистика",
-          "callback_data": "scr_5"
+          "callback_data": "plug"
         }
       ],
       [
