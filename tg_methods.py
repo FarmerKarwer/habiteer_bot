@@ -9,8 +9,10 @@ There will be all the methods necessary for Telegram Bot
 TG_TOKEN=os.getenv('BOT_TOKEN')
 URL = f"https://api.telegram.org/bot{TG_TOKEN}/"
 
+
 # Sending Messages
-def send_text_message(reply, chat_id, disable_notification=None, protect_content=None, reply_parameters=None, keyboard=None):
+def send_text_message(reply, chat_id, disable_notification=None, 
+    protect_content=None, reply_parameters=None, keyboard=None):
 	data = {
 		'text':reply,
 		'chat_id':chat_id,
@@ -22,9 +24,6 @@ def send_text_message(reply, chat_id, disable_notification=None, protect_content
 	}
 	url = URL+"sendMessage"
 	requests.post(url, data=data)
-
-def send_picture():
-	pass
 
 def delete_message(message_id, chat_id):
 	data = {
@@ -38,6 +37,9 @@ def answer_callback_query(callback_query_id):
 	data = {"callback_query_id": callback_query_id}
 	url = URL+"answerCallbackQuery"
 	requests.post(url, data=data)
+
+def send_picture():
+	pass
 
 # Utils
 def get_updates():
