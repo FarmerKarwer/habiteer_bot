@@ -41,7 +41,9 @@ def use_logic(message):
 		unix_timestamp = message['message']['date']
 		timestamp = unix_to_timestamp(unix_timestamp)
 
-		message_info = {"user_id": user_id, "chat_id": chat_id, "message_id": message_id, "callback_data": None, "text": text}
+		message_info = {"user_id": user_id, "chat_id": chat_id, 
+						"message_id": message_id, "callback_data": None, 
+						"text": text}
 
 		handle_text_input(text, chat_id, message_id, user_id, timestamp, message_info)
 	else:
@@ -52,7 +54,9 @@ def use_logic(message):
 		user_id = message['message']['from']['id']
 
 		tg_methods.send_text_message('Я понимаю только текстовые сообщения и кнопки', chat_id)
-		message_info = {"user_id":user_id,"chat_id":chat_id, "message_id":message_id, "callback_data":None, "text":None}
+		message_info = {"user_id": user_id,"chat_id": chat_id, 
+						"message_id": message_id, "callback_data": None, 
+						"text": None}
 	
 	newdata = append_to_json(filepath=cache_filepath, new_data=message_info)
 	save_to_json(filepath=cache_filepath, new_data=newdata)
@@ -438,9 +442,9 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 				message_info["callback_data"]="scr_14"
 
 			except ValueError:
+				reply = "Оценки должны быть числовыми, от 1 до 10.\n\nПожалуйста, введите в формате:\n1. <оценка числом от 1 до 10>\n2. <оценка числом от 1 до 10>\n"
 				switch_screen(reply, chat_id, message_id, 
 							delete_previous=False, keyboard=get_button('scr_13'))
-				tg_methods.send_text_message("Оценки должны быть числовыми, от 1 до 10.\n\nПожалуйста, введите в формате:\n1. <оценка числом от 1 до 10>\n2. <оценка числом от 1 до 10>\n", chat_id, protect_content=True, keyboard=json.dumps(buttons['scr_13']))
 				message_info["callback_data"]="scr_14"
 
 			except ValueOutOfRangeError:
