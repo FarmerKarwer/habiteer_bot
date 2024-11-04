@@ -29,10 +29,10 @@ def get_cached_data(filepath, user_id, chat_id, property):
         return None
         
     except s3.exceptions.NoSuchKey:
-        print(f"Error: File {filename} does not exist in bucket.")
+        print(f"Error: File does not exist in bucket.")
         return None
     except json.JSONDecodeError:
-        print(f"Error: JSON file {filename} is empty or corrupted.")
+        print(f"Error: JSON file is empty or corrupted.")
         return None
     except Exception as e:
         print(f"Unexpected error occurred: {str(e)}")
@@ -65,8 +65,8 @@ def delete_user_records(filepath, user_id):
             print(f"No records found for user_id {user_id}.")
             
     except s3.exceptions.NoSuchKey:
-        print(f"Error: File {filename} does not exist in bucket.")
+        print(f"Error: File does not exist in bucket.")
     except json.JSONDecodeError:
-        print(f"Error: JSON file {filename} is empty or corrupted.")
+        print(f"Error: JSON file is empty or corrupted.")
     except Exception as e:
         print(f"Unexpected error occurred: {str(e)}")
