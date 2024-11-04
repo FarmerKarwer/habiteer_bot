@@ -5,12 +5,12 @@ import re
 
 import tg_methods
 from database import (
-    add_habit,
-    delete_habit,
-    delete_user_data,
-    generate_unique_uuid,
-    update_habit,
-    view_habits,
+	add_habit,
+	delete_habit,
+	delete_user_data,
+	generate_unique_uuid,
+	update_habit,
+	view_habits,
 )
 from recommender import get_ai_response
 from utils import *
@@ -588,10 +588,10 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 
 
 def switch_screen(reply, chat_id, message_id, delete_previous=True, 
-    disable_notification=None, protect_content=True, 
-    reply_parameters=None, keyboard=None):
+	disable_notification=None, protect_content=True,
+	reply_parameters=None, keyboard=None):
 	tg_methods.send_text_message(reply, chat_id, disable_notification, protect_content, 
-        reply_parameters, keyboard)
+		reply_parameters, keyboard)
 	if delete_previous:
 		tg_methods.delete_message(message_id, chat_id)
 
@@ -603,7 +603,7 @@ def get_button(screen_name, buttons_filepath=buttons_filepath):
 # Getting cache data
 
 def get_cached_data(filepath, user_id, chat_id, property):
-    # Check if file exists and read data if so
+	# Check if file exists and read data if so
 	if os.path.exists(filepath):
 		with open(filepath, "r", encoding="utf-8") as json_file:
 			try:
@@ -615,12 +615,12 @@ def get_cached_data(filepath, user_id, chat_id, property):
 		print("Error: File does not exist.")
 		return None
 
-    # Find the entry that matches the specified user_id and chat_id
+	# Find the entry that matches the specified user_id and chat_id
 	for entry in data:
 		if entry.get("user_id") == user_id and entry.get("chat_id") == chat_id:
 			return entry.get(property)
 
-    # Return None if no matching entry is found
+	# Return None if no matching entry is found
 	print("No matching entry found for the given user_id and chat_id.")
 	return None
 
@@ -641,28 +641,28 @@ def button_is_pressed(message):
 	return 'callback_query' in message.keys()
 
 def check_all_in_range(input_list, min=1, max=10):
-    # Check if all items are between 1 and 10
-    if not all(min <= item <= max for item in input_list):
-        raise ValueOutOfRangeError("All items must be between 1 and 10.")
+	# Check if all items are between 1 and 10
+	if not all(min <= item <= max for item in input_list):
+		raise ValueOutOfRangeError("All items must be between 1 and 10.")
 
 def check_matching_lengths(list1, list2):
-    if len(list1) != len(list2):
-        raise ListLengthMismatchError("The lengths of the lists do not match.")
+	if len(list1) != len(list2):
+		raise ListLengthMismatchError("The lengths of the lists do not match.")
 
 def check_minimum_length(input_list, min_length=5):
-    if len(input_list) < min_length:
-        raise ListTooShortError(f"The list has fewer than {min_length} entries.")
+	if len(input_list) < min_length:
+		raise ListTooShortError(f"The list has fewer than {min_length} entries.")
 
 
 # Custom exceptions
 class ValueOutOfRangeError(Exception):
-    """Custom exception for values out of range."""
-    pass
+	"""Custom exception for values out of range."""
+	pass
 
 class ListTooShortError(Exception):
-    """Custom exception for lists with fewer than 5 entries."""
-    pass
+	"""Custom exception for lists with fewer than 5 entries."""
+	pass
 
 class ListLengthMismatchError(Exception):
-    """Custom exception for list length mismatch errors."""
-    pass
+	"""Custom exception for list length mismatch errors."""
+	pass
