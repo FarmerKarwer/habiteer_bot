@@ -10,12 +10,14 @@ s3 = boto3.client(
 )
 bucket_name = os.getenv('BUCKET')
 
-def get_cached_data(filepath, user_id, chat_id, property):
-    # Extract filename from filepath
+
+
+def get_cached_data(user_id, chat_id, property):
+    filename = ''
     
     try:
         # Get object from S3
-        obj = s3.get_object(Bucket=bucket_name, Key=(название файла))
+        obj = s3.get_object(Bucket=bucket_name, Key=filename)
         file_content = obj['Body'].read().decode('utf-8')
         data = json.loads(file_content) if file_content else []
         
@@ -38,13 +40,13 @@ def get_cached_data(filepath, user_id, chat_id, property):
         print(f"Unexpected error occurred: {str(e)}")
         return None
 
-def delete_user_records(filepath, user_id):
-    # Extract filename from filepath
+def delete_user_records(user_id):
+    filename = ''
 
     
     try:
         # Get object from S3
-        obj = s3.get_object(Bucket=bucket_name, Key=(название файла))
+        obj = s3.get_object(Bucket=bucket_name, Key=filename)
         file_content = obj['Body'].read().decode('utf-8')
         data = json.loads(file_content) if file_content else []
         
