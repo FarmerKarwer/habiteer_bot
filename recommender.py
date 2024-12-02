@@ -44,7 +44,8 @@ def get_ai_response(aspiration):
 		response = requests.post(
 			url=url,
 			headers=headers,
-			data=json.dumps(payload, ensure_ascii=False).encode('utf-8')
+			data=json.dumps(payload, ensure_ascii=False).encode('utf-8'),
+			timeout=15
 		)
 		
 		print(f"Status Code: {response.status_code}")
