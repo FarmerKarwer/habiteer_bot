@@ -1,11 +1,14 @@
-from index import handler
+import sys
 import os
 import json
 import traceback
-from utils import load_json
+
+# Add the src folder to sys.path
+sys.path.append(os.path.abspath('./src'))
+
+from index import handler
 
 SAMPLE_EVENTPATH = "events/using_command.json"
-
 some_context = "Sample context"
 
 if __name__ == "__main__":

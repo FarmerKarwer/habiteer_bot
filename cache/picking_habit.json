@@ -1,1 +1,18 @@
-[]
+[
+    {
+        "user_id": 940985788,
+        "chat_id": 940985788,
+        "aspiration": "something",
+        "habits": null,
+        "behavior_options": [
+            "sfgsdfg",
+            "sdfgsdfg",
+            "sdfgsdfg",
+            "sdfgdsfg",
+            "sdfhgsdfgfds"
+        ],
+        "suitability": null,
+        "effectiveness": null,
+        "id": 1
+    }
+]
