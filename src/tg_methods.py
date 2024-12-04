@@ -42,9 +42,10 @@ def send_picture():
 	pass
 
 # Utils
-def get_updates():
+def get_updates(offset=None, timeout=None):
 	url = URL+"getUpdates"
-	update_array = requests.get(url)
+	params = {"offset": offset, "timeout": timeout}
+	update_array = requests.get(url, params=params)
 	return json.loads(update_array.content)
 
 if __name__ == "__main__":
