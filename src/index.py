@@ -25,7 +25,7 @@ def handler_long(event, context):
 	while running:
 		if last_update_id:
 			offset = last_update_id+1
-		
+
 		updates = get_updates(offset = offset, timeout=30)
 
 		if updates["ok"]:

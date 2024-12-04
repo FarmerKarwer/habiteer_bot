@@ -14,7 +14,7 @@ some_context = "Sample context"
 if __name__ == "__main__":
     try:
         use_handler = handler_long(event = SAMPLE_EVENTPATH, context=some_context)
-        print(use_handler['message'])
+        #print(use_handler['message'])
     except KeyboardInterrupt:
         print("\nBot has been stopped. Exiting gracefully...")
     except Exception as e:
