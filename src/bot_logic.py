@@ -2,6 +2,7 @@ import json
 import os
 import random
 import re
+from typing import Any, Callable, Dict, List, Optional
 
 import tg_methods
 from database import (
@@ -589,15 +590,30 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 			handle_text_query(text, chat_id, message_id, user_id)
 
 
-def switch_screen(reply, chat_id, message_id, delete_previous=True, 
-	disable_notification=None, protect_content=True,
-	reply_parameters=None, keyboard=None):
-	tg_methods.send_text_message(reply, chat_id, disable_notification, protect_content, 
-		reply_parameters, keyboard)
-	if delete_previous:
-		tg_methods.delete_message(message_id, chat_id)
+def switch_screen(
+    reply: str,
+    chat_id: int,
+    message_id: int,
+    delete_previous: bool = True,
+    disable_notification: Optional[bool] = None,
+    protect_content: bool = True,
+    reply_parameters: Optional[Dict[str, Any]] = None,
+    keyboard: Optional[str] = None,
+) -> None:
+    """Sends a message and optionally deletes the previous one."""
+    tg_methods.send_text_message(
+        reply,
+        chat_id,
+        disable_notification=disable_notification,
+        protect_content=protect_content,
+        reply_parameters=reply_parameters,
+        keyboard=keyboard,
+    )
+    if delete_previous:
+        tg_methods.delete_message(message_id, chat_id)
 
 def get_button(screen_name, buttons_filepath=BUTTONS_FILEPATH):
+	"""Retrieves the button configuration for a given screen."""
 	buttons = load_json(buttons_filepath)
 	return json.dumps(buttons[screen_name])
 
@@ -648,10 +664,12 @@ def check_all_in_range(input_list, min=1, max=10):
 		raise ValueOutOfRangeError("All items must be between 1 and 10.")
 
 def check_matching_lengths(list1, list2):
+	"""Checks if two lists have matching lengths."""
 	if len(list1) != len(list2):
 		raise ListLengthMismatchError("The lengths of the lists do not match.")
 
 def check_minimum_length(input_list, min_length=5):
+	"""Ensures the list meets the minimum required length."""
 	if len(input_list) < min_length:
 		raise ListTooShortError(f"The list has fewer than {min_length} entries.")
 
