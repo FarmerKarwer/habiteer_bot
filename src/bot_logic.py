@@ -89,11 +89,11 @@ def handle_callback_query(message):
 		no_habits = len(user_habits)==0
 
 		if no_habits:
-			reply = "У вас пока нет привычек. Создайте новую привычку или давайте их подберем"
+			reply = replies['3_no_habits']
 			switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_3_no_habits'))
 		else:
 			habit_names = [item['name'] for item in user_habits]
-			habit_names_str = "\n".join([f"{i+1}. {habit_name.capitalize()}" for i, habit_name in enumerate(habit_names)])
+			habit_names_str = format_numbered_list(habit_names)
 			reply = replies['3'].replace('[habits]', habit_names_str)
 			switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_3'))
 
@@ -101,7 +101,7 @@ def handle_callback_query(message):
 		switch_screen(replies['3.1'], chat_id, message_id, keyboard=get_button('scr_3_1'))
 
 	elif callback_data == "scr_4":
-		aspirations_str = "\n".join([f"{i+1}. {aspiration.capitalize()}" for i, aspiration in enumerate(aspirations)])
+		aspirations_str = format_numbered_list(aspirations)
 		reply = replies['4'].replace("[aspirations]", aspirations_str)
 		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_4'))
 
@@ -110,7 +110,7 @@ def handle_callback_query(message):
 		aspiration = aspirations[aspiration_idx]
 		habits = list(premade_habits[aspiration])
 		random_habits = random.sample(habits, k=10)
-		random_habits_str = "\n".join([f"{i+1}. {habit.capitalize()}" for i, habit in enumerate(random_habits)])
+		random_habits_str = format_numbered_list(random_habits)
 		reply = replies['9'].replace("[habits]", random_habits_str)
 
 		new_data = {"user_id":user_id,"chat_id":chat_id, "aspiration":aspiration, "habits":None, "behavior_options":random_habits, "suitability":None, "effectiveness":None}
@@ -155,7 +155,7 @@ def handle_callback_query(message):
 	elif callback_data == "scr_12_1":
 		aspiration = get_cached_data(cache_pickhabit_filepath, user_id, chat_id, property="aspiration")
 		habits = get_ai_response(aspiration=aspiration)
-		numbered_habits = "\n".join([f"{i+1}. {habit}" for i, habit in enumerate(habits.values())])
+		numbered_habits = format_numbered_list(habits.values())
 		behavior_options_list = [habit for habit in habits.values()]
 		reply = "Возможно, вам подойдут эти варианты:\n\n"+numbered_habits+'\n\n---\n\n'+replies['ai_warn']
 
@@ -180,7 +180,7 @@ def handle_callback_query(message):
 
 	elif callback_data == "scr_18": 
 		habits = get_cached_data(cache_pickhabit_filepath, user_id, chat_id, property="habits")
-		habits_str = "\n".join([f"{i+1}. {habit.capitalize()}" for i, habit in enumerate(habits)])
+		habits_str = format_numbered_list(habits)
 		for habit in habits:
 			unique_id = generate_unique_uuid()
 			add_habit(habit=habit, creation_datetime=timestamp, user_id=user_id, unique_id=unique_id)	
@@ -326,7 +326,7 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 				habit_options = get_cached_data(cache_pickhabit_filepath, user_id, chat_id, property="behavior_options")	
 				filtered_habits = [i-1 for i in entered_numbers if i < len(habit_options)+1]
 				selected_habits = [habit_options[i] for i in filtered_habits]
-				filtered_habits_str = "\n".join([f"{i+1}. {habit.capitalize()}" for i, habit in enumerate(selected_habits)])
+				filtered_habits_str = format_numbered_list(selected_habits)
 				check_minimum_length(selected_habits, min_length=1)
 				update_user_value(cache_pickhabit_filepath, user_id, "habits", selected_habits)
 				
@@ -435,7 +435,7 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 				
 				habit_grades = sum_arrays(suitability_ratings, effectiveness_ratings)
 				top_habits = [habit for _, habit in sorted(zip(habit_grades, behaviors), reverse=True)[:3]]
-				top_habits_str = "\n".join([f"{i+1}. {habit}" for i, habit in enumerate(top_habits)])
+				top_habits_str = format_numbered_list(top_habits)
 
 				reply = replies['15'].replace("[habits]", top_habits_str)
 				update_user_value(cache_pickhabit_filepath, user_id, "habits", top_habits)
@@ -493,7 +493,7 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 			update_habit(unique_id, "last_updated", f"CAST('{timestamp}'AS Timestamp)")
 			updated_habits = view_habits(user_id)
 			habit_names = [item['name'] for item in updated_habits]
-			habit_names_str = "\n".join([f"{i+1}. {habit_name.capitalize()}" for i, habit_name in enumerate(habit_names)])
+			habit_names_str = format_numbered_list(habit_names)
 			reply = replies['20'].replace("[updated_habits]", habit_names_str)
 			switch_screen(reply, chat_id, message_id, 
 							delete_previous=False, keyboard=get_button('scr_20'))
@@ -572,7 +572,7 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 
 				else:
 					habit_names = [item['name'] for item in updated_user_habits]
-					habit_names_str = "\n".join([f"{i+1}. {habit_name.capitalize()}" for i, habit_name in enumerate(habit_names)])
+					habit_names_str = format_numbered_list(habit_names)
 					reply = replies['45'].replace('[updated_habits]', habit_names_str)
 					if len(entered_numbers)==1:
 						reply = reply.replace("[end1]","а")
@@ -673,6 +673,24 @@ def check_minimum_length(input_list, min_length=5):
 	if len(input_list) < min_length:
 		raise ListTooShortError(f"The list has fewer than {min_length} entries.")
 
+# Other useful functions
+def format_numbered_list(items: List[str], capitalize: bool = True) -> str:
+    """
+    Formats a list of strings into a numbered, newline-separated string.
+
+    Args:
+        items (List[str]): The list of strings to format.
+        capitalize (bool, optional): Whether to capitalize each item. Defaults to True.
+
+    Returns:
+        str: A numbered, newline-separated string with each item optionally capitalized.
+    """
+    if capitalize:
+        items = (item.capitalize() for item in items)
+    else:
+        items = (item for item in items)
+    
+    return "\n".join(f"{i + 1}. {item}" for i, item in enumerate(items))
 
 # Custom exceptions
 class ValueOutOfRangeError(Exception):
