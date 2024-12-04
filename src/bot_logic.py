@@ -370,7 +370,7 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 			
 		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_12':
 			try:
-				behaviors = [line.split('. ')[1] for line in text.strip().split('\n') if line]
+				behaviors = extract_numbered_items(text)
 				check_minimum_length(behaviors)
 				update_user_value(cache_pickhabit_filepath, user_id, "behavior_options", behaviors)
 				
@@ -471,7 +471,7 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_17': 
 			try:
 				behaviours = get_cached_data(cache_pickhabit_filepath, user_id, chat_id, property="behavior_options")
-				new_behaviors = [line.split('. ')[1] for line in text.strip().split('\n') if line]
+				new_behaviors = extract_numbered_items(text)
 				behaviours.extend(new_behaviors)
 				update_user_value(cache_pickhabit_filepath, user_id, "behavior_options", behaviours)
 				
@@ -691,6 +691,30 @@ def format_numbered_list(items: List[str], capitalize: bool = True) -> str:
         items = (item for item in items)
     
     return "\n".join(f"{i + 1}. {item}" for i, item in enumerate(items))
+
+def extract_numbered_items(text: str) -> List[str]:
+    """
+    Extracts items from a numbered multi-line string.
+
+    Each line should start with a number followed by a period and a space (e.g., "1. Item").
+
+    Args:
+        text (str): The input string containing numbered items separated by newlines.
+
+    Returns:
+        List[str]: A list of extracted items without their numbering.
+    """
+    items = []
+    for line in text.strip().split('\n'):
+        if line:
+            match = re.match(r'^\d+\.\s+(.*)', line)
+            if match:
+                item = match.group(1).strip()
+                items.append(item)
+            else:
+                print("Warning! Lines do not match the expected pattern. Handling is skipped")
+                continue
+    return items
 
 # Custom exceptions
 class ValueOutOfRangeError(Exception):
