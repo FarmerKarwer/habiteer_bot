@@ -22,22 +22,25 @@ def handler_long(event, context):
 	#print(f"Last_id: {last_update_id}")
 	running = True
 
-	while running:
-		if last_update_id:
-			offset = last_update_id+1
+	try:
+		while running:
+			if last_update_id:
+				offset = last_update_id+1
 
-		updates = get_updates(offset = offset, timeout=30)
+			updates = get_updates(offset = offset, timeout=30)
 
-		if updates["ok"]:
-			update = updates['result'][-1]
-			#print(f"New id: {update["update_id"]}")
-			if (last_update_id is None) or (update["update_id"] == last_update_id + 1):
-				last_update_id = update["update_id"]
-				#print(f"Last_id is changed to {last_update_id}")
-				#print(update)
-				use_logic(update)
+			if updates["ok"]:
+				update = updates['result'][-1]
+				#print(f"New id: {update["update_id"]}")
+				if (last_update_id is None) or (update["update_id"] == last_update_id + 1):
+					last_update_id = update["update_id"]
+					#print(f"Last_id is changed to {last_update_id}")
+					#print(update)
+					use_logic(update)
 
-		time.sleep(1)
+			time.sleep(1)
+	except KeyboardInterrupt:
+		print("\nBot has been stopped. Exiting gracefully...")
 	return {
 	'statusCode':200, 
 	'body':event,
