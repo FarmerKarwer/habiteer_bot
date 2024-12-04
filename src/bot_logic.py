@@ -15,16 +15,18 @@ from database import (
 from recommender import get_ai_response
 from utils import *
 
-replies_filepath = "./strings/replies.json"
-buttons_filepath = "./strings/buttons.json"
-premade_habits_filepath = "./strings/premade_habits.json"
+# Constants for file paths
+REPLIES_FILEPATH = "./strings/replies.json"
+BUTTONS_FILEPATH = "./strings/buttons.json"
+PREMADE_HABITS_FILEPATH = "./strings/premade_habits.json"
 
 cache_filepath = "./cache/callback_history.json"
 cache_pickhabit_filepath = "./cache/picking_habit.json"
 cache_updatehabit_filepath = "./cache/updating_habit.json"
 
-replies = load_json(replies_filepath)
-premade_habits = load_json(premade_habits_filepath)
+# Load JSON data
+replies = load_json(REPLIES_FILEPATH)
+premade_habits = load_json(PREMADE_HABITS_FILEPATH)
 aspirations = list(premade_habits.keys())
 
 
@@ -595,7 +597,7 @@ def switch_screen(reply, chat_id, message_id, delete_previous=True,
 	if delete_previous:
 		tg_methods.delete_message(message_id, chat_id)
 
-def get_button(screen_name, buttons_filepath=buttons_filepath):
+def get_button(screen_name, buttons_filepath=BUTTONS_FILEPATH):
 	buttons = load_json(buttons_filepath)
 	return json.dumps(buttons[screen_name])
 

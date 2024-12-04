@@ -2,17 +2,11 @@
     {
         "user_id": 940985788,
         "chat_id": 940985788,
-        "aspiration": "something",
+        "aspiration": "\u0445\u043e\u0447\u0443 \u0432\u0441\u0435 \u0437\u043d\u0430\u0442\u044c",
         "habits": null,
-        "behavior_options": [
-            "sfgsdfg",
-            "sdfgsdfg",
-            "sdfgsdfg",
-            "sdfgdsfg",
-            "sdfhgsdfgfds"
-        ],
+        "behavior_options": null,
         "suitability": null,
         "effectiveness": null,
-        "id": 1
+        "id": 2
     }
 ]
