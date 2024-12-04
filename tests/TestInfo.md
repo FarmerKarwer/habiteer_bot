@@ -2,13 +2,13 @@
 ## Description
 This document is created in order to explain what is covered and what is not covered by unit tests.
 
-## Coverage (~34%)
+## Coverage (~40%)
 ### starter.py
 * `main` (Covered)
 
 ### index.py
 * `handler` (Covered)
-* `handler_long` (Not covered)
+* `handler_long` (Covered)
 
 ### bot_logic.py
 * Not covered
