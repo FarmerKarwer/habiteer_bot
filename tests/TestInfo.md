@@ -2,9 +2,9 @@
 ## Description
 This document is created in order to explain what is covered and what is not covered by unit tests.
 
-## Coverage (~6%)
+## Coverage (~34%)
 ### starter.py
-* Not covered
+* `main` (Covered)
 
 ### index.py
 * `handler` (Covered)
@@ -26,7 +26,13 @@ This document is created in order to explain what is covered and what is not cov
 * `get_updates` (Covered without params)
 
 ### utils.py
-* Not covered
+* `append_to_json` (Covered)
+* `delete_user_records` (Covered)
+* `load_json` (Covered)
+* `save_to_json` (Covered)
+* `sum_arrays` (Covered)
+* `unix_to_timestamp` (Covered)
+* `update_user_value` (Covered)
 
 ### utils_yandex.py
 * Not covered
