@@ -9,10 +9,9 @@ sys.path.append(os.path.abspath('./src'))
 
 from src.index import handler, handler_long
 
-SAMPLE_EVENTPATH = "events/using_command.json"
-some_context = "Sample context"
-
 def main():
+    SAMPLE_EVENTPATH = "events/using_command.json"
+    some_context = "Sample context"
     parser = argparse.ArgumentParser(description="Select the polling method.")
     parser.add_argument(
         '--handler', 
