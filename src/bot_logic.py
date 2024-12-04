@@ -314,15 +314,7 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 
 		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data") in ("hab_1", "hab_2", "hab_3", "hab_4", "hab_5", "hab_6", "hab_7", "hab_8", "hab_9", "hab_10") or get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=="scr_9":
 			try:
-				pattern = r"\b\d{1,2}\b"
-				if ", " in text:
-					entered_numbers = [int(num) for num in text.split(', ')]
-				elif "," in text:
-					entered_numbers = [int(num) for num in text.split(',')]
-				elif re.findall(pattern, text):
-					entered_numbers = [int(text)]
-				else:
-					raise IndexError
+				entered_numbers = parse_numbers(text)
 				habit_options = get_cached_data(cache_pickhabit_filepath, user_id, chat_id, property="behavior_options")	
 				filtered_habits = [i-1 for i in entered_numbers if i < len(habit_options)+1]
 				selected_habits = [habit_options[i] for i in filtered_habits]
@@ -330,7 +322,7 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 				check_minimum_length(selected_habits, min_length=1)
 				update_user_value(cache_pickhabit_filepath, user_id, "habits", selected_habits)
 				
-				### Save to DB
+				# Save to DB
 				for habit in selected_habits:
 					unique_id = generate_unique_uuid()
 					add_habit(habit=habit, creation_datetime=timestamp, user_id=user_id, unique_id=unique_id)
@@ -550,15 +542,7 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 
 		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_44':
 			try:
-				pattern = r"\b\d{1,2}\b"
-				if ", " in text:
-					entered_numbers = [int(num) for num in text.split(', ')]
-				elif "," in text:
-					entered_numbers = [int(num) for num in text.split(',')]
-				elif re.findall(pattern, text):
-					entered_numbers = [int(text)]
-				else:
-					raise IndexError
+				entered_numbers = parse_numbers(text)
 				user_habits = view_habits(user_id)
 				for idx in entered_numbers:
 					unique_id = user_habits[idx-1].get("id")
@@ -715,6 +699,18 @@ def extract_numbered_items(text: str) -> List[str]:
                 print("Warning! Lines do not match the expected pattern. Handling is skipped")
                 continue
     return items
+
+def parse_numbers(text: str) -> List[int]:
+    """Parses numbers from a given text."""
+    pattern = r"\b\d{1,2}\b"
+    if ", " in text:
+        return [int(num) for num in text.split(", ")]
+    elif "," in text:
+        return [int(num) for num in text.split(",")]
+    elif matches := re.findall(pattern, text):
+        return [int(num) for num in matches]
+    else:
+        raise IndexError
 
 # Custom exceptions
 class ValueOutOfRangeError(Exception):
