@@ -35,26 +35,10 @@ def use_logic(message):
 	if button_is_pressed(message):
 		message_info = handle_callback_query(message)
 	elif text_message_is_entered(message):
-
-		# Getting data
-		chat_id = message['message']['chat']['id']
-		text = message['message']['text']
-		message_id = message['message']['message_id']
-		user_id = message['message']['from']['id']
-		unix_timestamp = message['message']['date']
-		timestamp = unix_to_timestamp(unix_timestamp)
-
-		message_info = {"user_id": user_id, "chat_id": chat_id, 
-						"message_id": message_id, "callback_data": None, 
-						"text": text}
-
-		handle_text_input(text, chat_id, message_id, user_id, timestamp, message_info)
+		message_info = handle_text_message(message)
 	else:
 		message_info = handle_unknown_message(message)
-	
-	newdata = append_to_json(filepath=cache_filepath, new_data=message_info)
-	save_to_json(filepath=cache_filepath, new_data=newdata)
-
+	save_data_to_cache(filepath=cache_filepath, data=message_info)
 
 def handle_callback_query(message):
 
@@ -105,8 +89,7 @@ def handle_callback_query(message):
 		reply = replies['9'].replace("[habits]", random_habits_str)
 
 		new_data = {"user_id":user_id,"chat_id":chat_id, "aspiration":aspiration, "habits":None, "behavior_options":random_habits, "suitability":None, "effectiveness":None}
-		new_data = append_to_json(filepath = cache_pickhabit_filepath, new_data=new_data)
-		save_to_json(cache_pickhabit_filepath, new_data)
+		save_data_to_cache(cache_pickhabit_filepath, new_data)
 
 		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_9'))
 
@@ -285,8 +268,8 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 				habit_idx = int(text)-1
 				habit_name = habits[habit_idx].get("name")
 				new_data = {"user_id":user_id,"chat_id":chat_id, "habit_number":habit_idx, "habit_name":habit_name}
-				new_data = append_to_json(filepath = cache_updatehabit_filepath, new_data=new_data)
-				save_to_json(cache_updatehabit_filepath, new_data)
+				save_data_to_cache(cache_updatehabit_filepath, new_data)
+
 				reply = replies['8.1']+f"\n\nВы выбрали привычку: {habit_name}"
 
 				switch_screen(reply, chat_id, message_id, 
@@ -345,8 +328,8 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 			new_data = {"user_id":user_id,"chat_id":chat_id, "aspiration":text, 
 						"habits":None, "behavior_options":None, "suitability":None, 
 						"effectiveness":None}
-			new_data = append_to_json(filepath = cache_pickhabit_filepath, new_data=new_data)
-			save_to_json(cache_pickhabit_filepath, new_data)
+			save_data_to_cache(cache_pickhabit_filepath, new_data)
+			
 			reply = replies['11'].replace("[aspiration]", text)
 			switch_screen(reply, chat_id, message_id, 
 							delete_previous=False, keyboard=get_button('scr_11'))
@@ -564,6 +547,27 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 		else:
 			handle_text_query(text, chat_id, message_id, user_id)
 
+def handle_text_message(message):
+	"""Handles the text message from the user."""
+	# Extract common data
+	chat_id = message['message']['chat']['id']
+	text = message['message']['text']
+	message_id = message['message']['message_id']
+	user_id = message['message']['from']['id']
+	unix_timestamp = message['message']['date']
+	timestamp = unix_to_timestamp(unix_timestamp)
+
+	message_info = {
+	"user_id": user_id,
+	"chat_id": chat_id,
+	"message_id": message_id,
+	"callback_data": None,
+	"text": text
+	}
+	
+	handle_text_input(text, chat_id, message_id, user_id, timestamp, message_info)
+	return message_info
+
 def handle_unknown_message(message):
 	"""Handles messages that are neither text nor button presses."""
 	chat_id = message['message']['chat']['id']
@@ -636,7 +640,7 @@ def get_cached_data(filepath, user_id, chat_id, property):
 
 def save_data_to_cache(filepath, data):
 	new_data = append_to_json(filepath=filepath, new_data=data)
-	save_to_json(filepath=cache_filepath, new_data=new_data)
+	save_to_json(filepath=filepath, new_data=new_data)
 	print(f"Data have been saved successfully to {filepath}")
 
 
