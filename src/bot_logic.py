@@ -21,9 +21,9 @@ REPLIES_FILEPATH = "./strings/replies.json"
 BUTTONS_FILEPATH = "./strings/buttons.json"
 PREMADE_HABITS_FILEPATH = "./strings/premade_habits.json"
 
-cache_filepath = "./cache/callback_history.json"
-cache_pickhabit_filepath = "./cache/picking_habit.json"
-cache_updatehabit_filepath = "./cache/updating_habit.json"
+CACHE_FILEPATH = "./cache/callback_history.json"
+CACHE_PICKHABIT_FILEPATH = "./cache/picking_habit.json"
+CACHE_UPDATEHABIT_FILEPATH = "./cache/updating_habit.json"
 
 # Load JSON data
 replies = load_json(REPLIES_FILEPATH)
@@ -38,7 +38,7 @@ def use_logic(message):
 		message_info = handle_text_message(message)
 	else:
 		message_info = handle_unknown_message(message)
-	save_data_to_cache(filepath=cache_filepath, data=message_info)
+	save_data_to_cache(filepath=CACHE_FILEPATH, data=message_info)
 
 def handle_callback_query(message):
 
@@ -89,7 +89,7 @@ def handle_callback_query(message):
 		reply = replies['9'].replace("[habits]", random_habits_str)
 
 		new_data = {"user_id":user_id,"chat_id":chat_id, "aspiration":aspiration, "habits":None, "behavior_options":random_habits, "suitability":None, "effectiveness":None}
-		save_data_to_cache(cache_pickhabit_filepath, new_data)
+		save_data_to_cache(CACHE_PICKHABIT_FILEPATH, new_data)
 
 		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_9'))
 
@@ -103,13 +103,13 @@ def handle_callback_query(message):
 		switch_screen(replies['8'], chat_id, message_id, 
 						delete_previous=False, keyboard=get_button('scr_8'))
 
-	elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")in ("hab_1", "hab_2", "hab_3", "hab_4", "hab_5", "hab_6", "hab_7", "hab_8", "hab_9", "hab_10") and callback_data=="scr_12":
+	elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")in ("hab_1", "hab_2", "hab_3", "hab_4", "hab_5", "hab_6", "hab_7", "hab_8", "hab_9", "hab_10") and callback_data=="scr_12":
 		switch_screen(replies['12'], chat_id, message_id, keyboard=get_button('9_scr_12'))
 
-	elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=="scr_9" and callback_data=="scr_12":
+	elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=="scr_9" and callback_data=="scr_12":
 		switch_screen(replies['12'], chat_id, message_id, keyboard=get_button('9_scr_12'))
 
-	elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=="scr_11" and callback_data=="scr_12":
+	elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=="scr_11" and callback_data=="scr_12":
 		switch_screen(replies['12'], chat_id, message_id, keyboard=get_button('scr_12'))
 
 	elif callback_data == "scr_9":
@@ -119,7 +119,7 @@ def handle_callback_query(message):
 		switch_screen(replies['10'], chat_id, message_id, keyboard=get_button('scr_10'))
 
 	elif callback_data == "scr_11":
-		aspiration = get_cached_data(cache_pickhabit_filepath, user_id, chat_id, property="aspiration")
+		aspiration = get_cached_data(CACHE_PICKHABIT_FILEPATH, user_id, chat_id, property="aspiration")
 		reply = replies['11'].replace("[aspiration]", aspiration)
 		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_11'))
 
@@ -127,16 +127,16 @@ def handle_callback_query(message):
 		switch_screen(replies['12'], chat_id, message_id, keyboard=get_button('scr_12'))
 
 	elif callback_data == "scr_12_1":
-		aspiration = get_cached_data(cache_pickhabit_filepath, user_id, chat_id, property="aspiration")
+		aspiration = get_cached_data(CACHE_PICKHABIT_FILEPATH, user_id, chat_id, property="aspiration")
 		habits = get_ai_response(aspiration=aspiration)
 		numbered_habits = format_numbered_list(habits.values())
 		behavior_options_list = [habit for habit in habits.values()]
 		reply = "Возможно, вам подойдут эти варианты:\n\n"+numbered_habits+'\n\n---\n\n'+replies['ai_warn']
 
 		switch_screen(reply, chat_id, message_id, delete_previous=False, keyboard=get_button('scr_12_1'))
-		update_user_value(cache_pickhabit_filepath, user_id, "behavior_options", behavior_options_list)
+		update_user_value(CACHE_PICKHABIT_FILEPATH, user_id, "behavior_options", behavior_options_list)
 
-	elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=="scr_16" and callback_data=="scr_13":
+	elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=="scr_16" and callback_data=="scr_13":
 		switch_screen(replies['13'], chat_id, message_id, keyboard=get_button('16_scr_13'))
 
 	elif callback_data == "scr_13":
@@ -153,12 +153,12 @@ def handle_callback_query(message):
 		switch_screen(replies['17'], chat_id, message_id, keyboard=get_button('scr_17'))
 
 	elif callback_data == "scr_18": 
-		habits = get_cached_data(cache_pickhabit_filepath, user_id, chat_id, property="habits")
+		habits = get_cached_data(CACHE_PICKHABIT_FILEPATH, user_id, chat_id, property="habits")
 		habits_str = format_numbered_list(habits)
 		for habit in habits:
 			unique_id = generate_unique_uuid()
 			add_habit(habit=habit, creation_datetime=timestamp, user_id=user_id, unique_id=unique_id)	
-		delete_user_records(cache_pickhabit_filepath, user_id)
+		delete_user_records(CACHE_PICKHABIT_FILEPATH, user_id)
 		reply = replies['18']+f"\n\nСохраненные привычки:\n{habits_str}"
 
 		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_18'))
@@ -253,22 +253,22 @@ def handle_text_query(text, chat_id, message_id, user_id):
 
 def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_info):
 		# ATTENTION! Possible problems when a user types command '/start'
-		if get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_2':
+		if get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=='scr_2':
 			add_habit(habit=text, creation_datetime=timestamp, user_id=user_id)
 			switch_screen(replies['7'], chat_id, message_id, 
 							delete_previous=False, keyboard=get_button('scr_7'))
 
-		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_3_1':
+		elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=='scr_3_1':
 			switch_screen(replies['21'], chat_id, message_id, 
 							delete_previous=False, keyboard=get_button('scr_21'))
 
-		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_8':
+		elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=='scr_8':
 			habits = view_habits(user_id)
 			try:
 				habit_idx = int(text)-1
 				habit_name = habits[habit_idx].get("name")
 				new_data = {"user_id":user_id,"chat_id":chat_id, "habit_number":habit_idx, "habit_name":habit_name}
-				save_data_to_cache(cache_updatehabit_filepath, new_data)
+				save_data_to_cache(CACHE_UPDATEHABIT_FILEPATH, new_data)
 
 				reply = replies['8.1']+f"\n\nВы выбрали привычку: {habit_name}"
 
@@ -286,21 +286,21 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 							delete_previous=False, keyboard=get_button('scr_8'))
 				message_info["callback_data"]="scr_8"
 
-		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data") in ("hab_1", "hab_2", "hab_3", "hab_4", "hab_5", "hab_6", "hab_7", "hab_8", "hab_9", "hab_10") or get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=="scr_9":
+		elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data") in ("hab_1", "hab_2", "hab_3", "hab_4", "hab_5", "hab_6", "hab_7", "hab_8", "hab_9", "hab_10") or get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=="scr_9":
 			try:
 				entered_numbers = parse_numbers(text)
-				habit_options = get_cached_data(cache_pickhabit_filepath, user_id, chat_id, property="behavior_options")	
+				habit_options = get_cached_data(CACHE_PICKHABIT_FILEPATH, user_id, chat_id, property="behavior_options")	
 				filtered_habits = [i-1 for i in entered_numbers if i < len(habit_options)+1]
 				selected_habits = [habit_options[i] for i in filtered_habits]
 				filtered_habits_str = format_numbered_list(selected_habits)
 				check_minimum_length(selected_habits, min_length=1)
-				update_user_value(cache_pickhabit_filepath, user_id, "habits", selected_habits)
+				update_user_value(CACHE_PICKHABIT_FILEPATH, user_id, "habits", selected_habits)
 				
 				# Save to DB
 				for habit in selected_habits:
 					unique_id = generate_unique_uuid()
 					add_habit(habit=habit, creation_datetime=timestamp, user_id=user_id, unique_id=unique_id)
-				delete_user_records(cache_pickhabit_filepath, user_id)
+				delete_user_records(CACHE_PICKHABIT_FILEPATH, user_id)
 
 				reply = replies['18']+f"\n\nСохраненные привычки:\n{filtered_habits_str}"
 				switch_screen(reply, chat_id, message_id, 
@@ -324,21 +324,21 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 							delete_previous=False, keyboard=get_button('scr_9'))
 				message_info["callback_data"]="scr_9"
 
-		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_10':
+		elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=='scr_10':
 			new_data = {"user_id":user_id,"chat_id":chat_id, "aspiration":text, 
 						"habits":None, "behavior_options":None, "suitability":None, 
 						"effectiveness":None}
-			save_data_to_cache(cache_pickhabit_filepath, new_data)
+			save_data_to_cache(CACHE_PICKHABIT_FILEPATH, new_data)
 			
 			reply = replies['11'].replace("[aspiration]", text)
 			switch_screen(reply, chat_id, message_id, 
 							delete_previous=False, keyboard=get_button('scr_11'))
 			
-		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_12':
+		elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=='scr_12':
 			try:
 				behaviors = extract_numbered_items(text)
 				check_minimum_length(behaviors)
-				update_user_value(cache_pickhabit_filepath, user_id, "behavior_options", behaviors)
+				update_user_value(CACHE_PICKHABIT_FILEPATH, user_id, "behavior_options", behaviors)
 				
 				switch_screen(replies['13'], chat_id, message_id, 
 							delete_previous=False, keyboard=get_button('scr_13'))
@@ -356,13 +356,13 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 							delete_previous=False, keyboard=get_button('scr_13'))
 				message_info["callback_data"]="scr_12"
 
-		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_13':
+		elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=='scr_13':
 			try:
 				suitability_ratings = [int(line.split('. ')[1]) for line in text.strip().split('\n')]
 				check_all_in_range(suitability_ratings)
-				behaviors = get_cached_data(cache_pickhabit_filepath, user_id, chat_id, property="behavior_options")
+				behaviors = get_cached_data(CACHE_PICKHABIT_FILEPATH, user_id, chat_id, property="behavior_options")
 				check_matching_lengths(suitability_ratings, behaviors)
-				update_user_value(cache_pickhabit_filepath, user_id, "suitability", suitability_ratings)
+				update_user_value(CACHE_PICKHABIT_FILEPATH, user_id, "suitability", suitability_ratings)
 				
 				switch_screen(replies['14'], chat_id, message_id, 
 							delete_previous=False, keyboard=get_button('scr_14'))
@@ -390,21 +390,21 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 							delete_previous=False, keyboard=get_button('scr_13'))
 				message_info["callback_data"]="scr_13"
 
-		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_14':
+		elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=='scr_14':
 			try:
 				effectiveness_ratings = [int(line.split('. ')[1]) for line in text.strip().split('\n')]
 				check_all_in_range(effectiveness_ratings)
-				behaviors = get_cached_data(cache_pickhabit_filepath, user_id, chat_id, property="behavior_options")
+				behaviors = get_cached_data(CACHE_PICKHABIT_FILEPATH, user_id, chat_id, property="behavior_options")
 				check_matching_lengths(effectiveness_ratings, behaviors)
-				update_user_value(cache_pickhabit_filepath, user_id, "effectiveness", effectiveness_ratings)
-				suitability_ratings = get_cached_data(cache_pickhabit_filepath, user_id, chat_id, property="suitability")
+				update_user_value(CACHE_PICKHABIT_FILEPATH, user_id, "effectiveness", effectiveness_ratings)
+				suitability_ratings = get_cached_data(CACHE_PICKHABIT_FILEPATH, user_id, chat_id, property="suitability")
 				
 				habit_grades = sum_arrays(suitability_ratings, effectiveness_ratings)
 				top_habits = [habit for _, habit in sorted(zip(habit_grades, behaviors), reverse=True)[:3]]
 				top_habits_str = format_numbered_list(top_habits)
 
 				reply = replies['15'].replace("[habits]", top_habits_str)
-				update_user_value(cache_pickhabit_filepath, user_id, "habits", top_habits)
+				update_user_value(CACHE_PICKHABIT_FILEPATH, user_id, "habits", top_habits)
 				
 				switch_screen(reply, chat_id, message_id, 
 							delete_previous=False, keyboard=get_button('scr_15'))
@@ -434,12 +434,12 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 							delete_previous=False, keyboard=get_button('scr_13'))
 				message_info["callback_data"]="scr_14"
 
-		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_17': 
+		elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=='scr_17': 
 			try:
-				behaviours = get_cached_data(cache_pickhabit_filepath, user_id, chat_id, property="behavior_options")
+				behaviours = get_cached_data(CACHE_PICKHABIT_FILEPATH, user_id, chat_id, property="behavior_options")
 				new_behaviors = extract_numbered_items(text)
 				behaviours.extend(new_behaviors)
-				update_user_value(cache_pickhabit_filepath, user_id, "behavior_options", behaviours)
+				update_user_value(CACHE_PICKHABIT_FILEPATH, user_id, "behavior_options", behaviours)
 				
 				switch_screen(replies['13'], chat_id, message_id, 
 							delete_previous=False, keyboard=get_button('scr_13'))
@@ -451,9 +451,9 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 							delete_previous=False, keyboard=get_button('scr_13'))
 				message_info["callback_data"]="scr_17"
 
-		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_19':
+		elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=='scr_19':
 			new_name = text
-			habit_idx = get_cached_data(cache_updatehabit_filepath, user_id, chat_id, property="habit_number")
+			habit_idx = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_number")
 			unique_id = view_habits(user_id)[habit_idx].get("id")
 			update_habit(unique_id, "name", f"'{new_name}'")
 			update_habit(unique_id, "last_updated", f"CAST('{timestamp}'AS Timestamp)")
@@ -464,57 +464,57 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 			switch_screen(reply, chat_id, message_id, 
 							delete_previous=False, keyboard=get_button('scr_20'))
 
-		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_23':
+		elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=='scr_23':
 			switch_screen(replies['24'], chat_id, message_id, 
 							delete_previous=False, keyboard=get_button('scr_24'))
 
-		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_26':
+		elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=='scr_26':
 			switch_screen(replies['20'], chat_id, message_id, 
 							delete_previous=False, keyboard=get_button('scr_20'))
 
-		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_28':
+		elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=='scr_28':
 			switch_screen(replies['20'], chat_id, message_id, 
 							delete_previous=False, keyboard=get_button('scr_20'))
 
-		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_31':
+		elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=='scr_31':
 			switch_screen(replies['7'], chat_id, message_id, 
 							delete_previous=False, keyboard=get_button('scr_7'))
 
-		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_33':
+		elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=='scr_33':
 			switch_screen(replies['36'], chat_id, message_id, 
 							delete_previous=False, keyboard=get_button('scr_36'))
 			message_info["callback_data"]="scr_36"
 			print(text)
-		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_35':
+		elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=='scr_35':
 			switch_screen(replies['36'], chat_id, message_id, 
 							delete_previous=False, keyboard=get_button('scr_36'))
 			message_info["callback_data"]="scr_36"
 
-		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_36':
+		elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=='scr_36':
 			switch_screen(replies['20'], chat_id, message_id, 
 							delete_previous=False, keyboard=get_button('scr_20'))
 
-		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_37':
+		elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=='scr_37':
 			switch_screen(replies['20'], chat_id, message_id, 
 							delete_previous=False, keyboard=get_button('scr_20'))
 
-		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_38':
+		elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=='scr_38':
 			switch_screen(replies['20'], chat_id, message_id, 
 							delete_previous=False, keyboard=get_button('scr_20'))
 
-		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_40':
+		elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=='scr_40':
 			switch_screen(replies['43'], chat_id, message_id, 
 							delete_previous=False, keyboard=get_button('scr_43'))
 
-		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_41':
+		elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=='scr_41':
 			switch_screen(replies['43'], chat_id, message_id, 
 							delete_previous=False, keyboard=get_button('scr_43'))
 
-		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_42':
+		elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=='scr_42':
 			switch_screen(replies['start'], chat_id, message_id, 
 							delete_previous=False, keyboard=get_button('start'))
 
-		elif get_cached_data(cache_filepath, user_id, chat_id, property="callback_data")=='scr_44':
+		elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=='scr_44':
 			try:
 				entered_numbers = parse_numbers(text)
 				user_habits = view_habits(user_id)
