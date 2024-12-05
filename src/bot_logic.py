@@ -81,7 +81,7 @@ def handle_callback_query(message):
 		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_4'))
 
 	elif callback_data in ("hab_1", "hab_2", "hab_3", "hab_4", "hab_5", "hab_6", "hab_7", "hab_8", "hab_9", "hab_10"):
-		view_predefined_habits(callback_data, user_id, chat_id, message_id)
+		show_predefined_habits(callback_data, user_id, chat_id, message_id)
 
 	elif callback_data == "scr_5":
 		switch_screen(replies['5'], chat_id, message_id, keyboard=get_button('scr_5'))
@@ -574,7 +574,7 @@ def handle_unknown_message(message):
 	}
 
 
-def view_predefined_habits(callback_data, user_id, chat_id, message_id):
+def show_predefined_habits(callback_data, user_id, chat_id, message_id):
 	"""After clicking on aspiration, this func sends a message to a user with predefined habits"""
 	aspiration = get_aspiration_from_callback(callback_data)
 	random_habits = get_predefined_habits_for_aspiration(aspiration, size=10)
