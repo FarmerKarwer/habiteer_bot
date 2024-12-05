@@ -52,7 +52,7 @@ def handle_callback_query(message):
 	timestamp = unix_to_timestamp(unix_timestamp)
 
 
-	## Actual logic
+	# Actual logic
 	if callback_data == "scr_1":
 		switch_screen(replies['1'], chat_id, message_id, keyboard=get_button('scr_1'))
 
@@ -329,7 +329,7 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 						"habits":None, "behavior_options":None, "suitability":None, 
 						"effectiveness":None}
 			save_data_to_cache(CACHE_PICKHABIT_FILEPATH, new_data)
-			
+
 			reply = replies['11'].replace("[aspiration]", text)
 			switch_screen(reply, chat_id, message_id, 
 							delete_previous=False, keyboard=get_button('scr_11'))
