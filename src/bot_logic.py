@@ -50,16 +50,7 @@ def use_logic(message):
 
 		handle_text_input(text, chat_id, message_id, user_id, timestamp, message_info)
 	else:
-		
-		# Getting data
-		chat_id = message['message']['chat']['id']
-		message_id = message['message']['message_id']
-		user_id = message['message']['from']['id']
-
-		tg_methods.send_text_message('Я понимаю только текстовые сообщения и кнопки', chat_id)
-		message_info = {"user_id": user_id,"chat_id": chat_id, 
-						"message_id": message_id, "callback_data": None, 
-						"text": None}
+		message_info = handle_unknown_message(message)
 	
 	newdata = append_to_json(filepath=cache_filepath, new_data=message_info)
 	save_to_json(filepath=cache_filepath, new_data=newdata)
@@ -572,6 +563,21 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 				message_info["callback_data"]="scr_44"
 		else:
 			handle_text_query(text, chat_id, message_id, user_id)
+
+def handle_unknown_message(message):
+	"""Handles messages that are neither text nor button presses."""
+	chat_id = message['message']['chat']['id']
+	message_id = message['message']['message_id']
+	user_id = message['message']['from']['id']
+
+	tg_methods.send_text_message(replies['unknown_message'], chat_id)
+	return {
+	"user_id": user_id,
+	"chat_id": chat_id,
+	"message_id": message_id,
+	"callback_data": None,
+	"text": None
+	}
 
 
 def switch_screen(
