@@ -12,7 +12,7 @@ def save_to_json(filepath, new_data):
 
 def append_to_json(filepath, new_data):
     if os.path.exists(filepath):
-        with open(filepath, "r") as json_file:
+        with open(filepath, "r", encoding='utf-8') as json_file:
             try:
                 data = json.load(json_file)
             except json.JSONDecodeError:
