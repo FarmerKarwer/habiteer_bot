@@ -1,7 +1,6 @@
 import json
 import os
 import random
-import re
 from typing import Any, Callable, Dict, List, Optional
 
 import tg_methods
@@ -13,8 +12,27 @@ from database import (
 	update_habit,
 	view_habits,
 )
+from exceptions import (
+	ValueOutOfRangeError,
+	ListTooShortError,
+	ListLengthMismatchError,
+)
 from recommender import get_ai_response
-from utils import *
+from utils import (
+	load_json,
+	update_user_value,
+	delete_user_records,
+	sum_arrays,
+	unix_to_timestamp,
+	format_numbered_list,
+	extract_numbered_items,
+	get_cached_data,
+	save_data_to_cache,
+	check_all_in_range,
+	check_matching_lengths,
+	check_minimum_length,
+	parse_numbers,
+)
 
 # Constants for file paths
 REPLIES_FILEPATH = "./strings/replies.json"
@@ -662,116 +680,14 @@ def get_button(screen_name, buttons_filepath=BUTTONS_FILEPATH):
 	return json.dumps(buttons[screen_name])
 
 
-# Getting cache data
-
-def get_cached_data(filepath, user_id, chat_id, property):
-	# Check if file exists and read data if so
-	if os.path.exists(filepath):
-		with open(filepath, "r", encoding="utf-8") as json_file:
-			try:
-				data = json.load(json_file)
-			except json.JSONDecodeError:
-				print("Error: JSON file is empty or corrupted.")
-				return None
-	else:
-		print("Error: File does not exist.")
-		return None
-
-	# Find the entry that matches the specified user_id and chat_id
-	for entry in data:
-		if entry.get("user_id") == user_id and entry.get("chat_id") == chat_id:
-			return entry.get(property)
-
-	# Return None if no matching entry is found
-	print("No matching entry found for the given user_id and chat_id.")
-	return None
-
-# Saving to cache
-
-def save_data_to_cache(filepath, data):
-	new_data = append_to_json(filepath=filepath, new_data=data)
-	save_to_json(filepath=filepath, new_data=new_data)
-	print(f"Data have been saved successfully to {filepath}")
-
-
 # Checking for conditions
-
 def text_message_is_entered(message):
 	return 'message' in message and 'text' in message['message']
 
 def button_is_pressed(message):
 	return 'callback_query' in message.keys()
 
-def check_all_in_range(input_list, min=1, max=10):
-	# Check if all items are between 1 and 10
-	if not all(min <= item <= max for item in input_list):
-		raise ValueOutOfRangeError("All items must be between 1 and 10.")
-
-def check_matching_lengths(list1, list2):
-	"""Checks if two lists have matching lengths."""
-	if len(list1) != len(list2):
-		raise ListLengthMismatchError("The lengths of the lists do not match.")
-
-def check_minimum_length(input_list, min_length=5):
-	"""Ensures the list meets the minimum required length."""
-	if len(input_list) < min_length:
-		raise ListTooShortError(f"The list has fewer than {min_length} entries.")
-
 # Other useful functions
-def format_numbered_list(items: List[str], capitalize: bool = True) -> str:
-    """
-    Formats a list of strings into a numbered, newline-separated string.
-
-    Args:
-        items (List[str]): The list of strings to format.
-        capitalize (bool, optional): Whether to capitalize each item. Defaults to True.
-
-    Returns:
-        str: A numbered, newline-separated string with each item optionally capitalized.
-    """
-    if capitalize:
-        items = (item.capitalize() for item in items)
-    else:
-        items = (item for item in items)
-    
-    return "\n".join(f"{i + 1}. {item}" for i, item in enumerate(items))
-
-def extract_numbered_items(text: str) -> List[str]:
-    """
-    Extracts items from a numbered multi-line string.
-
-    Each line should start with a number followed by a period and a space (e.g., "1. Item").
-
-    Args:
-        text (str): The input string containing numbered items separated by newlines.
-
-    Returns:
-        List[str]: A list of extracted items without their numbering.
-    """
-    items = []
-    for line in text.strip().split('\n'):
-        if line:
-            match = re.match(r'^\d+\.\s+(.*)', line)
-            if match:
-                item = match.group(1).strip()
-                items.append(item)
-            else:
-                print("Warning! Lines do not match the expected pattern. Handling is skipped")
-                continue
-    return items
-
-def parse_numbers(text: str) -> List[int]:
-    """Parses numbers from a given text."""
-    pattern = r"\b\d{1,2}\b"
-    if ", " in text:
-        return [int(num) for num in text.split(", ")]
-    elif "," in text:
-        return [int(num) for num in text.split(",")]
-    elif matches := re.findall(pattern, text):
-        return [int(num) for num in matches]
-    else:
-        raise IndexError
-
 def get_aspiration_from_callback(callback_data):
 	"""Returns aspiration from button callback"""
 	aspiration_idx = int(callback_data.split('_')[-1])-1
@@ -783,16 +699,3 @@ def get_predefined_habits_for_aspiration(aspiration, size=10):
 	habits = list(premade_habits[aspiration])
 	habits = random.sample(habits, k=size)
 	return habits
-
-# Custom exceptions
-class ValueOutOfRangeError(Exception):
-	"""Custom exception for values out of range."""
-	pass
-
-class ListTooShortError(Exception):
-	"""Custom exception for lists with fewer than 5 entries."""
-	pass
-
-class ListLengthMismatchError(Exception):
-	"""Custom exception for list length mismatch errors."""
-	pass
