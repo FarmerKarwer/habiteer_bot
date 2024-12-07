@@ -49,7 +49,10 @@ premade_habits = load_json(PREMADE_HABITS_FILEPATH)
 aspirations = list(premade_habits.keys())
 
 # Sets of buttons
-callback_predefined_habits = ("hab_1", "hab_2", "hab_3", "hab_4", "hab_5", "hab_6", "hab_7", "hab_8", "hab_9", "hab_10")
+callback_predefined_habits = (
+	"hab_1", "hab_2", "hab_3", "hab_4", "hab_5", 
+	"hab_6", "hab_7", "hab_8", "hab_9", "hab_10"
+)
 
 
 def use_logic(message):
