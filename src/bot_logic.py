@@ -48,6 +48,9 @@ replies = load_json(REPLIES_FILEPATH)
 premade_habits = load_json(PREMADE_HABITS_FILEPATH)
 aspirations = list(premade_habits.keys())
 
+# Sets of buttons
+callback_predefined_habits = ("hab_1", "hab_2", "hab_3", "hab_4", "hab_5", "hab_6", "hab_7", "hab_8", "hab_9", "hab_10")
+
 
 def use_logic(message):
 	if button_is_pressed(message):
@@ -69,149 +72,59 @@ def handle_callback_query(message):
 	unix_timestamp = message['callback_query']['message']['date']
 	timestamp = unix_to_timestamp(unix_timestamp)
 
+	previous_screen = get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")
+
+
+	def show_callback_reply(screen_id, delete_previous=True):
+		switch_screen(replies[screen_id], chat_id, message_id, delete_previous=delete_previous,
+						keyboard=get_button(f'scr_{screen_id}'))
 
 	# Actual logic
-	if callback_data == "scr_1":
-		switch_screen(replies['1'], chat_id, message_id, keyboard=get_button('scr_1'))
+	DEFAULT_CALLBACK_SCREENS = (
+		"scr_1", "scr_2", "scr_5", "scr_6", "scr_8",
+		"scr_9", "scr_10", "scr_12", "scr_13", "scr_15",
+		"scr_16", "scr_17", "scr_19", "scr_21", "scr_22",
+		"scr_23_1", "scr_23", "scr_25", "scr_26", "scr_27",
+		"scr_28", "scr_30", "scr_31", "scr_32", "scr_33",
+		"scr_34", "scr_35", "scr_37", "scr_38", "scr_39",
+		"scr_40", "scr_41", "scr_42", "scr_44", "scr_plug"
+		)
 
-	elif callback_data == "scr_2":
-		switch_screen(replies['2'], chat_id, message_id, keyboard=get_button('scr_2'))
+	SPECIAL_CALLBACK_HANDLERS = {
+	"scr_3": lambda: show_user_habits(user_id, chat_id, message_id),
+	"scr_4": lambda: show_aspirations(chat_id, message_id),
+	"scr_11": lambda: show_aspiration_confirmation(chat_id, message_id, user_id, callback_data=callback_data),
+	"scr_12_1": lambda: show_ai_recommended_habits(user_id, chat_id, message_id),
+	"scr_18": lambda: show_picked_habits(user_id, chat_id, message_id, timestamp)
+	}
 
-	elif callback_data == "scr_3":
-		show_user_habits(user_id, chat_id, message_id)
+	SPECIAL_CALLBACK_SCREENS = SPECIAL_CALLBACK_HANDLERS.keys()
 
-	elif callback_data == "scr_3_1":
-		switch_screen(replies['3.1'], chat_id, message_id, keyboard=get_button('scr_3_1'))
+	if callback_data in DEFAULT_CALLBACK_SCREENS:
+		screen_id = callback_data.split('_')[1]
+		if screen_id in ("8", "13", "21", "44"):
+			show_callback_reply(screen_id, delete_previous=False)
+		else:
+			show_callback_reply(screen_id)
+	
+	elif callback_data in SPECIAL_CALLBACK_SCREENS:
+		action = SPECIAL_CALLBACK_HANDLERS.get(callback_data)
+		action()
 
-	elif callback_data == "scr_4":
-		show_aspirations(chat_id, message_id)
-
-	elif callback_data in ("hab_1", "hab_2", "hab_3", "hab_4", "hab_5", "hab_6", "hab_7", "hab_8", "hab_9", "hab_10"):
+	elif callback_data in callback_predefined_habits:
 		show_predefined_habits(callback_data, user_id, chat_id, message_id)
 
-	elif callback_data == "scr_5":
-		switch_screen(replies['5'], chat_id, message_id, keyboard=get_button('scr_5'))
-
-	elif callback_data == "scr_6":
-		switch_screen(replies['6'], chat_id, message_id, keyboard=get_button('scr_6'))
-
-	elif callback_data == "scr_8":
-		switch_screen(replies['8'], chat_id, message_id, 
-						delete_previous=False, keyboard=get_button('scr_8'))
-
-	elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")in ("hab_1", "hab_2", "hab_3", "hab_4", "hab_5", "hab_6", "hab_7", "hab_8", "hab_9", "hab_10") and callback_data=="scr_12":
+	elif previous_screen in callback_predefined_habits and callback_data == "scr_12":
 		switch_screen(replies['12'], chat_id, message_id, keyboard=get_button('9_scr_12'))
 
-	elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=="scr_9" and callback_data=="scr_12":
+	elif previous_screen=="scr_9" and callback_data=="scr_12":
 		switch_screen(replies['12'], chat_id, message_id, keyboard=get_button('9_scr_12'))
 
-	elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=="scr_11" and callback_data=="scr_12":
+	elif previous_screen=="scr_11" and callback_data=="scr_12":
 		switch_screen(replies['12'], chat_id, message_id, keyboard=get_button('scr_12'))
 
-	elif callback_data == "scr_9":
-		switch_screen(replies['9'], chat_id, message_id, keyboard=get_button('scr_9'))
-
-	elif callback_data == "scr_10":
-		switch_screen(replies['10'], chat_id, message_id, keyboard=get_button('scr_10'))
-
-	elif callback_data == "scr_11":
-		show_aspiration_confirmation(chat_id, message_id, user_id, callback_data=callback_data)
-
-	elif callback_data == "scr_12":
-		switch_screen(replies['12'], chat_id, message_id, keyboard=get_button('scr_12'))
-
-	elif callback_data == "scr_12_1":
-		show_ai_recommended_habits(user_id, chat_id, message_id)
-
-	elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=="scr_16" and callback_data=="scr_13":
+	elif previous_screen=="scr_16" and callback_data=="scr_13":
 		switch_screen(replies['13'], chat_id, message_id, keyboard=get_button('16_scr_13'))
-
-	elif callback_data == "scr_13":
-		switch_screen(replies['13'], chat_id, message_id, 
-						delete_previous=False, keyboard=get_button('scr_13'))
-
-	elif callback_data == "scr_15":
-		switch_screen(replies['15'], chat_id, message_id, keyboard=get_button('scr_15'))
-
-	elif callback_data == "scr_16": 
-		switch_screen(replies['16'], chat_id, message_id, keyboard=get_button('scr_16'))
-
-	elif callback_data == "scr_17": 
-		switch_screen(replies['17'], chat_id, message_id, keyboard=get_button('scr_17'))
-
-	elif callback_data == "scr_18": 
-		show_picked_habits(user_id, chat_id, message_id, timestamp)
-
-	elif callback_data == "scr_19":
-		switch_screen(replies['19'], chat_id, message_id, keyboard=get_button('scr_19'))
-
-	elif callback_data == "scr_21":
-		switch_screen(replies['21'], chat_id, message_id, 
-						delete_previous=False, keyboard=get_button('scr_21'))
-	
-	elif callback_data == "scr_22": 
-		switch_screen(replies['22'], chat_id, message_id, keyboard=get_button('scr_22'))
-
-	elif callback_data == "scr_23_1":
-		switch_screen(replies['23.1'], chat_id, message_id, keyboard=get_button('scr_23_1')) 
-
-	elif callback_data == "scr_23": 
-		switch_screen(replies['23'], chat_id, message_id, keyboard=get_button('scr_23'))
-
-	elif callback_data == "scr_25": 
-		switch_screen(replies['25'], chat_id, message_id, keyboard=get_button('scr_25'))
-
-	elif callback_data == "scr_26": 
-		switch_screen(replies['26'], chat_id, message_id, keyboard=get_button('scr_26'))
-
-	elif callback_data == "scr_27": 
-		switch_screen(replies['27'], chat_id, message_id, keyboard=get_button('scr_27'))
-
-	elif callback_data == "scr_28": 
-		switch_screen(replies['28'], chat_id, message_id, keyboard=get_button('scr_28'))
-
-	elif callback_data == "scr_30": 
-		switch_screen(replies['30'], chat_id, message_id, keyboard=get_button('scr_30'))
-
-	elif callback_data == "scr_31": 
-		switch_screen(replies['31'], chat_id, message_id, keyboard=get_button('scr_31'))
-
-	elif callback_data == "scr_32": 
-		switch_screen(replies['32'], chat_id, message_id, keyboard=get_button('scr_32'))
-
-	elif callback_data == "scr_33": 
-		switch_screen(replies['33'], chat_id, message_id, keyboard=get_button('scr_33'))
-
-	elif callback_data == "scr_34": 
-		switch_screen(replies['34'], chat_id, message_id, keyboard=get_button('scr_34'))
-
-	elif callback_data == "scr_35": 
-		switch_screen(replies['35'], chat_id, message_id, keyboard=get_button('scr_35'))
-
-	elif callback_data == "scr_37": 
-		switch_screen(replies['37'], chat_id, message_id, keyboard=get_button('scr_37'))
-
-	elif callback_data == "scr_38": 
-		switch_screen(replies['38'], chat_id, message_id, keyboard=get_button('scr_38'))
-
-	elif callback_data == "scr_39": 
-		switch_screen(replies['39'], chat_id, message_id, keyboard=get_button('scr_39'))
-
-	elif callback_data == "scr_40": 
-		switch_screen(replies['40'], chat_id, message_id, keyboard=get_button('scr_40'))
-
-	elif callback_data == "scr_41": 
-		switch_screen(replies['41'], chat_id, message_id, keyboard=get_button('scr_41'))
-
-	elif callback_data == "scr_42": 
-		switch_screen(replies['42'], chat_id, message_id, keyboard=get_button('scr_42'))
-
-	elif callback_data == "scr_44": 
-		switch_screen(replies['44'], chat_id, message_id, delete_previous=False,
-						keyboard=get_button('scr_44'))
-	
-	elif callback_data == "plug": 
-		switch_screen(replies['plug'], chat_id, message_id, keyboard=get_button('plug'))
 
 	else:
 		tg_methods.send_text_message("Error: unknown callback data", chat_id, protect_content=True)
@@ -231,89 +144,92 @@ def handle_text_query(text, chat_id, message_id, user_id):
 	return data
 
 def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_info):
+
+		previous_screen = get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")
+
 		# ATTENTION! Possible problems when a user types command '/start'
-		if get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=='scr_2':
+		if previous_screen=='scr_2':
 			show_adding_habit(text, user_id, chat_id, message_id, timestamp)
 
-		elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=='scr_3_1':
+		elif previous_screen=='scr_3_1':
 			switch_screen(replies['21'], chat_id, message_id, 
 							delete_previous=False, keyboard=get_button('scr_21'))
 
-		elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=='scr_8':
+		elif previous_screen=='scr_8':
 			show_editing_habit(text, user_id, chat_id, message_id, message_info)
 
-		elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data") in ("hab_1", "hab_2", "hab_3", "hab_4", "hab_5", "hab_6", "hab_7", "hab_8", "hab_9", "hab_10") or get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=="scr_9":
+		elif previous_screen in callback_predefined_habits or previous_screen =="scr_9":
 			show_picked_predefined_habits(text, chat_id, message_id, user_id, timestamp, message_info)
 
-		elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=='scr_10':
+		elif previous_screen=='scr_10':
 			show_aspiration_confirmation(chat_id, message_id, user_id, text=text)
 			
-		elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=='scr_12':
+		elif previous_screen=='scr_12':
 			show_magic_wanding(text, chat_id, message_id, user_id, message_info)
 
-		elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=='scr_13':
+		elif previous_screen=='scr_13':
 			show_suitability_evaluation(text, chat_id, message_id, user_id, message_info)
 
-		elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=='scr_14':
+		elif previous_screen=='scr_14':
 			show_effectiveness_evaluation(text, chat_id, message_id, user_id, message_info)
 
-		elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=='scr_17': 
+		elif previous_screen=='scr_17': 
 			show_extend_behavior_options(text, chat_id, message_id, user_id, message_info)
 
-		elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=='scr_19':
+		elif previous_screen=='scr_19':
 			show_updated_habitname(text, chat_id, message_id, user_id, timestamp)
 
-		elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=='scr_23':
+		elif previous_screen=='scr_23':
 			switch_screen(replies['24'], chat_id, message_id, 
 							delete_previous=False, keyboard=get_button('scr_24'))
 
-		elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=='scr_26':
+		elif previous_screen=='scr_26':
 			switch_screen(replies['20'], chat_id, message_id, 
 							delete_previous=False, keyboard=get_button('scr_20'))
 
-		elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=='scr_28':
+		elif previous_screen=='scr_28':
 			switch_screen(replies['20'], chat_id, message_id, 
 							delete_previous=False, keyboard=get_button('scr_20'))
 
-		elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=='scr_31':
+		elif previous_screen=='scr_31':
 			switch_screen(replies['7'], chat_id, message_id, 
 							delete_previous=False, keyboard=get_button('scr_7'))
 
-		elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=='scr_33':
+		elif previous_screen=='scr_33':
 			switch_screen(replies['36'], chat_id, message_id, 
 							delete_previous=False, keyboard=get_button('scr_36'))
 			message_info["callback_data"]="scr_36"
 			print(text)
-		elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=='scr_35':
+		elif previous_screen=='scr_35':
 			switch_screen(replies['36'], chat_id, message_id, 
 							delete_previous=False, keyboard=get_button('scr_36'))
 			message_info["callback_data"]="scr_36"
 
-		elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=='scr_36':
+		elif previous_screen=='scr_36':
 			switch_screen(replies['20'], chat_id, message_id, 
 							delete_previous=False, keyboard=get_button('scr_20'))
 
-		elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=='scr_37':
+		elif previous_screen=='scr_37':
 			switch_screen(replies['20'], chat_id, message_id, 
 							delete_previous=False, keyboard=get_button('scr_20'))
 
-		elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=='scr_38':
+		elif previous_screen=='scr_38':
 			switch_screen(replies['20'], chat_id, message_id, 
 							delete_previous=False, keyboard=get_button('scr_20'))
 
-		elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=='scr_40':
+		elif previous_screen=='scr_40':
 			switch_screen(replies['43'], chat_id, message_id, 
 							delete_previous=False, keyboard=get_button('scr_43'))
 
-		elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=='scr_41':
+		elif previous_screen=='scr_41':
 			switch_screen(replies['43'], chat_id, message_id, 
 							delete_previous=False, keyboard=get_button('scr_43'))
 
-		elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=='scr_42':
+		elif previous_screen=='scr_42':
 			switch_screen(replies['start'], chat_id, message_id, 
 							delete_previous=False, keyboard=get_button('start'))
 
-		elif get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")=='scr_44':
+		elif previous_screen=='scr_44':
 			show_updated_habits_after_deletion(text, chat_id, message_id, user_id, message_info)
 		else:
 			handle_text_query(text, chat_id, message_id, user_id)

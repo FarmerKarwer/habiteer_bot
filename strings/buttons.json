@@ -38,7 +38,7 @@
       [
         {
           "text": "Статистика",
-          "callback_data": "plug"
+          "callback_data": "scr_plug"
         }
       ],
       [
@@ -89,7 +89,7 @@
         [
           {
             "text":"Улучшить привычку",
-            "callback_data":"plug"
+            "callback_data":"scr_plug"
           }
       ],
         [
@@ -207,31 +207,31 @@
       [
         {
           "text": "Приостановить уведомления",
-          "callback_data": "plug"
+          "callback_data": "scr_plug"
         }
       ],
       [
         {
           "text": "Мотивационные сообщения",
-          "callback_data": "plug"
+          "callback_data": "scr_plug"
         }
       ],
       [
         {
           "text": "Отчетность",
-          "callback_data": "plug"
+          "callback_data": "scr_plug"
         }
       ],
       [
         {
           "text": "Отправить отзыв",
-          "callback_data": "plug"
+          "callback_data": "scr_plug"
         }
       ],
       [
         {
           "text": "Удалить все данные",
-          "callback_data": "plug"
+          "callback_data": "scr_plug"
         }
       ],
       [
@@ -247,7 +247,7 @@
       [
         {
           "text": "Улучшить привычку",
-          "callback_data": "plug"
+          "callback_data": "scr_plug"
         }
       ],
       [
@@ -1184,7 +1184,7 @@
       ]
     ]
   },
-  "plug":{
+  "scr_plug":{
     "inline_keyboard": [
       [
         {
