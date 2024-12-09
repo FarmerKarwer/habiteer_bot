@@ -58,11 +58,12 @@ callback_predefined_habits = (
 def use_logic(message):
 	if button_is_pressed(message):
 		message_info = handle_callback_query(message)
+		save_data_to_cache(filepath=CACHE_FILEPATH, data=message_info)
 	elif text_message_is_entered(message):
 		message_info = handle_text_message(message)
+		save_data_to_cache(filepath=CACHE_FILEPATH, data=message_info)
 	else:
 		message_info = handle_unknown_message(message)
-	save_data_to_cache(filepath=CACHE_FILEPATH, data=message_info)
 
 def handle_callback_query(message):
 
