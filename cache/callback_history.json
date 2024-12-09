@@ -18,9 +18,9 @@
     {
         "user_id": 940985788,
         "chat_id": 940985788,
-        "message_id": 798,
-        "callback_data": "scr_1",
-        "text": null,
-        "id": 1669
+        "message_id": 843,
+        "callback_data": null,
+        "text": "1, 10",
+        "id": 1704
     }
 ]

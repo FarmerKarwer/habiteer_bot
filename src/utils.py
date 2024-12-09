@@ -145,18 +145,32 @@ def extract_numbered_items(text: str) -> List[str]:
                 continue
     return items
 
-
 def parse_numbers(text: str) -> List[int]:
-    """Parses numbers from a given text."""
-    pattern = r"\b\d{1,2}\b"
-    if ", " in text:
-        return [int(num) for num in text.split(", ")]
-    elif "," in text:
-        return [int(num) for num in text.split(",")]
-    elif matches := re.findall(pattern, text):
-        return [int(num) for num in matches]
-    else:
-        raise IndexError
+    """Parses numbers and ranges from a given text."""
+    numbers = []
+    # Split the input by commas
+    parts = text.split(',')
+    for part in parts:
+        part = part.strip()  # Remove any surrounding whitespace
+        if '-' in part:
+            # Split the range into start and end
+            try:
+                start, end = part.split('-')
+                start, end = int(start), int(end)
+                if start > end:
+                    raise ValueError(f"Invalid range: {part}")
+                # Extend the numbers list with the range
+                numbers.extend(range(start, end + 1))
+            except ValueError as ve:
+                raise ValueError(f"Invalid range format: '{part}'. Error: {ve}")
+        else:
+            # Convert single number to integer and append
+            try:
+                number = int(part)
+                numbers.append(number)
+            except ValueError:
+                raise ValueError(f"Invalid number format: '{part}'")
+    return numbers
 
 # Getting cache data
 def get_cached_data(filepath, user_id, chat_id, property):

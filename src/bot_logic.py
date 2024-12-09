@@ -564,8 +564,8 @@ def show_updated_habits_after_deletion(text, chat_id, message_id, user_id, messa
 				reply = reply.replace("[end2]","ы")
 			switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_45'))
 
-	except IndexError:
-		reply = "Введенный текст должен содержать привычки, введеные через запятую. Попробуйте ввести еще раз."
+	except ValueError:
+		reply = "Введенный текст должен содержать привычки, введеные через запятую или через тире. Возможно, неверно указан диапазон. Попробуйте ввести еще раз."
 		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_44'))
 		message_info["callback_data"]="scr_44"
 
