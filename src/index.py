@@ -8,7 +8,7 @@ import logging
 logging.basicConfig(
     filename='logs.txt',      # Name of the log file
     filemode='a',             # Append mode; use 'w' to overwrite existing file
-    level=logging.DEBUG,        # Log level: DEBUG, INFO, WARNING, ERROR, CRITICAL
+    level=logging.INFO,        # Log level: DEBUG, INFO, WARNING, ERROR, CRITICAL
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
 

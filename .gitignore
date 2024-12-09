@@ -2,3 +2,4 @@
 venv/
 .vs/
 .idea/
+logs.txt
