@@ -2,6 +2,15 @@ import json
 from bot_logic import use_logic
 from tg_methods import get_updates
 import time
+import logging
+
+# Configure logging
+logging.basicConfig(
+    filename='logs.txt',      # Name of the log file
+    filemode='a',             # Append mode; use 'w' to overwrite existing file
+    level=logging.DEBUG,        # Log level: DEBUG, INFO, WARNING, ERROR, CRITICAL
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
 
 def handler(event, context):
 	#Change it to json.loads(event['body']) when using it on Yandex Cloud
@@ -15,11 +24,11 @@ def handler(event, context):
 
 def handler_long(event, context):
 	print("Long polling has started...")
+	logging.info("Long polling has started...")
 	print("Press Ctrl + C to exit")
 
 	last_update_id = None
 	offset = None
-	#print(f"Last_id: {last_update_id}")
 	running = True
 
 	try:
@@ -29,20 +38,19 @@ def handler_long(event, context):
 
 			updates = get_updates(offset = offset, timeout=30)
 
-			if updates["ok"]:
+			if updates["ok"] and updates["result"]:
+				logging.debug(f"Received updates: {updates}")
 				update = updates['result'][-1]
-				#print(f"New id: {update["update_id"]}")
 				if (last_update_id is None) or (update["update_id"] == last_update_id + 1):
 					last_update_id = update["update_id"]
-					#print(f"Last_id is changed to {last_update_id}")
-					#print(update)
+					logging.info(f"Received update ID: {last_update_id}")
 					use_logic(update)
 
 			time.sleep(1)
 	except KeyboardInterrupt:
-		print("\nBot has been stopped. Exiting gracefully...")
+		print("Bot has been stopped. Exiting gracefully...")
+		logging.info("Bot has been stopped by user.")
 	return {
 	'statusCode':200, 
 	'body':event,
-	'message':update
 	}

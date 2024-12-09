@@ -1,0 +1,49 @@
+2024-12-09 11:44:05,838 - INFO - Long polling has started...
+2024-12-09 11:44:05,838 - DEBUG - Starting new HTTPS connection (1): api.telegram.org:443
+2024-12-09 11:44:05,916 - INFO - Closing channel for endpoint ydb.serverless.yandexcloud.net:2135
+2024-12-09 11:44:11,370 - DEBUG - https://api.telegram.org:443 "GET /bot7332437137:AAES0BVmlNUQ0t619k7FIZX5oJsAdBV-KUs/getUpdates?timeout=5 HTTP/1.1" 200 23
+2024-12-09 11:44:12,382 - DEBUG - Starting new HTTPS connection (1): api.telegram.org:443
+2024-12-09 11:44:17,903 - DEBUG - https://api.telegram.org:443 "GET /bot7332437137:AAES0BVmlNUQ0t619k7FIZX5oJsAdBV-KUs/getUpdates?timeout=5 HTTP/1.1" 200 23
+2024-12-09 11:44:18,920 - DEBUG - Starting new HTTPS connection (1): api.telegram.org:443
+2024-12-09 11:44:24,384 - DEBUG - https://api.telegram.org:443 "GET /bot7332437137:AAES0BVmlNUQ0t619k7FIZX5oJsAdBV-KUs/getUpdates?timeout=5 HTTP/1.1" 200 23
+2024-12-09 11:44:25,387 - DEBUG - Starting new HTTPS connection (1): api.telegram.org:443
+2024-12-09 11:44:30,875 - INFO - Bot has been stopped by user.
+2024-12-09 11:49:50,567 - INFO - Long polling has started...
+2024-12-09 11:49:50,567 - DEBUG - Starting new HTTPS connection (1): api.telegram.org:443
+2024-12-09 11:49:50,614 - INFO - Closing channel for endpoint ydb.serverless.yandexcloud.net:2135
+2024-12-09 11:49:52,454 - DEBUG - https://api.telegram.org:443 "GET /bot7332437137:AAES0BVmlNUQ0t619k7FIZX5oJsAdBV-KUs/getUpdates?timeout=30 HTTP/1.1" 200 1410
+2024-12-09 11:49:52,454 - DEBUG - Received updates: {'ok': True, 'result': [{'update_id': 325958923, 'callback_query': {'id': '4041503189522973257', 'from': {'id': 940985788, 'is_bot': False, 'first_name': 'Artem', 'username': 'morisdave', 'language_code': 'en'}, 'message': {'message_id': 783, 'from': {'id': 7332437137, 'is_bot': True, 'first_name': 'Habiteer_local', 'username': 'habiteer_local_bot'}, 'chat': {'id': 940985788, 'first_name': 'Artem', 'username': 'morisdave', 'type': 'private'}, 'date': 1733733154, 'text': 'Главное меню\n\nВыберите один из пунктов ниже', 'entities': [{'offset': 0, 'length': 12, 'type': 'bold'}], 'reply_markup': {'inline_keyboard': [[{'text': 'Добавить привычку', 'callback_data': 'scr_2'}], [{'text': 'Мои привычки', 'callback_data': 'scr_3'}], [{'text': 'Подобрать привычку', 'callback_data': 'scr_4'}], [{'text': 'Статистика', 'callback_data': 'scr_plug'}], [{'text': 'Настройки', 'callback_data': 'scr_6'}]]}, 'has_protected_content': True}, 'chat_instance': '8667056629342611601', 'data': 'scr_6'}}]}
+2024-12-09 11:49:52,454 - INFO - Received update ID: 325958923
+2024-12-09 11:49:52,454 - DEBUG - Starting new HTTPS connection (1): api.telegram.org:443
+2024-12-09 11:49:52,970 - DEBUG - https://api.telegram.org:443 "POST /bot7332437137:AAES0BVmlNUQ0t619k7FIZX5oJsAdBV-KUs/sendMessage HTTP/1.1" 200 1218
+2024-12-09 11:49:52,970 - DEBUG - Starting new HTTPS connection (1): api.telegram.org:443
+2024-12-09 11:49:53,564 - DEBUG - https://api.telegram.org:443 "POST /bot7332437137:AAES0BVmlNUQ0t619k7FIZX5oJsAdBV-KUs/deleteMessage HTTP/1.1" 200 25
+2024-12-09 11:49:54,573 - DEBUG - Starting new HTTPS connection (1): api.telegram.org:443
+2024-12-09 11:49:55,080 - DEBUG - https://api.telegram.org:443 "GET /bot7332437137:AAES0BVmlNUQ0t619k7FIZX5oJsAdBV-KUs/getUpdates?offset=325958924&timeout=30 HTTP/1.1" 200 1458
+2024-12-09 11:49:55,080 - DEBUG - Received updates: {'ok': True, 'result': [{'update_id': 325958924, 'callback_query': {'id': '4041503189442166201', 'from': {'id': 940985788, 'is_bot': False, 'first_name': 'Artem', 'username': 'morisdave', 'language_code': 'en'}, 'message': {'message_id': 784, 'from': {'id': 7332437137, 'is_bot': True, 'first_name': 'Habiteer_local', 'username': 'habiteer_local_bot'}, 'chat': {'id': 940985788, 'first_name': 'Artem', 'username': 'morisdave', 'type': 'private'}, 'date': 1733734195, 'text': 'Настройки', 'entities': [{'offset': 0, 'length': 9, 'type': 'bold'}], 'reply_markup': {'inline_keyboard': [[{'text': 'Приостановить уведомления', 'callback_data': 'scr_plug'}], [{'text': 'Мотивационные сообщения', 'callback_data': 'scr_plug'}], [{'text': 'Отчетность', 'callback_data': 'scr_plug'}], [{'text': 'Отправить отзыв', 'callback_data': 'scr_plug'}], [{'text': 'Удалить все данные', 'callback_data': 'scr_plug'}], [{'text': 'Назад', 'callback_data': 'scr_1'}]]}, 'has_protected_content': True}, 'chat_instance': '8667056629342611601', 'data': 'scr_1'}}]}
+2024-12-09 11:49:55,080 - INFO - Received update ID: 325958924
+2024-12-09 11:49:55,096 - DEBUG - Starting new HTTPS connection (1): api.telegram.org:443
+2024-12-09 11:49:55,611 - DEBUG - https://api.telegram.org:443 "POST /bot7332437137:AAES0BVmlNUQ0t619k7FIZX5oJsAdBV-KUs/sendMessage HTTP/1.1" 200 1170
+2024-12-09 11:49:55,611 - DEBUG - Starting new HTTPS connection (1): api.telegram.org:443
+2024-12-09 11:49:56,096 - DEBUG - https://api.telegram.org:443 "POST /bot7332437137:AAES0BVmlNUQ0t619k7FIZX5oJsAdBV-KUs/deleteMessage HTTP/1.1" 200 25
+2024-12-09 11:49:57,123 - DEBUG - Starting new HTTPS connection (1): api.telegram.org:443
+2024-12-09 11:50:27,695 - INFO - Bot has been stopped by user.
+2024-12-09 11:52:21,650 - INFO - Long polling has started...
+2024-12-09 11:52:21,651 - DEBUG - Starting new HTTPS connection (1): api.telegram.org:443
+2024-12-09 11:52:21,704 - INFO - Closing channel for endpoint ydb.serverless.yandexcloud.net:2135
+2024-12-09 11:52:24,312 - DEBUG - https://api.telegram.org:443 "GET /bot7332437137:AAES0BVmlNUQ0t619k7FIZX5oJsAdBV-KUs/getUpdates?timeout=5 HTTP/1.1" 200 1410
+2024-12-09 11:52:24,314 - DEBUG - Received updates: {'ok': True, 'result': [{'update_id': 325958925, 'callback_query': {'id': '4041503186228397341', 'from': {'id': 940985788, 'is_bot': False, 'first_name': 'Artem', 'username': 'morisdave', 'language_code': 'en'}, 'message': {'message_id': 785, 'from': {'id': 7332437137, 'is_bot': True, 'first_name': 'Habiteer_local', 'username': 'habiteer_local_bot'}, 'chat': {'id': 940985788, 'first_name': 'Artem', 'username': 'morisdave', 'type': 'private'}, 'date': 1733734198, 'text': 'Главное меню\n\nВыберите один из пунктов ниже', 'entities': [{'offset': 0, 'length': 12, 'type': 'bold'}], 'reply_markup': {'inline_keyboard': [[{'text': 'Добавить привычку', 'callback_data': 'scr_2'}], [{'text': 'Мои привычки', 'callback_data': 'scr_3'}], [{'text': 'Подобрать привычку', 'callback_data': 'scr_4'}], [{'text': 'Статистика', 'callback_data': 'scr_plug'}], [{'text': 'Настройки', 'callback_data': 'scr_6'}]]}, 'has_protected_content': True}, 'chat_instance': '8667056629342611601', 'data': 'scr_6'}}]}
+2024-12-09 11:52:24,314 - INFO - Received update ID: 325958925
+2024-12-09 11:52:24,317 - DEBUG - Starting new HTTPS connection (1): api.telegram.org:443
+2024-12-09 11:52:24,844 - DEBUG - https://api.telegram.org:443 "POST /bot7332437137:AAES0BVmlNUQ0t619k7FIZX5oJsAdBV-KUs/sendMessage HTTP/1.1" 200 1218
+2024-12-09 11:52:24,844 - DEBUG - Starting new HTTPS connection (1): api.telegram.org:443
+2024-12-09 11:52:25,378 - DEBUG - https://api.telegram.org:443 "POST /bot7332437137:AAES0BVmlNUQ0t619k7FIZX5oJsAdBV-KUs/deleteMessage HTTP/1.1" 200 25
+2024-12-09 11:52:26,386 - DEBUG - Starting new HTTPS connection (1): api.telegram.org:443
+2024-12-09 11:52:26,867 - DEBUG - https://api.telegram.org:443 "GET /bot7332437137:AAES0BVmlNUQ0t619k7FIZX5oJsAdBV-KUs/getUpdates?offset=325958926&timeout=5 HTTP/1.1" 200 1458
+2024-12-09 11:52:26,867 - DEBUG - Received updates: {'ok': True, 'result': [{'update_id': 325958926, 'callback_query': {'id': '4041503187967867309', 'from': {'id': 940985788, 'is_bot': False, 'first_name': 'Artem', 'username': 'morisdave', 'language_code': 'en'}, 'message': {'message_id': 786, 'from': {'id': 7332437137, 'is_bot': True, 'first_name': 'Habiteer_local', 'username': 'habiteer_local_bot'}, 'chat': {'id': 940985788, 'first_name': 'Artem', 'username': 'morisdave', 'type': 'private'}, 'date': 1733734347, 'text': 'Настройки', 'entities': [{'offset': 0, 'length': 9, 'type': 'bold'}], 'reply_markup': {'inline_keyboard': [[{'text': 'Приостановить уведомления', 'callback_data': 'scr_plug'}], [{'text': 'Мотивационные сообщения', 'callback_data': 'scr_plug'}], [{'text': 'Отчетность', 'callback_data': 'scr_plug'}], [{'text': 'Отправить отзыв', 'callback_data': 'scr_plug'}], [{'text': 'Удалить все данные', 'callback_data': 'scr_plug'}], [{'text': 'Назад', 'callback_data': 'scr_1'}]]}, 'has_protected_content': True}, 'chat_instance': '8667056629342611601', 'data': 'scr_1'}}]}
+2024-12-09 11:52:26,867 - INFO - Received update ID: 325958926
+2024-12-09 11:52:26,875 - DEBUG - Starting new HTTPS connection (1): api.telegram.org:443
+2024-12-09 11:52:27,416 - DEBUG - https://api.telegram.org:443 "POST /bot7332437137:AAES0BVmlNUQ0t619k7FIZX5oJsAdBV-KUs/sendMessage HTTP/1.1" 200 1170
+2024-12-09 11:52:27,416 - DEBUG - Starting new HTTPS connection (1): api.telegram.org:443
+2024-12-09 11:52:28,053 - DEBUG - https://api.telegram.org:443 "POST /bot7332437137:AAES0BVmlNUQ0t619k7FIZX5oJsAdBV-KUs/deleteMessage HTTP/1.1" 200 25
+2024-12-09 11:52:28,512 - INFO - Bot has been stopped by user.
