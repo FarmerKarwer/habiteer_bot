@@ -137,21 +137,10 @@ def handle_callback_query(message):
 	data = {"user_id":user_id,"chat_id":chat_id, "message_id":message_id, "callback_data":callback_data, "text":None}
 	return data
 
-def handle_text_query(text, chat_id, message_id, user_id):
-
-	# Actual logic
-	if text=="/start":
-		switch_screen(replies['start'], chat_id, message_id, keyboard=get_button('start'))
-
-	## Saving data
-	data = {"user_id":user_id,"chat_id":chat_id, "message_id":message_id, "callback_data":None, "text":text}
-	return data
-
 def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_info):
 
 		previous_screen = get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")
 
-		# ATTENTION! Possible problems when a user types command '/start'
 		if previous_screen=='scr_2':
 			show_adding_habit(text, user_id, chat_id, message_id, timestamp)
 
@@ -235,8 +224,6 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 
 		elif previous_screen=='scr_44':
 			show_updated_habits_after_deletion(text, chat_id, message_id, user_id, message_info)
-		else:
-			handle_text_query(text, chat_id, message_id, user_id)
 
 def handle_text_message(message):
 	"""Handles the text message from the user."""
@@ -255,8 +242,12 @@ def handle_text_message(message):
 	"callback_data": None,
 	"text": text
 	}
-	
-	handle_text_input(text, chat_id, message_id, user_id, timestamp, message_info)
+
+	if text=="/start":
+		switch_screen(replies['start'], chat_id, message_id, keyboard=get_button('start'))
+	else:
+		handle_text_input(text, chat_id, message_id, user_id, timestamp, message_info)
+
 	return message_info
 
 def handle_unknown_message(message):
