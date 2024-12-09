@@ -85,7 +85,7 @@ def handle_callback_query(message):
 	# Actual logic
 	DEFAULT_CALLBACK_SCREENS = (
 		"scr_1", "scr_2", "scr_5", "scr_6", "scr_8",
-		"scr_9", "scr_10", "scr_12", "scr_13", "scr_15",
+		"scr_9", "scr_10", "scr_12", "scr_13", 
 		"scr_16", "scr_17", "scr_19", "scr_21", "scr_22",
 		"scr_23_1", "scr_23", "scr_25", "scr_26", "scr_27",
 		"scr_28", "scr_30", "scr_31", "scr_32", "scr_33",
@@ -98,6 +98,7 @@ def handle_callback_query(message):
 	"scr_4": lambda: show_aspirations(chat_id, message_id),
 	"scr_11": lambda: show_aspiration_confirmation(chat_id, message_id, user_id, callback_data=callback_data),
 	"scr_12_1": lambda: show_ai_recommended_habits(user_id, chat_id, message_id),
+	"scr_15": lambda: show_proposed_habits(user_id, chat_id, message_id),
 	"scr_18": lambda: show_picked_habits(user_id, chat_id, message_id, timestamp)
 	}
 
@@ -508,6 +509,12 @@ def show_effectiveness_evaluation(text, chat_id, message_id, user_id, message_in
 		switch_screen(reply, chat_id, message_id, 
 					delete_previous=False, keyboard=get_button('scr_13'))
 		message_info["callback_data"]="scr_14"
+
+def show_proposed_habits(user_id, chat_id, message_id):
+	top_habits = get_cached_data(CACHE_PICKHABIT_FILEPATH, user_id, chat_id, property="habits")
+	top_habits_str = format_numbered_list(top_habits)
+	reply = replies['15'].replace("[habits]", top_habits_str)
+	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_15'))
 
 def show_extend_behavior_options(text, chat_id, message_id, user_id, message_info):
 	try:
