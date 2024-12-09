@@ -11,19 +11,19 @@ URL = f"https://api.telegram.org/bot{TG_TOKEN}/"
 
 
 # Sending Messages
-def send_text_message(reply, chat_id, disable_notification=None, 
+def send_text_message(reply, chat_id, parse_mode='Markdown', disable_notification=None, 
     protect_content=None, reply_parameters=None, keyboard=None):
 	data = {
 		'text':reply,
 		'chat_id':chat_id,
-		'parse_mode':'Markdown',
+		'parse_mode':parse_mode,
 		'disable_notification':disable_notification,
 		'protect_content':protect_content,
 		'reply_parameters':reply_parameters,
 		'reply_markup': keyboard
 	}
 	url = URL+"sendMessage"
-	requests.post(url, data=data)
+	response = requests.post(url, data=data)
 
 def delete_message(message_id, chat_id):
 	data = {

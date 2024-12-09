@@ -576,6 +576,7 @@ def switch_screen(
     chat_id: int,
     message_id: int,
     delete_previous: bool = True,
+    parse_mode: str = 'Markdown',
     disable_notification: Optional[bool] = None,
     protect_content: bool = True,
     reply_parameters: Optional[Dict[str, Any]] = None,
@@ -585,6 +586,7 @@ def switch_screen(
     tg_methods.send_text_message(
         reply,
         chat_id,
+        parse_mode=parse_mode,
         disable_notification=disable_notification,
         protect_content=protect_content,
         reply_parameters=reply_parameters,
