@@ -4,14 +4,7 @@ import random
 from typing import Any, Callable, Dict, List, Optional
 
 import tg_methods
-from database import (
-	add_habit,
-	delete_habit,
-	delete_user_data,
-	generate_unique_uuid,
-	update_habit,
-	view_habits,
-)
+from database import DatabaseClient
 from exceptions import (
 	ValueOutOfRangeError,
 	ListTooShortError,
@@ -54,6 +47,7 @@ callback_predefined_habits = (
 	"hab_6", "hab_7", "hab_8", "hab_9", "hab_10"
 )
 
+db = DatabaseClient()
 
 def use_logic(message):
 	if button_is_pressed(message):
@@ -268,12 +262,12 @@ def handle_unknown_message(message):
 
 
 def show_adding_habit(text, user_id, chat_id, message_id, timestamp):
-	add_habit(habit=text, creation_datetime=timestamp, user_id=user_id)
+	db.add_habit(habit=text, creation_datetime=timestamp, user_id=user_id)
 	switch_screen(replies['7'], chat_id, message_id, 
 					delete_previous=False, keyboard=get_button('scr_7'))
 
 def show_user_habits(user_id, chat_id, message_id):
-	user_habits = view_habits(user_id)
+	user_habits = db.view_habits(user_id)
 	no_habits = len(user_habits)==0
 
 	if no_habits:
@@ -286,7 +280,7 @@ def show_user_habits(user_id, chat_id, message_id):
 		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_3'))
 
 def show_editing_habit(text, user_id, chat_id, message_id, message_info):
-	habits = view_habits(user_id)
+	habits = db.view_habits(user_id)
 	try:
 		habit_idx = int(text)-1
 		habit_name = habits[habit_idx].get("name")
@@ -340,8 +334,8 @@ def show_picked_habits(user_id, chat_id, message_id, timestamp):
 	habits = get_cached_data(CACHE_PICKHABIT_FILEPATH, user_id, chat_id, property="habits")
 	habits_str = format_numbered_list(habits)
 	for habit in habits:
-		unique_id = generate_unique_uuid()
-		add_habit(habit=habit, creation_datetime=timestamp, user_id=user_id, unique_id=unique_id)	
+		unique_id = db.generate_unique_uuid()
+		db.add_habit(habit=habit, creation_datetime=timestamp, user_id=user_id, unique_id=unique_id)	
 	delete_user_records(CACHE_PICKHABIT_FILEPATH, user_id)
 	reply = replies['18']+f"\n\nСохраненные привычки:\n{habits_str}"
 
@@ -359,8 +353,8 @@ def show_picked_predefined_habits(text, chat_id, message_id, user_id, timestamp,
 		
 		# Save to DB
 		for habit in selected_habits:
-			unique_id = generate_unique_uuid()
-			add_habit(habit=habit, creation_datetime=timestamp, user_id=user_id, unique_id=unique_id)
+			unique_id = db.generate_unique_uuid()
+			db.add_habit(habit=habit, creation_datetime=timestamp, user_id=user_id, unique_id=unique_id)
 		delete_user_records(CACHE_PICKHABIT_FILEPATH, user_id)
 
 		reply = replies['18']+f"\n\nСохраненные привычки:\n{filtered_habits_str}"
@@ -528,10 +522,10 @@ def show_extend_behavior_options(text, chat_id, message_id, user_id, message_inf
 def show_updated_habitname(text, chat_id, message_id, user_id, timestamp):
 	new_name = text
 	habit_idx = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_number")
-	unique_id = view_habits(user_id)[habit_idx].get("id")
-	update_habit(unique_id, "name", f"'{new_name}'")
-	update_habit(unique_id, "last_updated", f"CAST('{timestamp}'AS Timestamp)")
-	updated_habits = view_habits(user_id)
+	unique_id = db.view_habits(user_id)[habit_idx].get("id")
+	db.update_habit(unique_id, "name", f"'{new_name}'")
+	db.update_habit(unique_id, "last_updated", f"CAST('{timestamp}'AS Timestamp)")
+	updated_habits = db.view_habits(user_id)
 	habit_names = [item['name'] for item in updated_habits]
 	habit_names_str = format_numbered_list(habit_names)
 	reply = replies['20'].replace("[updated_habits]", habit_names_str)
@@ -541,11 +535,11 @@ def show_updated_habitname(text, chat_id, message_id, user_id, timestamp):
 def show_updated_habits_after_deletion(text, chat_id, message_id, user_id, message_info):
 	try:
 		entered_numbers = parse_numbers(text)
-		user_habits = view_habits(user_id)
+		user_habits = db.view_habits(user_id)
 		for idx in entered_numbers:
 			unique_id = user_habits[idx-1].get("id")
-			delete_habit(unique_id)
-		updated_user_habits = view_habits(user_id)
+			db.delete_habit(unique_id)
+		updated_user_habits = db.view_habits(user_id)
 
 		no_habits_left = len(updated_user_habits)==0
 		if no_habits_left:
