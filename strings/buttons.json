@@ -471,9 +471,53 @@
   "scr_13":{
     "inline_keyboard": [
       [
+          {
+            "text":"1",
+            "callback_data":"suitability_1"
+          },
+          {
+            "text":"2",
+            "callback_data":"suitability_2"
+          },
+          {
+            "text":"3",
+            "callback_data":"suitability_3"
+          },
+          {
+            "text":"4",
+            "callback_data":"suitability_4"
+          },
+          {
+            "text":"5",
+            "callback_data":"suitability_5"
+          }
+      ],
+        [
+          {
+            "text":"6",
+            "callback_data":"suitability_6"
+          },
+          {
+            "text":"7",
+            "callback_data":"suitability_7"
+          },
+          {
+            "text":"8",
+            "callback_data":"suitability_8"
+          },
+          {
+            "text":"9",
+            "callback_data":"suitability_9"
+          },
+          {
+            "text":"10",
+            "callback_data":"suitability_10"
+          }
+      ], 
+      [
         {
           "text": "Назад",
-          "callback_data": "scr_12"
+          "callback_data": "scr_12_proxy_[n]"
         }
       ],
       [
