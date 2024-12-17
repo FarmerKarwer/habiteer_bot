@@ -255,6 +255,8 @@ def handle_text_message(message):
 	"text": text
 	}
 
+	tg_methods.delete_message(message_id-1, chat_id)
+
 	if text=="/start":
 		switch_screen(replies['start'], chat_id, message_id, keyboard=get_button('start'))
 	else:
@@ -280,8 +282,8 @@ def handle_unknown_message(message):
 
 def show_adding_habit(text, user_id, chat_id, message_id, timestamp):
 	db.add_habit(habit=text, creation_datetime=timestamp, user_id=user_id)
-	switch_screen(replies['7'], chat_id, message_id, 
-					delete_previous=False, keyboard=get_button('scr_7'))
+	reply = replies['7'].replace("[habit]", text)
+	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_7'))
 
 def show_user_habits(user_id, chat_id, message_id):
 	user_habits = db.view_habits(user_id)
@@ -423,8 +425,6 @@ def show_magic_wanding(text, chat_id, message_id, user_id, message_info):
 		main_message = replies['12_proxy']['main_message'].replace('[behaviors]', behaviors_str)
 		praise = random.choice(replies['12_proxy']['praises'])
 		reply = main_message + praise
-		last_message_id = message_info["message_id"]-1
-		tg_methods.delete_message(last_message_id, chat_id)
 		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_12_proxy_1'))
 		message_info["callback_data"]="scr_12_proxy_1"
 
@@ -441,8 +441,6 @@ def show_magic_wanding(text, chat_id, message_id, user_id, message_info):
 			keyboard = json.loads(get_button('scr_12_proxy_5_less'))
 			keyboard["inline_keyboard"][0][0]["callback_data"] = keyboard["inline_keyboard"][0][0]["callback_data"].replace("[n]", str(entered_options_cnt-1))
 			keyboard = json.dumps(keyboard)
-			last_message_id = message_info["message_id"]-1
-			tg_methods.delete_message(last_message_id, chat_id)
 			switch_screen(reply, chat_id, message_id, keyboard=keyboard)
 			message_info["callback_data"]=f"scr_12_proxy_{entered_options_cnt}"
 
@@ -454,11 +452,8 @@ def show_magic_wanding(text, chat_id, message_id, user_id, message_info):
 			praise = replies['12_proxy']['5_options']
 			reply = main_message + praise
 			keyboard = json.loads(get_button('scr_12_proxy_5_more'))
-			print(keyboard["inline_keyboard"][1])
 			keyboard["inline_keyboard"][1][0]["callback_data"] = keyboard["inline_keyboard"][1][0]["callback_data"].replace("[n]", str(entered_options_cnt-1))
 			keyboard = json.dumps(keyboard)
-			last_message_id = message_info["message_id"]-1
-			tg_methods.delete_message(last_message_id, chat_id)
 			switch_screen(reply, chat_id, message_id, keyboard=keyboard)
 			message_info["callback_data"]=f"scr_12_proxy_{entered_options_cnt}" # change to scr_12_proxy_n
 
@@ -472,8 +467,6 @@ def show_magic_wanding(text, chat_id, message_id, user_id, message_info):
 			keyboard = json.loads(get_button('scr_12_proxy_5_more'))
 			keyboard["inline_keyboard"][1][0]["callback_data"] = keyboard["inline_keyboard"][1][0]["callback_data"].replace("[n]", str(entered_options_cnt-1))
 			keyboard = json.dumps(keyboard)
-			last_message_id = message_info["message_id"]-1
-			tg_methods.delete_message(last_message_id, chat_id)
 			switch_screen(reply, chat_id, message_id, keyboard=keyboard)
 			message_info["callback_data"]=f"scr_12_proxy_{entered_options_cnt}" # change to scr_12_proxy_n
 
@@ -644,8 +637,16 @@ def show_updated_habitname(text, chat_id, message_id, user_id, timestamp):
 def show_updated_habits_after_deletion(text, chat_id, message_id, user_id, message_info):
 	try:
 		entered_numbers = parse_numbers(text)
+		print(entered_numbers)
 		user_habits = db.view_habits(user_id)
+		if len(entered_numbers)>len(user_habits):
+			raise IndexError
+		if len(entered_numbers)==1:
+			if entered_numbers[0]==0:
+				raise ValueOutOfRangeError
 		for idx in entered_numbers:
+			print(idx-1)
+			print(user_habits[idx-1])
 			unique_id = user_habits[idx-1].get("id")
 			db.delete_habit(unique_id)
 		updated_user_habits = db.view_habits(user_id)
@@ -669,6 +670,14 @@ def show_updated_habits_after_deletion(text, chat_id, message_id, user_id, messa
 
 	except ValueError:
 		reply = "Введенный текст должен содержать привычки, введеные через запятую или через тире. Возможно, неверно указан диапазон. Попробуйте ввести еще раз."
+		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_44'))
+		message_info["callback_data"]="scr_44"
+	except IndexError:
+		reply = "Неверно указан диапазон. Число запрашиваемых для удаления привычек больше, чем число самих привычек. Попробуйте ввести еще раз."
+		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_44'))
+		message_info["callback_data"]="scr_44"
+	except ValueOutOfRangeError:
+		reply = "Номер привычки не может быть нулевым. Попробуйте ввести еще раз."
 		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_44'))
 		message_info["callback_data"]="scr_44"
 
