@@ -414,6 +414,60 @@
       ]
     ]
   },
+  "scr_12_proxy_1":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_12"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_12_proxy_5_less":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_12_proxy_[n]"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_12_proxy_5_more":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Подтвердить выбор",
+          "callback_data": "scr_13"
+        }
+      ],
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_12_proxy_[n]"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
   "scr_13":{
     "inline_keyboard": [
       [

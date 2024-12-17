@@ -1,6 +1,7 @@
 import json
 import os
 import random
+import re
 from typing import Any, Callable, Dict, List, Optional
 
 import tg_methods
@@ -71,6 +72,9 @@ def handle_callback_query(message):
 	timestamp = unix_to_timestamp(unix_timestamp)
 
 	previous_screen = get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")
+	if previous_screen:
+		is_previous_screen_in_magic_wanding = bool(re.match(r"^scr_12_proxy_\d+$", previous_screen))
+	is_callback_in_magic_wanding = bool(re.match(r"^scr_12_proxy_\d+$", callback_data))
 
 
 	def show_callback_reply(screen_id, delete_previous=True):
@@ -98,22 +102,25 @@ def handle_callback_query(message):
 	}
 
 	SPECIAL_CALLBACK_SCREENS = SPECIAL_CALLBACK_HANDLERS.keys()
-
-	if callback_data in DEFAULT_CALLBACK_SCREENS:
-		screen_id = callback_data.split('_')[1]
-		if screen_id in ("8", "13", "21", "44"):
-			show_callback_reply(screen_id, delete_previous=False)
-		else:
-			show_callback_reply(screen_id)
 	
-	elif callback_data in SPECIAL_CALLBACK_SCREENS:
+	if callback_data in SPECIAL_CALLBACK_SCREENS:
 		action = SPECIAL_CALLBACK_HANDLERS.get(callback_data)
 		action()
 
 	elif callback_data in callback_predefined_habits:
 		show_predefined_habits(callback_data, user_id, chat_id, message_id)
 
+	elif is_callback_in_magic_wanding:
+		show_magic_wanding_return_back(callback_data, user_id, chat_id, message_id)
+
+	elif previous_screen is not None and is_previous_screen_in_magic_wanding and callback_data=="scr_12":
+		behavior_options = None
+		update_user_value(CACHE_PICKHABIT_FILEPATH, user_id, "behavior_options", behavior_options)
+		switch_screen(replies['12'], chat_id, message_id, keyboard=get_button('scr_12'))
+
 	elif previous_screen in callback_predefined_habits and callback_data == "scr_12":
+		behavior_options = None
+		update_user_value(CACHE_PICKHABIT_FILEPATH, user_id, "behavior_options", behavior_options)
 		switch_screen(replies['12'], chat_id, message_id, keyboard=get_button('9_scr_12'))
 
 	elif previous_screen=="scr_9" and callback_data=="scr_12":
@@ -125,8 +132,16 @@ def handle_callback_query(message):
 	elif previous_screen=="scr_16" and callback_data=="scr_13":
 		switch_screen(replies['13'], chat_id, message_id, keyboard=get_button('16_scr_13'))
 
+	elif callback_data in DEFAULT_CALLBACK_SCREENS:
+		screen_id = callback_data.split('_')[1]
+		if screen_id in ("8", "13", "21", "44"):
+			show_callback_reply(screen_id, delete_previous=False)
+		else:
+			show_callback_reply(screen_id)
+
 	else:
-		tg_methods.send_text_message("Error: unknown callback data", chat_id, protect_content=True)
+		print(callback_data)
+		tg_methods.send_text_message(f"Error: unknown callback data", chat_id, protect_content=True)
 
 	# Saving data
 	data = {"user_id":user_id,"chat_id":chat_id, "message_id":message_id, "callback_data":callback_data, "text":None}
@@ -135,6 +150,8 @@ def handle_callback_query(message):
 def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_info):
 
 		previous_screen = get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")
+
+		is_previous_screen_in_magic_wanding = bool(re.match(r"^scr_12_proxy_\d+$", previous_screen))
 
 		if previous_screen=='scr_2':
 			show_adding_habit(text, user_id, chat_id, message_id, timestamp)
@@ -152,7 +169,7 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 		elif previous_screen=='scr_10':
 			show_aspiration_confirmation(chat_id, message_id, user_id, text=text)
 			
-		elif previous_screen=='scr_12':
+		elif previous_screen=='scr_12' or is_previous_screen_in_magic_wanding:
 			show_magic_wanding(text, chat_id, message_id, user_id, message_info)
 
 		elif previous_screen=='scr_13':
@@ -391,32 +408,124 @@ def show_aspiration_confirmation(chat_id, message_id, user_id, callback_data=Non
 		save_data_to_cache(CACHE_PICKHABIT_FILEPATH, new_data)
 
 		reply = replies['11'].replace("[aspiration]", text)
-		switch_screen(reply, chat_id, message_id, 
-						delete_previous=False, keyboard=get_button('scr_11'))
+		tg_methods.delete_message(message_id-1, chat_id)
+		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_11'))
 	else:
 		print("It is impossible to switch screen because the message does not contain text or callback")
 
 def show_magic_wanding(text, chat_id, message_id, user_id, message_info):
-	try:
-		behaviors = extract_numbered_items(text)
-		check_minimum_length(behaviors)
+	# TO-DO After returning back to a screen, I should remove the old behaviours
+	behavior_options = get_cached_data(CACHE_PICKHABIT_FILEPATH, user_id, chat_id, property="behavior_options")
+	if behavior_options is None:
+		behaviors = [text]
+		behaviors_str = format_numbered_list(behaviors)
 		update_user_value(CACHE_PICKHABIT_FILEPATH, user_id, "behavior_options", behaviors)
+		main_message = replies['12_proxy']['main_message'].replace('[behaviors]', behaviors_str)
+		praise = random.choice(replies['12_proxy']['praises'])
+		reply = main_message + praise
+		last_message_id = message_info["message_id"]-1
+		tg_methods.delete_message(last_message_id, chat_id)
+		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_12_proxy_1'))
+		message_info["callback_data"]="scr_12_proxy_1"
+
+	else:
+		entered_options_cnt = len(behavior_options)+1
+		print(entered_options_cnt)
+		if entered_options_cnt<5:
+			behavior_options.append(text)
+			behaviors_str = format_numbered_list(behavior_options)
+			update_user_value(CACHE_PICKHABIT_FILEPATH, user_id, "behavior_options", behavior_options)
+			main_message = replies['12_proxy']['main_message'].replace('[behaviors]', behaviors_str)
+			praise = random.choice(replies['12_proxy']['praises'])
+			reply = main_message + praise
+			keyboard = json.loads(get_button('scr_12_proxy_5_less'))
+			keyboard["inline_keyboard"][0][0]["callback_data"] = keyboard["inline_keyboard"][0][0]["callback_data"].replace("[n]", str(entered_options_cnt-1))
+			keyboard = json.dumps(keyboard)
+			last_message_id = message_info["message_id"]-1
+			tg_methods.delete_message(last_message_id, chat_id)
+			switch_screen(reply, chat_id, message_id, keyboard=keyboard)
+			message_info["callback_data"]=f"scr_12_proxy_{entered_options_cnt}"
+
+		elif entered_options_cnt==5:
+			behavior_options.append(text)
+			behaviors_str = format_numbered_list(behavior_options)
+			update_user_value(CACHE_PICKHABIT_FILEPATH, user_id, "behavior_options", behavior_options)
+			main_message = replies['12_proxy']['main_message'].replace('[behaviors]', behaviors_str)
+			praise = replies['12_proxy']['5_options']
+			reply = main_message + praise
+			keyboard = json.loads(get_button('scr_12_proxy_5_more'))
+			print(keyboard["inline_keyboard"][1])
+			keyboard["inline_keyboard"][1][0]["callback_data"] = keyboard["inline_keyboard"][1][0]["callback_data"].replace("[n]", str(entered_options_cnt-1))
+			keyboard = json.dumps(keyboard)
+			last_message_id = message_info["message_id"]-1
+			tg_methods.delete_message(last_message_id, chat_id)
+			switch_screen(reply, chat_id, message_id, keyboard=keyboard)
+			message_info["callback_data"]=f"scr_12_proxy_{entered_options_cnt}" # change to scr_12_proxy_n
+
+		elif entered_options_cnt>5:
+			behavior_options.append(text)
+			behaviors_str = format_numbered_list(behavior_options)
+			update_user_value(CACHE_PICKHABIT_FILEPATH, user_id, "behavior_options", behavior_options)
+			main_message = replies['12_proxy']['main_message'].replace('[behaviors]', behaviors_str)
+			praise = random.choice(replies['12_proxy']['praises'])
+			reply = main_message + praise
+			keyboard = json.loads(get_button('scr_12_proxy_5_more'))
+			keyboard["inline_keyboard"][1][0]["callback_data"] = keyboard["inline_keyboard"][1][0]["callback_data"].replace("[n]", str(entered_options_cnt-1))
+			keyboard = json.dumps(keyboard)
+			last_message_id = message_info["message_id"]-1
+			tg_methods.delete_message(last_message_id, chat_id)
+			switch_screen(reply, chat_id, message_id, keyboard=keyboard)
+			message_info["callback_data"]=f"scr_12_proxy_{entered_options_cnt}" # change to scr_12_proxy_n
+
+		else:
+			reply = "Что-то пошло не так"
+			switch_screen(reply, chat_id, message_id)
+
+def show_magic_wanding_return_back(callback_data, user_id, chat_id, message_id):
+	print(callback_data)
+	# Updating behavior options to allow changing an option
+	behavior_options = get_cached_data(CACHE_PICKHABIT_FILEPATH, user_id, chat_id, property="behavior_options")
+	behavior_options.pop()
+	behaviors_str = format_numbered_list(behavior_options)
+	update_user_value(CACHE_PICKHABIT_FILEPATH, user_id, "behavior_options", behavior_options)
+	# Updating message
+	main_message = replies['12_proxy']['main_message'].replace('[behaviors]', behaviors_str)
+	praise = random.choice(replies['12_proxy']['praises'])
+	reply = main_message + praise
+	if len(behavior_options)>=5:
+		keyboard = json.loads(get_button('scr_12_proxy_5_more'))	
+		keyboard["inline_keyboard"][1][0]["callback_data"] = keyboard["inline_keyboard"][1][0]["callback_data"].replace("[n]", str(len(behavior_options)))
+		keyboard = json.dumps(keyboard)
+	elif len(behavior_options)==1:
+		keyboard = get_button('scr_12_proxy_1')
+	elif 1<len(behavior_options)<5:
+		keyboard = json.loads(get_button('scr_12_proxy_5_less'))
+		keyboard["inline_keyboard"][0][0]["callback_data"] = keyboard["inline_keyboard"][0][0]["callback_data"].replace("[n]", str(len(behavior_options)))
+		keyboard = json.dumps(keyboard)
+	switch_screen(reply, chat_id, message_id, keyboard=keyboard)
+
+
+# def show_magic_wanding(text, chat_id, message_id, user_id, message_info):
+# 	try:
+# 		behaviors = extract_numbered_items(text)
+# 		check_minimum_length(behaviors)
+# 		update_user_value(CACHE_PICKHABIT_FILEPATH, user_id, "behavior_options", behaviors)
 		
-		switch_screen(replies['13'], chat_id, message_id, 
-					delete_previous=False, keyboard=get_button('scr_13'))
-		message_info["callback_data"]="scr_13"
+# 		switch_screen(replies['13'], chat_id, message_id, 
+# 					delete_previous=False, keyboard=get_button('scr_13'))
+# 		message_info["callback_data"]="scr_13"
 
-	except IndexError:
-		reply = "Данные были введены некорректно.\n\nПожалуйста, введите в формате:\n 1. <поведение1>\n 2. <поведение2>\n..."
-		switch_screen(reply, chat_id, message_id, 
-					delete_previous=False, keyboard=get_button('scr_13'))
-		message_info["callback_data"]="scr_12"
+# 	except IndexError:
+# 		reply = "Данные были введены некорректно.\n\nПожалуйста, введите в формате:\n 1. <поведение1>\n 2. <поведение2>\n..."
+# 		switch_screen(reply, chat_id, message_id, 
+# 					delete_previous=False, keyboard=get_button('scr_13'))
+# 		message_info["callback_data"]="scr_12"
 
-	except ListTooShortError:
-		reply = "Вариантов поведения должно быть, как минимум, 5.\n\nПожалуйста, введите в формате:\n 1. <поведение1>\n 2. <поведение2>\n..."
-		switch_screen(reply, chat_id, message_id, 
-					delete_previous=False, keyboard=get_button('scr_13'))
-		message_info["callback_data"]="scr_12"
+# 	except ListTooShortError:
+# 		reply = "Вариантов поведения должно быть, как минимум, 5.\n\nПожалуйста, введите в формате:\n 1. <поведение1>\n 2. <поведение2>\n..."
+# 		switch_screen(reply, chat_id, message_id, 
+# 					delete_previous=False, keyboard=get_button('scr_13'))
+# 		message_info["callback_data"]="scr_12"
 
 def show_suitability_evaluation(text, chat_id, message_id, user_id, message_info):
 	try:
