@@ -53,6 +53,11 @@ callback_suitability_evaluation = (
 	"suitability_6", "suitability_7", "suitability_8", "suitability_9", "suitability_10"
 )
 
+callback_effectiveness_evaluation = (
+	"effectiveness_1", "effectiveness_2", "effectiveness_3", "effectiveness_4", "effectiveness_5", 
+	"effectiveness_6", "effectiveness_7", "effectiveness_8", "effectiveness_9", "effectiveness_10"
+)
+
 db = DatabaseClient()
 
 def use_logic(message):
@@ -81,6 +86,7 @@ def handle_callback_query(message):
 		is_previous_screen_in_magic_wanding = bool(re.match(r"^scr_12_proxy_\d+$", previous_screen))
 	is_callback_in_magic_wanding = bool(re.match(r"^scr_12_proxy_\d+$", callback_data))
 	is_callback_in_suitability_eval = bool(re.match(r"^scr_13_proxy_\d+$", callback_data))
+	is_callback_in_effectiveness_eval = bool(re.match(r"^scr_14_proxy_\d+$", callback_data))
 
 	def show_callback_reply(screen_id, delete_previous=True):
 		switch_screen(replies[screen_id], chat_id, message_id, delete_previous=delete_previous,
@@ -102,7 +108,8 @@ def handle_callback_query(message):
 	"scr_4": lambda: show_aspirations(chat_id, message_id),
 	"scr_11": lambda: show_aspiration_confirmation(chat_id, message_id, user_id, callback_data=callback_data),
 	"scr_12_1": lambda: show_ai_recommended_habits(user_id, chat_id, message_id),
-	"scr_13": lambda: show_suitability_evaluation(callback_data, user_id, chat_id, message_id),
+	"scr_13": lambda: show_evaluation(callback_data, user_id, chat_id, message_id, type="suitability"),
+	"scr_14": lambda: show_evaluation(callback_data, user_id, chat_id, message_id, type="effectiveness"),
 	"scr_15": lambda: show_proposed_habits(user_id, chat_id, message_id),
 	"scr_18": lambda: show_picked_habits(user_id, chat_id, message_id, timestamp)
 	}
@@ -120,7 +127,10 @@ def handle_callback_query(message):
 		show_magic_wanding_return_back(callback_data, user_id, chat_id, message_id)
 
 	elif callback_data in callback_suitability_evaluation or is_callback_in_suitability_eval:
-		show_suitability_evaluation(callback_data, user_id, chat_id, message_id)
+		show_evaluation(callback_data, user_id, chat_id, message_id, type="suitability")
+
+	elif callback_data in callback_effectiveness_evaluation or is_callback_in_effectiveness_eval:
+		show_evaluation(callback_data, user_id, chat_id, message_id, type="effectiveness")
 
 	elif previous_screen is not None and is_previous_screen_in_magic_wanding and callback_data=="scr_12":
 		behavior_options = None
@@ -131,6 +141,11 @@ def handle_callback_query(message):
 		behavior_options = None
 		update_user_value(CACHE_PICKHABIT_FILEPATH, user_id, "behavior_options", behavior_options)
 		switch_screen(replies['12'], chat_id, message_id, keyboard=get_button('9_scr_12'))
+
+	elif previous_screen == "scr_12_1" and callback_data == "scr_12":
+		behavior_options = None
+		update_user_value(CACHE_PICKHABIT_FILEPATH, user_id, "behavior_options", behavior_options)
+		switch_screen(replies['12'], chat_id, message_id, keyboard=get_button('scr_12'))
 
 	elif previous_screen=="scr_9" and callback_data=="scr_12":
 		switch_screen(replies['12'], chat_id, message_id, keyboard=get_button('9_scr_12'))
@@ -181,11 +196,8 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 		elif previous_screen=='scr_12' or is_previous_screen_in_magic_wanding:
 			show_magic_wanding(text, chat_id, message_id, user_id, message_info)
 
-		elif previous_screen=='scr_14':
-			show_effectiveness_evaluation(text, chat_id, message_id, user_id, message_info)
-
 		elif previous_screen=='scr_17': 
-			show_extend_behavior_options(text, chat_id, message_id, user_id, message_info)
+			show_magic_wanding(text, chat_id, message_id, user_id, message_info)
 
 		elif previous_screen=='scr_19':
 			show_updated_habitname(text, chat_id, message_id, user_id, timestamp)
@@ -461,7 +473,7 @@ def show_magic_wanding(text, chat_id, message_id, user_id, message_info):
 			keyboard["inline_keyboard"][1][0]["callback_data"] = keyboard["inline_keyboard"][1][0]["callback_data"].replace("[n]", str(entered_options_cnt-1))
 			keyboard = json.dumps(keyboard)
 			switch_screen(reply, chat_id, message_id, keyboard=keyboard)
-			message_info["callback_data"]=f"scr_12_proxy_{entered_options_cnt}" # change to scr_12_proxy_n
+			message_info["callback_data"]=f"scr_12_proxy_{entered_options_cnt}"
 
 		elif entered_options_cnt>5:
 			behavior_options.append(text)
@@ -474,7 +486,7 @@ def show_magic_wanding(text, chat_id, message_id, user_id, message_info):
 			keyboard["inline_keyboard"][1][0]["callback_data"] = keyboard["inline_keyboard"][1][0]["callback_data"].replace("[n]", str(entered_options_cnt-1))
 			keyboard = json.dumps(keyboard)
 			switch_screen(reply, chat_id, message_id, keyboard=keyboard)
-			message_info["callback_data"]=f"scr_12_proxy_{entered_options_cnt}" # change to scr_12_proxy_n
+			message_info["callback_data"]=f"scr_12_proxy_{entered_options_cnt}"
 
 		else:
 			reply = "Что-то пошло не так"
@@ -527,70 +539,94 @@ def show_magic_wanding_return_back(callback_data, user_id, chat_id, message_id):
 # 					delete_previous=False, keyboard=get_button('scr_13'))
 # 		message_info["callback_data"]="scr_12"
 
-def show_suitability_evaluation(callback_data, user_id, chat_id, message_id):
-	behavior_options = get_cached_data(CACHE_PICKHABIT_FILEPATH, user_id, chat_id, property="behavior_options")
-	suitability_ratings = get_cached_data(CACHE_PICKHABIT_FILEPATH, user_id, chat_id, property="suitability")
-	is_callback_in_suitability_eval = bool(re.match(r"^scr_13_proxy_\d+$", callback_data))
-	print(is_callback_in_suitability_eval)
-	print(callback_data)
-	if is_callback_in_suitability_eval and callback_data not in "scr_13_proxy_1":
-		suitability_ratings.pop()
-		update_user_value(CACHE_PICKHABIT_FILEPATH, user_id, "suitability", suitability_ratings)
-		print(suitability_ratings)
-	elif callback_data in "scr_13_proxy_1":
-		suitability_ratings = None
-		update_user_value(CACHE_PICKHABIT_FILEPATH, user_id, "suitability", suitability_ratings)
+def show_evaluation(callback_data, user_id, chat_id, message_id, type):
+	if type=="suitability":
+		pattern = r"^scr_13_proxy_\d+$"
+		back_to_first_scr = "scr_13_proxy_1"
+		scr_number = '13'
+		scr_next = '14'
+		prev_keyboard_name = 'scr_12'
+		keyboard_name = 'scr_13'
+		next_keyboard_name = 'scr_14'
+	elif type=="effectiveness":
+		pattern = r"^scr_14_proxy_\d+$"
+		back_to_first_scr = "scr_14_proxy_1"
+		scr_number = '14'
+		scr_next = '15'
+		prev_keyboard_name = 'scr_13'
+		keyboard_name = 'scr_14'
+		next_keyboard_name = 'scr_15'
 
-	if suitability_ratings is None:
+
+	behavior_options = get_cached_data(CACHE_PICKHABIT_FILEPATH, user_id, chat_id, property="behavior_options")
+	ratings = get_cached_data(CACHE_PICKHABIT_FILEPATH, user_id, chat_id, property=type)
+	is_callback_in_type_eval = bool(re.match(pattern, callback_data))
+
+	if is_callback_in_type_eval and callback_data not in back_to_first_scr:
+		ratings.pop()
+		update_user_value(CACHE_PICKHABIT_FILEPATH, user_id, type, ratings)
+
+	elif callback_data in back_to_first_scr:
+		ratings = None
+		update_user_value(CACHE_PICKHABIT_FILEPATH, user_id, type, ratings)
+
+	if ratings is None:
 		behavior_idx = 0
 		cur_progress = 1
-		if "suitability" in callback_data:
+		if type in callback_data:
 			grade = int(callback_data.split('_')[-1])
-			update_user_value(CACHE_PICKHABIT_FILEPATH, user_id, "suitability", [grade])
+			update_user_value(CACHE_PICKHABIT_FILEPATH, user_id, type, [grade])
 			behavior_idx = 1
 			cur_progress = 2
 		behavior_str = behavior_options[behavior_idx].capitalize()
-		print(behavior_idx)
-		print(len(behavior_options))
-		print(behavior_str)
-		first_message = replies['13']['first_message']
+		first_message = replies[scr_number]['first_message']
 		progress = f"({cur_progress}/{len(behavior_options)})"
-		main_message = replies['13']['main_message'].replace('[progress]', progress)
+		main_message = replies[scr_number]['main_message'].replace('[progress]', progress)
 		main_message = main_message.replace('[behavior]', behavior_str)
 		reply = first_message+main_message
-		keyboard = json.loads(get_button('scr_13'))
+		keyboard = json.loads(get_button(keyboard_name))
 		# TO-DO: probably replace when getting AI feedback
 		keyboard["inline_keyboard"][2][0]["callback_data"] = keyboard["inline_keyboard"][2][0]["callback_data"].replace("[n]", str(len(behavior_options)))
 		keyboard = json.dumps(keyboard)
-		print(keyboard)
-		if "suitability" in callback_data:
+
+		if type in callback_data:
 			reply = main_message
-			keyboard = json.loads(get_button('scr_13'))
+			keyboard = json.loads(get_button(keyboard_name))
 			keyboard["inline_keyboard"][2][0]["callback_data"] = keyboard["inline_keyboard"][2][0]["callback_data"].replace("[n]", "1")
-			keyboard["inline_keyboard"][2][0]["callback_data"] = keyboard["inline_keyboard"][2][0]["callback_data"].replace("scr_12", "scr_13")
+			keyboard["inline_keyboard"][2][0]["callback_data"] = keyboard["inline_keyboard"][2][0]["callback_data"].replace(prev_keyboard_name, keyboard_name)
 			keyboard = json.dumps(keyboard)
 		switch_screen(reply, chat_id, message_id, keyboard=keyboard)
 
-	elif len(suitability_ratings)<=len(behavior_options):
-		print(len(suitability_ratings))
-		print(len(behavior_options))
+	elif len(ratings)<=len(behavior_options):
 		# Updating grade list
-		if not is_callback_in_suitability_eval:
+		if not is_callback_in_type_eval:
 			grade = int(callback_data.split('_')[-1])
-			suitability_ratings.append(grade)
-			update_user_value(CACHE_PICKHABIT_FILEPATH, user_id, "suitability", suitability_ratings)
-		if len(suitability_ratings)==len(behavior_options):
-			switch_screen(replies['14'], chat_id, message_id, keyboard=get_button('scr_14'))
+			ratings.append(grade)
+			update_user_value(CACHE_PICKHABIT_FILEPATH, user_id, type, ratings)
+		if len(ratings)==len(behavior_options):
+			if type=="suitability":
+				update_user_value(CACHE_PICKHABIT_FILEPATH, user_id, "effectiveness", None)
+				show_evaluation(callback_data, user_id, chat_id, message_id, type="effectiveness")
+			elif type=="effectiveness":
+				suitability_ratings = get_cached_data(CACHE_PICKHABIT_FILEPATH, user_id, chat_id, property="suitability")
+				effectiveness_ratings = ratings
+				habit_grades = sum_arrays(suitability_ratings, effectiveness_ratings)
+				top_habits = [habit for _, habit in sorted(zip(habit_grades, behavior_options), reverse=True)[:3]]
+				top_habits_str = format_numbered_list(top_habits)
+
+				reply = replies[scr_next].replace("[habits]", top_habits_str)
+				update_user_value(CACHE_PICKHABIT_FILEPATH, user_id, "habits", top_habits)
+				switch_screen(reply, chat_id, message_id, keyboard=get_button(next_keyboard_name))
 			return
+
 		# Sending text message
-		behavior_str = behavior_options[len(suitability_ratings)].capitalize()
-		print(behavior_str)
-		progress = f"({len(suitability_ratings)+1}/{len(behavior_options)})"
-		main_message = replies['13']['main_message'].replace('[progress]', progress)
+		behavior_str = behavior_options[len(ratings)].capitalize()
+		progress = f"({len(ratings)+1}/{len(behavior_options)})"
+		main_message = replies[scr_number]['main_message'].replace('[progress]', progress)
 		main_message = main_message.replace('[behavior]', behavior_str)
-		keyboard = json.loads(get_button('scr_13'))
-		keyboard["inline_keyboard"][2][0]["callback_data"] = keyboard["inline_keyboard"][2][0]["callback_data"].replace("[n]", str(len(suitability_ratings)))
-		keyboard["inline_keyboard"][2][0]["callback_data"] = keyboard["inline_keyboard"][2][0]["callback_data"].replace("scr_12", "scr_13")
+		keyboard = json.loads(get_button(keyboard_name))
+		keyboard["inline_keyboard"][2][0]["callback_data"] = keyboard["inline_keyboard"][2][0]["callback_data"].replace("[n]", str(len(ratings)))
+		keyboard["inline_keyboard"][2][0]["callback_data"] = keyboard["inline_keyboard"][2][0]["callback_data"].replace(prev_keyboard_name, keyboard_name)
 		keyboard = json.dumps(keyboard)
 		switch_screen(main_message, chat_id, message_id, keyboard=keyboard)
 		
@@ -630,49 +666,49 @@ def show_suitability_evaluation(callback_data, user_id, chat_id, message_id):
 # 					delete_previous=False, keyboard=get_button('scr_13'))
 # 		message_info["callback_data"]="scr_13"
 
-def show_effectiveness_evaluation(text, chat_id, message_id, user_id, message_info):
-	try:
-		effectiveness_ratings = [int(line.split('. ')[1]) for line in text.strip().split('\n')]
-		check_all_in_range(effectiveness_ratings)
-		behaviors = get_cached_data(CACHE_PICKHABIT_FILEPATH, user_id, chat_id, property="behavior_options")
-		check_matching_lengths(effectiveness_ratings, behaviors)
-		update_user_value(CACHE_PICKHABIT_FILEPATH, user_id, "effectiveness", effectiveness_ratings)
-		suitability_ratings = get_cached_data(CACHE_PICKHABIT_FILEPATH, user_id, chat_id, property="suitability")
+# def show_effectiveness_evaluation(text, chat_id, message_id, user_id, message_info):
+# 	try:
+# 		effectiveness_ratings = [int(line.split('. ')[1]) for line in text.strip().split('\n')]
+# 		check_all_in_range(effectiveness_ratings)
+# 		behaviors = get_cached_data(CACHE_PICKHABIT_FILEPATH, user_id, chat_id, property="behavior_options")
+# 		check_matching_lengths(effectiveness_ratings, behaviors)
+# 		update_user_value(CACHE_PICKHABIT_FILEPATH, user_id, "effectiveness", effectiveness_ratings)
+# 		suitability_ratings = get_cached_data(CACHE_PICKHABIT_FILEPATH, user_id, chat_id, property="suitability")
 		
-		habit_grades = sum_arrays(suitability_ratings, effectiveness_ratings)
-		top_habits = [habit for _, habit in sorted(zip(habit_grades, behaviors), reverse=True)[:3]]
-		top_habits_str = format_numbered_list(top_habits)
+# 		habit_grades = sum_arrays(suitability_ratings, effectiveness_ratings)
+# 		top_habits = [habit for _, habit in sorted(zip(habit_grades, behaviors), reverse=True)[:3]]
+# 		top_habits_str = format_numbered_list(top_habits)
 
-		reply = replies['15'].replace("[habits]", top_habits_str)
-		update_user_value(CACHE_PICKHABIT_FILEPATH, user_id, "habits", top_habits)
+# 		reply = replies['15'].replace("[habits]", top_habits_str)
+# 		update_user_value(CACHE_PICKHABIT_FILEPATH, user_id, "habits", top_habits)
 		
-		switch_screen(reply, chat_id, message_id, 
-					delete_previous=False, keyboard=get_button('scr_15'))
-		message_info["callback_data"]="scr_14"
+# 		switch_screen(reply, chat_id, message_id, 
+# 					delete_previous=False, keyboard=get_button('scr_15'))
+# 		message_info["callback_data"]="scr_14"
 
-	except ValueError:
-		reply = "Оценки должны быть числовыми, от 1 до 10.\n\nПожалуйста, введите в формате:\n1. <оценка числом от 1 до 10>\n2. <оценка числом от 1 до 10>\n"
-		switch_screen(reply, chat_id, message_id, 
-					delete_previous=False, keyboard=get_button('scr_13'))
-		message_info["callback_data"]="scr_14"
+# 	except ValueError:
+# 		reply = "Оценки должны быть числовыми, от 1 до 10.\n\nПожалуйста, введите в формате:\n1. <оценка числом от 1 до 10>\n2. <оценка числом от 1 до 10>\n"
+# 		switch_screen(reply, chat_id, message_id, 
+# 					delete_previous=False, keyboard=get_button('scr_13'))
+# 		message_info["callback_data"]="scr_14"
 
-	except ValueOutOfRangeError:
-		reply = "Оценки должны быть от 1 до 10.\n\nПожалуйста, введите в формате:\n1. <оценка числом от 1 до 10>\n2. <оценка числом от 1 до 10>\n"
-		switch_screen(reply, chat_id, message_id, 
-					delete_previous=False, keyboard=get_button('scr_13'))
-		message_info["callback_data"]="scr_14"
+# 	except ValueOutOfRangeError:
+# 		reply = "Оценки должны быть от 1 до 10.\n\nПожалуйста, введите в формате:\n1. <оценка числом от 1 до 10>\n2. <оценка числом от 1 до 10>\n"
+# 		switch_screen(reply, chat_id, message_id, 
+# 					delete_previous=False, keyboard=get_button('scr_13'))
+# 		message_info["callback_data"]="scr_14"
 
-	except ListLengthMismatchError:
-		reply = "Оценок должно быть столько же, сколько и вариантов поведения.\n\nПожалуйста, введите в формате:\n1. <оценка числом от 1 до 10>\n2. <оценка числом от 1 до 10>\n"
-		switch_screen(reply, chat_id, message_id, 
-					delete_previous=False, keyboard=get_button('scr_13'))
-		message_info["callback_data"]="scr_14"
+# 	except ListLengthMismatchError:
+# 		reply = "Оценок должно быть столько же, сколько и вариантов поведения.\n\nПожалуйста, введите в формате:\n1. <оценка числом от 1 до 10>\n2. <оценка числом от 1 до 10>\n"
+# 		switch_screen(reply, chat_id, message_id, 
+# 					delete_previous=False, keyboard=get_button('scr_13'))
+# 		message_info["callback_data"]="scr_14"
 
-	except IndexError:
-		reply = "Данные были введены некорректно.\n\nПожалуйста, введите в формате:\n1. <оценка числом от 1 до 10>\n2. <оценка числом от 1 до 10>\n"
-		switch_screen(reply, chat_id, message_id, 
-					delete_previous=False, keyboard=get_button('scr_13'))
-		message_info["callback_data"]="scr_14"
+# 	except IndexError:
+# 		reply = "Данные были введены некорректно.\n\nПожалуйста, введите в формате:\n1. <оценка числом от 1 до 10>\n2. <оценка числом от 1 до 10>\n"
+# 		switch_screen(reply, chat_id, message_id, 
+# 					delete_previous=False, keyboard=get_button('scr_13'))
+# 		message_info["callback_data"]="scr_14"
 
 def show_proposed_habits(user_id, chat_id, message_id):
 	top_habits = get_cached_data(CACHE_PICKHABIT_FILEPATH, user_id, chat_id, property="habits")
@@ -721,8 +757,6 @@ def show_updated_habits_after_deletion(text, chat_id, message_id, user_id, messa
 			if entered_numbers[0]==0:
 				raise ValueOutOfRangeError
 		for idx in entered_numbers:
-			print(idx-1)
-			print(user_habits[idx-1])
 			unique_id = user_habits[idx-1].get("id")
 			db.delete_habit(unique_id)
 		updated_user_habits = db.view_habits(user_id)

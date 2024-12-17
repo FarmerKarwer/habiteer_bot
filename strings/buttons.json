@@ -547,9 +547,53 @@
   "scr_14":{
     "inline_keyboard": [
       [
+          {
+            "text":"1",
+            "callback_data":"effectiveness_1"
+          },
+          {
+            "text":"2",
+            "callback_data":"effectiveness_2"
+          },
+          {
+            "text":"3",
+            "callback_data":"effectiveness_3"
+          },
+          {
+            "text":"4",
+            "callback_data":"effectiveness_4"
+          },
+          {
+            "text":"5",
+            "callback_data":"effectiveness_5"
+          }
+      ],
+        [
+          {
+            "text":"6",
+            "callback_data":"effectiveness_6"
+          },
+          {
+            "text":"7",
+            "callback_data":"effectiveness_7"
+          },
+          {
+            "text":"8",
+            "callback_data":"effectiveness_8"
+          },
+          {
+            "text":"9",
+            "callback_data":"effectiveness_9"
+          },
+          {
+            "text":"10",
+            "callback_data":"effectiveness_10"
+          }
+      ], 
+      [
         {
           "text": "Назад",
-          "callback_data": "scr_13"
+          "callback_data": "scr_13_proxy_[n]"
         }
       ],
       [
