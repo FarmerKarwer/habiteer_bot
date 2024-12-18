@@ -174,15 +174,16 @@ def handle_callback_query(message):
 def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_info):
 
 		previous_screen = get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")
-
-		is_previous_screen_in_magic_wanding = bool(re.match(r"^scr_12_proxy_\d+$", previous_screen))
+		if previous_screen:
+			is_previous_screen_in_magic_wanding = bool(re.match(r"^scr_12_proxy_\d+$", previous_screen))
+		else:
+			is_previous_screen_in_magic_wanding = False
 
 		if previous_screen=='scr_2':
 			show_adding_habit(text, user_id, chat_id, message_id, timestamp)
 
-		elif previous_screen=='scr_3_1':
-			switch_screen(replies['21'], chat_id, message_id, 
-							delete_previous=False, keyboard=get_button('scr_21'))
+		elif previous_screen=='scr_3':
+			show_habit_info(text, user_id, chat_id, message_id, message_info)
 
 		elif previous_screen=='scr_8':
 			show_editing_habit(text, user_id, chat_id, message_id, message_info)
@@ -316,6 +317,45 @@ def show_user_habits(user_id, chat_id, message_id):
 		reply = replies['3'].replace('[habits]', habit_names_str)
 		keyboard = get_button('scr_3')
 		switch_screen(reply, chat_id, message_id, keyboard=keyboard)
+
+def show_habit_info(text, user_id, chat_id, message_id, message_info):
+	habits = db.view_habits(user_id)
+	try:
+		habit_idx = int(text)-1
+		habit_name = habits[habit_idx].get("name")
+		aspiration = habits[habit_idx].get("aspiration")
+		status = habits[habit_idx].get("status")
+
+		if status is None:
+			reply = replies['3_1']['not_tracked'].replace('[habit]', habit_name)
+			keyboard = get_button('scr_3_1_not_tracked')
+		elif status=="tracked":
+			reply = replies['3_1']['tracked'].replace('[habit]', habit_name)
+			keyboard = get_button('scr_3_1_tracked')
+
+		if aspiration is None:
+			reply = reply.replace('[aspiration]', '_не указано_')
+		else:
+			reply = reply.replace('[aspiration]', aspiration)
+			keyboard = json.loads(keyboard)
+			keyboard['inline_keyboard'][2][0]['callback_data'] = keyboard['inline_keyboard'][2][0]['callback_data'].replace('Добавить', 'Изменить')
+			keyboard = json.dumps(keyboard)
+
+		new_data = {"user_id":user_id,"chat_id":chat_id, "habit_number":habit_idx, "habit_name":habit_name}
+		save_data_to_cache(CACHE_UPDATEHABIT_FILEPATH, new_data)
+		switch_screen(reply, chat_id, message_id, keyboard=keyboard)
+	except ValueError:
+		habit_names = [item['name'] for item in habits]
+		habit_names_str = format_numbered_list(habit_names)
+		reply = f"Пожалуйста, введите номер привычки, которую вы хотите выбрать числом.\n\nВаши привычки:\n\n{habit_names_str}"
+		switch_screen(reply, chat_id, message_id)
+		message_info["callback_data"]="scr_3"
+	except IndexError:
+		habit_names = [item['name'] for item in habits]
+		habit_names_str = format_numbered_list(habit_names)
+		reply = f"Такой привычки не существует. Попробуйте ещё раз.\n\nВаши привычки:\n\n{habit_names_str}"
+		switch_screen(reply, chat_id, message_id)
+		message_info["callback_data"]="scr_3"
 
 def show_editing_habit(text, user_id, chat_id, message_id, message_info):
 	habits = db.view_habits(user_id)
