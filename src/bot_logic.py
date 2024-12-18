@@ -96,7 +96,7 @@ def handle_callback_query(message):
 	DEFAULT_CALLBACK_SCREENS = (
 		"scr_1", "scr_2", "scr_5", "scr_6", "scr_8",
 		"scr_9", "scr_10", "scr_12", "scr_13", "scr_3_3",
-		"scr_16", "scr_17", "scr_19", "scr_21", "scr_22",
+		"scr_16", "scr_17", "scr_19", "scr_22",
 		"scr_23_1", "scr_23", "scr_25", "scr_26", "scr_27",
 		"scr_28", "scr_30", "scr_31", "scr_32", "scr_33",
 		"scr_34", "scr_35", "scr_37", "scr_38", "scr_39",
@@ -112,7 +112,8 @@ def handle_callback_query(message):
 	"scr_13": lambda: show_evaluation(callback_data, user_id, chat_id, message_id, type="suitability"),
 	"scr_14": lambda: show_evaluation(callback_data, user_id, chat_id, message_id, type="effectiveness"),
 	"scr_15": lambda: show_proposed_habits(user_id, chat_id, message_id),
-	"scr_18": lambda: show_picked_habits(user_id, chat_id, message_id, timestamp)
+	"scr_18": lambda: show_picked_habits(user_id, chat_id, message_id, timestamp),
+	"scr_21": lambda: show_choosing_habit_type(user_id, chat_id, message_id)
 	}
 
 	SPECIAL_CALLBACK_SCREENS = SPECIAL_CALLBACK_HANDLERS.keys()
@@ -159,7 +160,7 @@ def handle_callback_query(message):
 
 	elif callback_data in DEFAULT_CALLBACK_SCREENS:
 		screen_id = '_'.join(callback_data.split('_')[1:])
-		if screen_id in ("8", "13", "21", "44"):
+		if screen_id in ("8", "13", "44"):
 			show_callback_reply(screen_id, delete_previous=False)
 		else:
 			show_callback_reply(screen_id)
@@ -187,8 +188,6 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 			show_habit_info(text, user_id, chat_id, message_id, message_info)
 		elif previous_screen=='scr_3_3':
 			show_change_habit_aspiration(text, chat_id, message_id, user_id, timestamp)
-		elif previous_screen=='scr_8':
-			show_editing_habit(text, user_id, chat_id, message_id, message_info)
 
 		elif previous_screen in callback_predefined_habits or previous_screen =="scr_9":
 			show_picked_predefined_habits(text, chat_id, message_id, user_id, timestamp, message_info)
@@ -372,29 +371,34 @@ def get_back_to_habit(callback_data, user_id, chat_id, message_id):
 	text = str(get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_number")+1)
 	show_habit_info(text, user_id, chat_id, message_id, message_info)
 
-def show_editing_habit(text, user_id, chat_id, message_id, message_info):
-	habits = db.view_habits(user_id)
-	try:
-		habit_idx = int(text)-1
-		habit_name = habits[habit_idx].get("name")
-		new_data = {"user_id":user_id,"chat_id":chat_id, "habit_number":habit_idx, "habit_name":habit_name}
-		save_data_to_cache(CACHE_UPDATEHABIT_FILEPATH, new_data)
+def show_choosing_habit_type(user_id, chat_id, message_id):
+	habit_name = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_name")
+	reply = replies['21'].replace('[habit]', habit_name)
+	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_21'))
 
-		reply = replies['8.1']+f"\n\nВы выбрали привычку: {habit_name}"
+# def show_editing_habit(text, user_id, chat_id, message_id, message_info):
+# 	habits = db.view_habits(user_id)
+# 	try:
+# 		habit_idx = int(text)-1
+# 		habit_name = habits[habit_idx].get("name")
+# 		new_data = {"user_id":user_id,"chat_id":chat_id, "habit_number":habit_idx, "habit_name":habit_name}
+# 		save_data_to_cache(CACHE_UPDATEHABIT_FILEPATH, new_data)
 
-		switch_screen(reply, chat_id, message_id, 
-					delete_previous=False, keyboard=get_button('scr_8_1'))
+# 		reply = replies['8.1']+f"\n\nВы выбрали привычку: {habit_name}"
 
-	except ValueError:
-		reply = "Пожалуйста, введите номер привычки, которую вы хотите изменить числом."
-		switch_screen(reply, chat_id, message_id, 
-					delete_previous=False, keyboard=get_button('scr_8'))
-		message_info["callback_data"]="scr_8"
-	except IndexError:
-		reply = "Такой привычки не существует. Попробуйте ещё раз."
-		switch_screen(reply, chat_id, message_id, 
-					delete_previous=False, keyboard=get_button('scr_8'))
-		message_info["callback_data"]="scr_8"
+# 		switch_screen(reply, chat_id, message_id, 
+# 					delete_previous=False, keyboard=get_button('scr_8_1'))
+
+# 	except ValueError:
+# 		reply = "Пожалуйста, введите номер привычки, которую вы хотите изменить числом."
+# 		switch_screen(reply, chat_id, message_id, 
+# 					delete_previous=False, keyboard=get_button('scr_8'))
+# 		message_info["callback_data"]="scr_8"
+# 	except IndexError:
+# 		reply = "Такой привычки не существует. Попробуйте ещё раз."
+# 		switch_screen(reply, chat_id, message_id, 
+# 					delete_previous=False, keyboard=get_button('scr_8'))
+# 		message_info["callback_data"]="scr_8"
 
 def show_aspirations(chat_id, message_id):
 	aspirations_str = format_numbered_list(aspirations)
