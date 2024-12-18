@@ -188,6 +188,44 @@
     ]
   },
 
+  "scr_3_3":{
+    "inline_keyboard":[
+        [
+          {
+            "text":"Назад",
+            "callback_data":"scr_3_1"
+          }
+      ],
+
+        [
+          {
+            "text":"В главное меню",
+            "callback_data":"scr_1"
+          }
+      ]
+        
+    ]
+  },
+
+  "scr_3_7":{
+    "inline_keyboard":[
+        [
+          {
+            "text":"Вернуться к привычке",
+            "callback_data":"scr_3_1"
+          }
+      ],
+
+        [
+          {
+            "text":"В главное меню",
+            "callback_data":"scr_1"
+          }
+      ]
+        
+    ]
+  },
+
   "scr_4":{
     "inline_keyboard":[
         [
@@ -303,8 +341,8 @@
     "inline_keyboard": [
       [
         {
-          "text": "Улучшить привычку",
-          "callback_data": "scr_plug"
+          "text": "Начать отслеживать🚀",
+          "callback_data": "scr_21"
         }
       ],
       [
@@ -323,28 +361,6 @@
   },
   "scr_8":{
     "inline_keyboard": [
-      [
-        {
-          "text": "Назад",
-          "callback_data": "scr_3"
-        }
-      ],
-      [
-        {
-          "text": "В главное меню",
-          "callback_data": "scr_1"
-        }
-      ]
-    ]
-  },
-  "scr_8_1":{
-    "inline_keyboard": [
-      [
-        {
-          "text": "Изменить название",
-          "callback_data": "scr_19"
-        }
-      ],
       [
         {
           "text": "Назад",
@@ -736,7 +752,7 @@
       [
         {
           "text": "Назад",
-          "callback_data": "scr_8_1"
+          "callback_data": "scr_3_1"
         }
       ],
       [

@@ -95,7 +95,7 @@ def handle_callback_query(message):
 	# Actual logic
 	DEFAULT_CALLBACK_SCREENS = (
 		"scr_1", "scr_2", "scr_5", "scr_6", "scr_8",
-		"scr_9", "scr_10", "scr_12", "scr_13", 
+		"scr_9", "scr_10", "scr_12", "scr_13", "scr_3_3",
 		"scr_16", "scr_17", "scr_19", "scr_21", "scr_22",
 		"scr_23_1", "scr_23", "scr_25", "scr_26", "scr_27",
 		"scr_28", "scr_30", "scr_31", "scr_32", "scr_33",
@@ -105,6 +105,7 @@ def handle_callback_query(message):
 
 	SPECIAL_CALLBACK_HANDLERS = {
 	"scr_3": lambda: show_user_habits(user_id, chat_id, message_id),
+	"scr_3_1": lambda: get_back_to_habit(callback_data, user_id, chat_id, message_id),
 	"scr_4": lambda: show_aspirations(chat_id, message_id),
 	"scr_11": lambda: show_aspiration_confirmation(chat_id, message_id, user_id, callback_data=callback_data),
 	"scr_12_1": lambda: show_ai_recommended_habits(user_id, chat_id, message_id),
@@ -157,7 +158,7 @@ def handle_callback_query(message):
 		switch_screen(replies['13'], chat_id, message_id, keyboard=get_button('16_scr_13'))
 
 	elif callback_data in DEFAULT_CALLBACK_SCREENS:
-		screen_id = callback_data.split('_')[1]
+		screen_id = '_'.join(callback_data.split('_')[1:])
 		if screen_id in ("8", "13", "21", "44"):
 			show_callback_reply(screen_id, delete_previous=False)
 		else:
@@ -184,7 +185,8 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 
 		elif previous_screen=='scr_3':
 			show_habit_info(text, user_id, chat_id, message_id, message_info)
-
+		elif previous_screen=='scr_3_3':
+			show_change_habit_aspiration(text, chat_id, message_id, user_id, timestamp)
 		elif previous_screen=='scr_8':
 			show_editing_habit(text, user_id, chat_id, message_id, message_info)
 
@@ -338,10 +340,18 @@ def show_habit_info(text, user_id, chat_id, message_id, message_info):
 		else:
 			reply = reply.replace('[aspiration]', aspiration)
 			keyboard = json.loads(keyboard)
-			keyboard['inline_keyboard'][2][0]['callback_data'] = keyboard['inline_keyboard'][2][0]['callback_data'].replace('Добавить', 'Изменить')
+			keyboard['inline_keyboard'][2][0]['text'] = keyboard['inline_keyboard'][2][0]['text'].replace('Добавить', 'Изменить')
 			keyboard = json.dumps(keyboard)
 
-		new_data = {"user_id":user_id,"chat_id":chat_id, "habit_number":habit_idx, "habit_name":habit_name}
+		new_data = {
+			"user_id": user_id,
+			"chat_id": chat_id,
+			"habit_number": habit_idx,
+			"habit_name": habit_name,
+			"status":status,
+			"aspiration":aspiration
+		}
+
 		save_data_to_cache(CACHE_UPDATEHABIT_FILEPATH, new_data)
 		switch_screen(reply, chat_id, message_id, keyboard=keyboard)
 	except ValueError:
@@ -356,6 +366,11 @@ def show_habit_info(text, user_id, chat_id, message_id, message_info):
 		reply = f"Такой привычки не существует. Попробуйте ещё раз.\n\nВаши привычки:\n\n{habit_names_str}"
 		switch_screen(reply, chat_id, message_id)
 		message_info["callback_data"]="scr_3"
+
+def get_back_to_habit(callback_data, user_id, chat_id, message_id):
+	message_info = None
+	text = str(get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_number")+1)
+	show_habit_info(text, user_id, chat_id, message_id, message_info)
 
 def show_editing_habit(text, user_id, chat_id, message_id, message_info):
 	habits = db.view_habits(user_id)
@@ -429,10 +444,12 @@ def show_picked_predefined_habits(text, chat_id, message_id, user_id, timestamp,
 		check_minimum_length(selected_habits, min_length=1)
 		update_user_value(CACHE_PICKHABIT_FILEPATH, user_id, "habits", selected_habits)
 		
+		aspiration = get_cached_data(CACHE_PICKHABIT_FILEPATH, user_id, chat_id, property="aspiration")
+
 		# Save to DB
 		for habit in selected_habits:
 			unique_id = db.generate_unique_uuid()
-			db.add_habit(habit=habit, creation_datetime=timestamp, user_id=user_id, unique_id=unique_id)
+			db.add_habit(habit=habit, creation_datetime=timestamp, user_id=user_id, unique_id=unique_id, aspiration=aspiration)
 		delete_user_records(CACHE_PICKHABIT_FILEPATH, user_id)
 
 		reply = replies['18']+f"\n\nСохраненные привычки:\n{filtered_habits_str}"
@@ -654,18 +671,24 @@ def show_proposed_habits(user_id, chat_id, message_id):
 	reply = replies['15'].replace("[habits]", top_habits_str)
 	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_15'))
 
+# TO-DO: change these two functions to one function
 def show_updated_habitname(text, chat_id, message_id, user_id, timestamp):
 	new_name = text
 	habit_idx = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_number")
 	unique_id = db.view_habits(user_id)[habit_idx].get("id")
 	db.update_habit(unique_id, "name", f"'{new_name}'")
 	db.update_habit(unique_id, "last_updated", f"CAST('{timestamp}'AS Timestamp)")
-	updated_habits = db.view_habits(user_id)
-	habit_names = [item['name'] for item in updated_habits]
-	habit_names_str = format_numbered_list(habit_names)
-	reply = replies['20'].replace("[updated_habits]", habit_names_str)
-	switch_screen(reply, chat_id, message_id, 
-					delete_previous=False, keyboard=get_button('scr_20'))
+
+	switch_screen(replies['3_7'], chat_id, message_id, keyboard=get_button('scr_3_7'))
+
+def show_change_habit_aspiration(text, chat_id, message_id, user_id, timestamp):
+	new_aspiration = text
+	habit_idx = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_number")
+	unique_id = db.view_habits(user_id)[habit_idx].get("id")
+	db.update_habit(unique_id, "aspiration", f"'{new_aspiration}'")
+	db.update_habit(unique_id, "last_updated", f"CAST('{timestamp}'AS Timestamp)")
+
+	switch_screen(replies['3_7'], chat_id, message_id, keyboard=get_button('scr_3_7'))
 
 def show_updated_habits_after_deletion(text, chat_id, message_id, user_id, message_info):
 	try:

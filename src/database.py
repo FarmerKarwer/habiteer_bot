@@ -43,12 +43,12 @@ class DatabaseClient:
 				# If no duplicate is found, return the new UUID
 				return new_uuid
 
-	def add_habit(self, habit, creation_datetime, user_id, unique_id = None):
+	def add_habit(self, habit, creation_datetime, user_id, unique_id=None, aspiration=None):
 		if unique_id is None:
 			unique_id = self.generate_unique_uuid()
 		query = f"""
-		INSERT INTO habits (id, name, creation_datetime, user_id)
-		VALUES ({unique_id}, '{habit}', CAST('{creation_datetime}' AS Timestamp), {user_id});
+		INSERT INTO habits (id, name, creation_datetime, user_id, aspiration)
+		VALUES ({unique_id}, '{habit}', CAST('{creation_datetime}' AS Timestamp), {user_id}, '{aspiration}');
 		"""
 		self.execute_query(query)
 
