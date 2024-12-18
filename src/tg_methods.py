@@ -41,6 +41,22 @@ def answer_callback_query(callback_query_id):
 def send_picture():
 	pass
 
+def edit_message_reply_markup(chat_id, message_id, reply_markup):
+	"""
+	Edits the inline keyboard of a specific message.
+	"""
+	url = URL+"editMessageReplyMarkup"
+
+	# Payload for the API request
+	payload = {
+		"chat_id": chat_id,
+		"message_id": message_id,
+		"reply_markup": json.dumps(reply_markup)
+	}
+
+	# Send the request
+	response = requests.post(url, data=payload)
+
 # Utils
 def get_updates(offset=None, timeout=None):
 	url = URL+"getUpdates"

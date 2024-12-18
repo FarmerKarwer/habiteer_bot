@@ -88,14 +88,8 @@
     "inline_keyboard":[
         [
           {
-            "text":"Улучшить привычку",
-            "callback_data":"scr_plug"
-          }
-      ],
-        [
-          {
-            "text":"Изменить привычку",
-            "callback_data":"scr_8"
+            "text":"Выбрать привычки для удаления",
+            "callback_data":"scr_44"
           }
       ],
 
@@ -104,13 +98,8 @@
             "text":"В главное меню",
             "callback_data":"scr_1"
           }
-      ],
-        [
-          {
-            "text":"Удалить привычку",
-            "callback_data":"scr_44"
-          }
       ]
+        
     ]
   },
 
