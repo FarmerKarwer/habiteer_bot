@@ -326,7 +326,7 @@
       [
         {
           "text": "Удалить все данные",
-          "callback_data": "scr_plug"
+          "callback_data": "scr_42"
         }
       ],
       [
@@ -1453,6 +1453,16 @@
         {
           "text": "В главное меню",
           "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_account_deleted":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "OK!",
+          "callback_data": "no_scr"
         }
       ]
     ]

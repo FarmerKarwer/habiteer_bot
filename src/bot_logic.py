@@ -36,6 +36,7 @@ PREMADE_HABITS_FILEPATH = "./strings/premade_habits.json"
 CACHE_FILEPATH = "./cache/callback_history.json"
 CACHE_PICKHABIT_FILEPATH = "./cache/picking_habit.json"
 CACHE_UPDATEHABIT_FILEPATH = "./cache/updating_habit.json"
+CACHE_KEY_PHRASE = "./cache/key_phrase.json"
 
 # Load JSON data
 replies = load_json(REPLIES_FILEPATH)
@@ -105,7 +106,7 @@ def handle_callback_query(message):
 		"scr_23_1", "scr_23", "scr_25", "scr_26", "scr_27",
 		"scr_28", "scr_30", "scr_31", "scr_32", "scr_33",
 		"scr_34", "scr_35", "scr_37", "scr_38", "scr_39",
-		"scr_40", "scr_41", "scr_42", "scr_44", "scr_plug"
+		"scr_40", "scr_41", "scr_44", "scr_plug"
 		)
 
 	SPECIAL_CALLBACK_HANDLERS = {
@@ -119,7 +120,9 @@ def handle_callback_query(message):
 	"scr_15": lambda: show_proposed_habits(user_id, chat_id, message_id),
 	"scr_18": lambda: show_picked_habits(user_id, chat_id, message_id, timestamp),
 	"scr_21": lambda: show_choosing_habit_type(user_id, chat_id, message_id),
-	"scr_review_sent": lambda: show_review_sent(user_id, chat_id, message_id, timestamp)
+	"scr_review_sent": lambda: show_review_sent(user_id, chat_id, message_id, timestamp),
+	"scr_42": lambda: show_delete_all_data_confirmation(user_id, chat_id, message_id),
+	"no_scr": lambda: tg_methods.delete_message(message_id, chat_id)
 	}
 
 	SPECIAL_CALLBACK_SCREENS = SPECIAL_CALLBACK_HANDLERS.keys()
@@ -257,14 +260,16 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 							delete_previous=False, keyboard=get_button('scr_43'))
 
 		elif previous_screen=='scr_42':
-			switch_screen(replies['start'], chat_id, message_id, 
-							delete_previous=False, keyboard=get_button('start'))
+			show_user_deletion_screen(text, chat_id, message_id, user_id, message_info)
 
 		elif previous_screen=='scr_44':
 			show_updated_habits_after_deletion(text, chat_id, message_id, user_id, message_info)
 
 		elif previous_screen=='scr_review':
 			show_review_confirmation(text, chat_id, message_id, user_id, message_info)
+
+		elif previous_screen=='scr_42':
+			show_delete_all_user_data(text)
 
 def handle_text_message(message):
 	"""Handles the text message from the user."""
@@ -732,6 +737,24 @@ def show_review_sent(user_id, chat_id, message_id, timestamp):
 	review = get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="text")
 	db.send_review(user_id, review, timestamp)
 	switch_screen(replies['review_sent'], chat_id, message_id, keyboard=get_button('scr_review_sent'))
+
+def show_delete_all_data_confirmation(user_id, chat_id, message_id):
+	random_num = random.randint(1000000, 9999999)
+	reply = replies['42'].replace('[random_num]', str(random_num))
+	key_phrase = re.search(r"_([^_]+)_", reply).group(1)
+	data = {"user_id":user_id, "chat_id":chat_id, "key_phrase":key_phrase}
+	save_data_to_cache(CACHE_KEY_PHRASE, data)
+	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_42'))
+
+def show_user_deletion_screen(text, chat_id, message_id, user_id, message_info):
+	key_phrase = get_cached_data(CACHE_KEY_PHRASE, user_id, chat_id, "key_phrase")
+	if text == key_phrase:
+		delete_user_records(CACHE_KEY_PHRASE, user_id)
+		db.delete_user_data(user_id)
+		switch_screen(replies['account_deleted'], chat_id, message_id, keyboard=get_button('scr_account_deleted'))
+	else:
+		reply = "*Кодовая фраза введена неверно.*\nУдаление данных не завершено. Если вы передумаете, мы всегда будем рады, что вы остались."
+		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_plug'))
 
 def switch_screen(
     reply: str,
