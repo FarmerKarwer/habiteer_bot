@@ -80,6 +80,22 @@ class DatabaseClient:
 		"""
 		self.execute_query(query)
 
+	def send_review(self, user_id, text, timestamp):
+		unique_id = self.autoincrement_id("id", "reviews")
+		query = f"""
+		INSERT INTO reviews (id, user_id, text, timestamp)
+		VALUES ({unique_id}, {user_id}, '{text}', CAST('{timestamp}' AS Timestamp));
+		"""
+		self.execute_query(query)
+
+	def autoincrement_id(self, col_with_id, tablename):
+		query = f"""
+		SELECT MAX({col_with_id}) 
+		FROM {tablename}
+		"""
+		max_id = self.execute_query(query)[0].rows[0]['column0']
+		return (max_id or 0) + 1
+
 if __name__=="__main__":
 	db = DatabaseClient()
 	res = db.select_all("habits")

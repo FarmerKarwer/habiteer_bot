@@ -48,6 +48,11 @@ callback_predefined_habits = (
 	"hab_6", "hab_7", "hab_8", "hab_9", "hab_10"
 )
 
+callback_predefined_triggers = (
+	"beh_1", "beh_2", "beh_3", "beh_4", "beh_5", 
+	"beh_6", "beh_7", "beh_8", "beh_9", "beh_10"
+)
+
 callback_suitability_evaluation = (
 	"suitability_1", "suitability_2", "suitability_3", "suitability_4", "suitability_5", 
 	"suitability_6", "suitability_7", "suitability_8", "suitability_9", "suitability_10"
@@ -96,7 +101,7 @@ def handle_callback_query(message):
 	DEFAULT_CALLBACK_SCREENS = (
 		"scr_1", "scr_2", "scr_5", "scr_6", "scr_8",
 		"scr_9", "scr_10", "scr_12", "scr_13", "scr_3_3",
-		"scr_16", "scr_17", "scr_19", "scr_22",
+		"scr_16", "scr_17", "scr_19", "scr_22", "scr_review",
 		"scr_23_1", "scr_23", "scr_25", "scr_26", "scr_27",
 		"scr_28", "scr_30", "scr_31", "scr_32", "scr_33",
 		"scr_34", "scr_35", "scr_37", "scr_38", "scr_39",
@@ -113,7 +118,8 @@ def handle_callback_query(message):
 	"scr_14": lambda: show_evaluation(callback_data, user_id, chat_id, message_id, type="effectiveness"),
 	"scr_15": lambda: show_proposed_habits(user_id, chat_id, message_id),
 	"scr_18": lambda: show_picked_habits(user_id, chat_id, message_id, timestamp),
-	"scr_21": lambda: show_choosing_habit_type(user_id, chat_id, message_id)
+	"scr_21": lambda: show_choosing_habit_type(user_id, chat_id, message_id),
+	"scr_review_sent": lambda: show_review_sent(user_id, chat_id, message_id, timestamp)
 	}
 
 	SPECIAL_CALLBACK_SCREENS = SPECIAL_CALLBACK_HANDLERS.keys()
@@ -257,6 +263,9 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 		elif previous_screen=='scr_44':
 			show_updated_habits_after_deletion(text, chat_id, message_id, user_id, message_info)
 
+		elif previous_screen=='scr_review':
+			show_review_confirmation(text, chat_id, message_id, user_id, message_info)
+
 def handle_text_message(message):
 	"""Handles the text message from the user."""
 	# Extract common data
@@ -375,30 +384,6 @@ def show_choosing_habit_type(user_id, chat_id, message_id):
 	habit_name = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_name")
 	reply = replies['21'].replace('[habit]', habit_name)
 	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_21'))
-
-# def show_editing_habit(text, user_id, chat_id, message_id, message_info):
-# 	habits = db.view_habits(user_id)
-# 	try:
-# 		habit_idx = int(text)-1
-# 		habit_name = habits[habit_idx].get("name")
-# 		new_data = {"user_id":user_id,"chat_id":chat_id, "habit_number":habit_idx, "habit_name":habit_name}
-# 		save_data_to_cache(CACHE_UPDATEHABIT_FILEPATH, new_data)
-
-# 		reply = replies['8.1']+f"\n\nВы выбрали привычку: {habit_name}"
-
-# 		switch_screen(reply, chat_id, message_id, 
-# 					delete_previous=False, keyboard=get_button('scr_8_1'))
-
-# 	except ValueError:
-# 		reply = "Пожалуйста, введите номер привычки, которую вы хотите изменить числом."
-# 		switch_screen(reply, chat_id, message_id, 
-# 					delete_previous=False, keyboard=get_button('scr_8'))
-# 		message_info["callback_data"]="scr_8"
-# 	except IndexError:
-# 		reply = "Такой привычки не существует. Попробуйте ещё раз."
-# 		switch_screen(reply, chat_id, message_id, 
-# 					delete_previous=False, keyboard=get_button('scr_8'))
-# 		message_info["callback_data"]="scr_8"
 
 def show_aspirations(chat_id, message_id):
 	aspirations_str = format_numbered_list(aspirations)
@@ -739,6 +724,14 @@ def show_updated_habits_after_deletion(text, chat_id, message_id, user_id, messa
 		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_44'))
 		message_info["callback_data"]="scr_44"
 
+def show_review_confirmation(text, chat_id, message_id, user_id, message_info):
+	reply = replies['review_confirmation'].replace('[review]', text)
+	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_review_confirmation'))
+
+def show_review_sent(user_id, chat_id, message_id, timestamp):
+	review = get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="text")
+	db.send_review(user_id, review, timestamp)
+	switch_screen(replies['review_sent'], chat_id, message_id, keyboard=get_button('scr_review_sent'))
 
 def switch_screen(
     reply: str,

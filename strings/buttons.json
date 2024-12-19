@@ -320,7 +320,7 @@
       [
         {
           "text": "Отправить отзыв",
-          "callback_data": "scr_plug"
+          "callback_data": "scr_review"
         }
       ],
       [
@@ -1390,6 +1390,54 @@
     ]
   },
   "scr_45":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_review":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_6"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_review_confirmation":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Отправить",
+          "callback_data": "scr_review_sent"
+        }
+      ],
+      [
+        {
+          "text": "Изменить",
+          "callback_data": "scr_review"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_review_sent":{
     "inline_keyboard": [
       [
         {
