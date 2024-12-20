@@ -2,10 +2,8 @@
     {
         "user_id": 940985788,
         "chat_id": 940985788,
-        "habit_number": 5,
-        "habit_name": "\u041e\u0442\u0436\u0438\u043c\u0430\u0442\u044c\u0441\u044f 1000 \u0440\u0430\u0437",
-        "status": null,
-        "aspiration": "\u0425\u043e\u0447\u0443 \u0431\u044b\u0442\u044c \u043a\u0440\u0443\u0442\u044b\u043c \u043a\u0430\u043a \u0427\u0430\u043a \u041d\u043e\u0440\u0440\u0438\u0441",
-        "id": 37
+        "habit_name": "\u0421\u043a\u0443\u0448\u0430\u0442\u044c \u044f\u0431\u043b\u043e\u043a\u043e",
+        "habit_number": "no_number",
+        "id": 5
     }
 ]

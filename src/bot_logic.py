@@ -100,7 +100,7 @@ def handle_callback_query(message):
 
 	# Actual logic
 	DEFAULT_CALLBACK_SCREENS = (
-		"scr_1", "scr_2", "scr_5", "scr_6", "scr_8",
+		"scr_1", "scr_2", "scr_5", "scr_6",
 		"scr_9", "scr_10", "scr_12", "scr_13", "scr_3_3",
 		"scr_16", "scr_17", "scr_19", "scr_22", "scr_review",
 		"scr_23_1", "scr_23", "scr_25", "scr_26", "scr_27",
@@ -113,6 +113,7 @@ def handle_callback_query(message):
 	"scr_3": lambda: show_user_habits(user_id, chat_id, message_id),
 	"scr_3_1": lambda: get_back_to_habit(callback_data, user_id, chat_id, message_id),
 	"scr_4": lambda: show_aspirations(chat_id, message_id),
+	"scr_8": lambda: show_make_habit_tiny(user_id, chat_id, message_id),
 	"scr_11": lambda: show_aspiration_confirmation(chat_id, message_id, user_id, callback_data=callback_data),
 	"scr_12_1": lambda: show_ai_recommended_habits(user_id, chat_id, message_id),
 	"scr_13": lambda: show_evaluation(callback_data, user_id, chat_id, message_id, type="suitability"),
@@ -315,7 +316,14 @@ def handle_unknown_message(message):
 
 
 def show_adding_habit(text, user_id, chat_id, message_id, timestamp):
+	new_data = {
+			"user_id": user_id,
+			"chat_id": chat_id,
+			"habit_name": text,
+			"habit_number":"no_number"
+		}
 	db.add_habit(habit=text, creation_datetime=timestamp, user_id=user_id)
+	save_data_to_cache(CACHE_UPDATEHABIT_FILEPATH, new_data)
 	reply = replies['7'].replace("[habit]", text)
 	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_7'))
 
@@ -388,7 +396,18 @@ def get_back_to_habit(callback_data, user_id, chat_id, message_id):
 def show_choosing_habit_type(user_id, chat_id, message_id):
 	habit_name = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_name")
 	reply = replies['21'].replace('[habit]', habit_name)
-	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_21'))
+	keyboard = get_button('scr_21')
+	habit_idx = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_number")
+	if habit_idx == "no_number":
+		keyboard = json.loads(keyboard)
+		del keyboard["inline_keyboard"][3]
+		keyboard = json.dumps(keyboard)
+	switch_screen(reply, chat_id, message_id, keyboard=keyboard)
+
+def show_make_habit_tiny(user_id, chat_id, message_id):
+	habit_name = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_name")
+	reply = replies['8'].replace('[habit]', habit_name)
+	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_8'))
 
 def show_aspirations(chat_id, message_id):
 	aspirations_str = format_numbered_list(aspirations)

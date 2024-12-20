@@ -363,8 +363,34 @@
     "inline_keyboard": [
       [
         {
+          "text": "Да, смогу",
+          "callback_data": "scr_22"
+        },
+        {
+          "text": "Нет, выглядит сложно",
+          "callback_data": "scr_8_1"
+        }
+      ],
+      [
+        {
           "text": "Назад",
-          "callback_data": "scr_3"
+          "callback_data": "scr_21"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_8_1":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_8"
         }
       ],
       [
@@ -778,7 +804,7 @@
       [
         {
           "text": "Хочу ее привить",
-          "callback_data": "scr_22"
+          "callback_data": "scr_8"
         }
       ],
       [
