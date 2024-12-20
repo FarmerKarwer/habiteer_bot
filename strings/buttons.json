@@ -866,7 +866,7 @@
       [
         {
           "text": "Назад",
-          "callback_data": "scr_22"
+          "callback_data": "scr_23_1"
         }
       ],
       [
@@ -960,7 +960,7 @@
       [
         {
           "text": "Назад",
-          "callback_data": "scr_23"
+          "callback_data": "scr_23_1"
         }
       ],
       [

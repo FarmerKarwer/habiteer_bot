@@ -32,6 +32,7 @@ from utils import (
 REPLIES_FILEPATH = "./strings/replies.json"
 BUTTONS_FILEPATH = "./strings/buttons.json"
 PREMADE_HABITS_FILEPATH = "./strings/premade_habits.json"
+PREMADE_TRIGGERS_FILEPATH = "./strings/triggers.json"
 
 CACHE_FILEPATH = "./cache/callback_history.json"
 CACHE_PICKHABIT_FILEPATH = "./cache/picking_habit.json"
@@ -41,6 +42,7 @@ CACHE_KEY_PHRASE = "./cache/key_phrase.json"
 # Load JSON data
 replies = load_json(REPLIES_FILEPATH)
 premade_habits = load_json(PREMADE_HABITS_FILEPATH)
+premade_triggers = load_json(PREMADE_TRIGGERS_FILEPATH)
 aspirations = list(premade_habits.keys())
 
 # Sets of buttons
@@ -103,7 +105,7 @@ def handle_callback_query(message):
 		"scr_1", "scr_2", "scr_5", "scr_6",
 		"scr_9", "scr_10", "scr_12", "scr_13", "scr_3_3",
 		"scr_16", "scr_17", "scr_19", "scr_22", "scr_review",
-		"scr_23_1", "scr_23", "scr_25", "scr_26", "scr_27",
+		 "scr_25", "scr_26", "scr_27",
 		"scr_28", "scr_30", "scr_31", "scr_32", "scr_33",
 		"scr_34", "scr_35", "scr_37", "scr_38", "scr_39",
 		"scr_40", "scr_41", "scr_44", "scr_plug"
@@ -122,6 +124,8 @@ def handle_callback_query(message):
 	"scr_15": lambda: show_proposed_habits(user_id, chat_id, message_id),
 	"scr_18": lambda: show_picked_habits(user_id, chat_id, message_id, timestamp),
 	"scr_21": lambda: show_choosing_habit_type(user_id, chat_id, message_id),
+	"scr_23": lambda: show_enter_your_trigger(user_id, chat_id, message_id),
+	"scr_23_1": lambda: show_premade_triggers(user_id, chat_id, message_id),
 	"scr_review_sent": lambda: show_review_sent(user_id, chat_id, message_id, timestamp),
 	"scr_42": lambda: show_delete_all_data_confirmation(user_id, chat_id, message_id),
 	"no_scr": lambda: tg_methods.delete_message(message_id, chat_id)
@@ -144,6 +148,9 @@ def handle_callback_query(message):
 
 	elif callback_data in callback_effectiveness_evaluation or is_callback_in_effectiveness_eval:
 		show_evaluation(callback_data, user_id, chat_id, message_id, type="effectiveness")
+
+	elif callback_data in callback_predefined_triggers:
+		show_habit_repetition(user_id, chat_id, message_id, callback_data=callback_data, text=None)
 
 	elif previous_screen is not None and is_previous_screen_in_magic_wanding and callback_data=="scr_12":
 		behavior_options = None
@@ -220,8 +227,7 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 			show_updated_habitname(text, chat_id, message_id, user_id, timestamp)
 
 		elif previous_screen=='scr_23':
-			switch_screen(replies['24'], chat_id, message_id, 
-							delete_previous=False, keyboard=get_button('scr_24'))
+			show_habit_repetition(user_id, chat_id, message_id, callback_data=None, text=text)
 
 		elif previous_screen=='scr_26':
 			switch_screen(replies['20'], chat_id, message_id, 
@@ -423,6 +429,53 @@ def show_reminding_options_after_making_habit_tiny(text, chat_id, message_id, us
 	new_habit_name = text
 	update_user_value(CACHE_UPDATEHABIT_FILEPATH, user_id, "new_habit_name", new_habit_name)
 	switch_screen(replies['22'], chat_id, message_id, keyboard=get_button('scr_22'))
+
+def show_premade_triggers(user_id, chat_id, message_id):
+	habit_name = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_name")
+	new_habit_name = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="new_habit_name")
+	if new_habit_name:
+		habit_name = new_habit_name
+
+	morning_triggers = random.sample(list(premade_triggers["morning"].values()),4)
+	commuting_triggers = random.sample(list(premade_triggers["commuting"].values()),1)
+	at_work_triggers = random.sample(list(premade_triggers["at_work"].values()),2)
+	break_time_triggers = random.sample(list(premade_triggers["break_time"].values()),1)
+	evening_triggers = random.sample(list(premade_triggers["evening"].values()),2)
+
+	chosen_triggers = []
+	for trigger_type in [morning_triggers, commuting_triggers, at_work_triggers, break_time_triggers, evening_triggers]:
+		for trigger in trigger_type:
+			chosen_triggers.append(trigger)
+	update_user_value(CACHE_UPDATEHABIT_FILEPATH, user_id, "trigger_options", chosen_triggers)
+	triggers_str = format_numbered_list(chosen_triggers)
+	reply = replies['23_1'].replace('[triggers]', triggers_str)
+	reply = reply.replace('[habit]', habit_name)
+	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_23_1'))
+
+def show_enter_your_trigger(user_id, chat_id, message_id):
+	habit_name = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_name")
+	new_habit_name = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="new_habit_name")
+	if new_habit_name:
+		habit_name = new_habit_name
+	reply = replies['23'].replace('[habit]', habit_name)
+	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_23'))
+
+def show_habit_repetition(user_id, chat_id, message_id, callback_data=None, text=None):
+	habit_name = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_name")
+	new_habit_name = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="new_habit_name")
+	if new_habit_name:
+		habit_name = new_habit_name
+	if text:
+		chosen_trigger = text
+		update_user_value(CACHE_UPDATEHABIT_FILEPATH, user_id, "trigger", chosen_trigger)
+	if callback_data:
+		trigger_options = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="trigger_options")
+		chosen_trigger_idx = int(callback_data.split('_')[-1])-1
+		chosen_trigger = trigger_options[chosen_trigger_idx]
+		update_user_value(CACHE_UPDATEHABIT_FILEPATH, user_id, "trigger", chosen_trigger)
+	reply = replies['24'].replace('[trigger]', chosen_trigger)
+	reply = reply.replace('[habit]', habit_name)
+	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_24'))
 
 def show_aspirations(chat_id, message_id):
 	aspirations_str = format_numbered_list(aspirations)
