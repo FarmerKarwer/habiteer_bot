@@ -113,7 +113,8 @@ def handle_callback_query(message):
 	"scr_3": lambda: show_user_habits(user_id, chat_id, message_id),
 	"scr_3_1": lambda: get_back_to_habit(callback_data, user_id, chat_id, message_id),
 	"scr_4": lambda: show_aspirations(chat_id, message_id),
-	"scr_8": lambda: show_make_habit_tiny(user_id, chat_id, message_id),
+	"scr_8": lambda: show_is_habit_tiny(user_id, chat_id, message_id),
+	"scr_8_1": lambda: show_make_habit_tiny(user_id, chat_id, message_id),
 	"scr_11": lambda: show_aspiration_confirmation(chat_id, message_id, user_id, callback_data=callback_data),
 	"scr_12_1": lambda: show_ai_recommended_habits(user_id, chat_id, message_id),
 	"scr_13": lambda: show_evaluation(callback_data, user_id, chat_id, message_id, type="suitability"),
@@ -196,8 +197,12 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 
 		elif previous_screen=='scr_3':
 			show_habit_info(text, user_id, chat_id, message_id, message_info)
+
 		elif previous_screen=='scr_3_3':
 			show_change_habit_aspiration(text, chat_id, message_id, user_id, timestamp)
+
+		elif previous_screen=='scr_8_1':
+			show_reminding_options_after_making_habit_tiny(text, chat_id, message_id, user_id)
 
 		elif previous_screen in callback_predefined_habits or previous_screen =="scr_9":
 			show_picked_predefined_habits(text, chat_id, message_id, user_id, timestamp, message_info)
@@ -348,7 +353,7 @@ def show_habit_info(text, user_id, chat_id, message_id, message_info):
 		habit_name = habits[habit_idx].get("name")
 		aspiration = habits[habit_idx].get("aspiration")
 		status = habits[habit_idx].get("status")
-
+		print(habits[habit_idx])
 		if status is None:
 			reply = replies['3_1']['not_tracked'].replace('[habit]', habit_name)
 			keyboard = get_button('scr_3_1_not_tracked')
@@ -356,7 +361,7 @@ def show_habit_info(text, user_id, chat_id, message_id, message_info):
 			reply = replies['3_1']['tracked'].replace('[habit]', habit_name)
 			keyboard = get_button('scr_3_1_tracked')
 
-		if aspiration is None:
+		if aspiration is None or aspiration=="None":
 			reply = reply.replace('[aspiration]', '_не указано_')
 		else:
 			reply = reply.replace('[aspiration]', aspiration)
@@ -404,10 +409,20 @@ def show_choosing_habit_type(user_id, chat_id, message_id):
 		keyboard = json.dumps(keyboard)
 	switch_screen(reply, chat_id, message_id, keyboard=keyboard)
 
-def show_make_habit_tiny(user_id, chat_id, message_id):
+def show_is_habit_tiny(user_id, chat_id, message_id):
 	habit_name = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_name")
 	reply = replies['8'].replace('[habit]', habit_name)
 	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_8'))
+
+def show_make_habit_tiny(user_id, chat_id, message_id):
+	habit_name = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_name")
+	reply = replies['8_1'].replace('[habit]', habit_name)
+	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_8_1'))
+
+def show_reminding_options_after_making_habit_tiny(text, chat_id, message_id, user_id):
+	new_habit_name = text
+	update_user_value(CACHE_UPDATEHABIT_FILEPATH, user_id, "new_habit_name", new_habit_name)
+	switch_screen(replies['22'], chat_id, message_id, keyboard=get_button('scr_22'))
 
 def show_aspirations(chat_id, message_id):
 	aspirations_str = format_numbered_list(aspirations)
@@ -440,8 +455,7 @@ def show_picked_habits(user_id, chat_id, message_id, timestamp):
 	habits = get_cached_data(CACHE_PICKHABIT_FILEPATH, user_id, chat_id, property="habits")
 	habits_str = format_numbered_list(habits)
 	for habit in habits:
-		unique_id = db.generate_unique_uuid()
-		db.add_habit(habit=habit, creation_datetime=timestamp, user_id=user_id, unique_id=unique_id)	
+		db.add_habit(habit=habit, creation_datetime=timestamp, user_id=user_id)	
 	delete_user_records(CACHE_PICKHABIT_FILEPATH, user_id)
 	reply = replies['18']+f"\n\nСохраненные привычки:\n{habits_str}"
 
@@ -461,8 +475,7 @@ def show_picked_predefined_habits(text, chat_id, message_id, user_id, timestamp,
 
 		# Save to DB
 		for habit in selected_habits:
-			unique_id = db.generate_unique_uuid()
-			db.add_habit(habit=habit, creation_datetime=timestamp, user_id=user_id, unique_id=unique_id, aspiration=aspiration)
+			db.add_habit(habit=habit, creation_datetime=timestamp, user_id=user_id, aspiration=aspiration)
 		delete_user_records(CACHE_PICKHABIT_FILEPATH, user_id)
 
 		reply = replies['18']+f"\n\nСохраненные привычки:\n{filtered_habits_str}"

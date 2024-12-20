@@ -32,20 +32,8 @@ class DatabaseClient:
 		result = self.execute_query(query)[0].rows
 		return result
 
-	def generate_unique_uuid(self):
-		while True:
-			# Generate a new UUID
-			new_uuid = secrets.randbits(64)
-
-			# Check if this UUID already exists in the database
-			res = self.execute_query(f"SELECT 1 FROM habits WHERE id = {new_uuid}")[0].rows
-			if len(res)==0:
-				# If no duplicate is found, return the new UUID
-				return new_uuid
-
-	def add_habit(self, habit, creation_datetime, user_id, unique_id=None, aspiration=None):
-		if unique_id is None:
-			unique_id = self.generate_unique_uuid()
+	def add_habit(self, habit, creation_datetime, user_id, aspiration=None):
+		unique_id = self.autoincrement_id("id", "habits")
 		query = f"""
 		INSERT INTO habits (id, name, creation_datetime, user_id, aspiration)
 		VALUES ({unique_id}, '{habit}', CAST('{creation_datetime}' AS Timestamp), {user_id}, '{aspiration}');
@@ -100,4 +88,3 @@ if __name__=="__main__":
 	db = DatabaseClient()
 	res = db.select_all("habits")
 	print(res)
-	print(db.generate_unique_uuid())
