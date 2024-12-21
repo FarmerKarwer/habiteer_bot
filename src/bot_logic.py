@@ -109,7 +109,7 @@ def handle_callback_query(message):
 		"scr_1", "scr_2", "scr_5", "scr_6",
 		"scr_9", "scr_10", "scr_12", "scr_13", "scr_3_3",
 		"scr_16", "scr_17", "scr_19", "scr_22", "scr_22_1",
-		 "scr_review", "scr_25", "scr_26", "scr_26_1", "scr_27",
+		 "scr_review", "scr_25", "scr_26", "scr_26_1",
 		"scr_28", "scr_30", "scr_31", "scr_32", "scr_33",
 		"scr_34", "scr_35", "scr_37", "scr_38", "scr_39",
 		"scr_40", "scr_41", "scr_44", "scr_plug"
@@ -128,9 +128,10 @@ def handle_callback_query(message):
 	"scr_15": lambda: show_proposed_habits(user_id, chat_id, message_id),
 	"scr_18": lambda: show_picked_habits(user_id, chat_id, message_id, timestamp),
 	"scr_21": lambda: show_choosing_habit_type(user_id, chat_id, message_id),
-	"scr_22_1_1": lambda: show_choose_weekdays_for_habit(user_id, chat_id, message_id),
+	"scr_22_1_1": lambda: show_choose_weekdays_for_habit(user_id, chat_id, message_id, scr_name='scr_22_1_1'),
 	"scr_23": lambda: show_enter_your_trigger(user_id, chat_id, message_id),
 	"scr_23_1": lambda: show_premade_triggers(user_id, chat_id, message_id),
+	"scr_27": lambda: show_set_trigger_notification_confirmation(user_id, chat_id, message_id),
 	"scr_review_sent": lambda: show_review_sent(user_id, chat_id, message_id, timestamp),
 	"scr_42": lambda: show_delete_all_data_confirmation(user_id, chat_id, message_id),
 	"no_scr": lambda: tg_methods.delete_message(message_id, chat_id)
@@ -154,11 +155,11 @@ def handle_callback_query(message):
 	elif callback_data in callback_effectiveness_evaluation or is_callback_in_effectiveness_eval:
 		show_evaluation(callback_data, user_id, chat_id, message_id, type="effectiveness")
 
-	elif callback_data in callback_predefined_triggers:
+	elif callback_data in callback_predefined_triggers or callback_data=="scr_24":
 		show_habit_repetition(user_id, chat_id, message_id, callback_data=callback_data, text=None)
 
 	elif callback_data in callback_weekdays:
-		show_choose_weekdays(user_id, chat_id, message_id, callback_data=callback_data)
+		show_choose_weekdays(user_id, chat_id, message_id, callback_data=callback_data, scr_name='scr_22_1_1')
 
 	elif previous_screen is not None and is_previous_screen_in_magic_wanding and callback_data=="scr_12":
 		behavior_options = None
@@ -446,12 +447,13 @@ def show_reminding_options_after_making_habit_tiny(text, chat_id, message_id, us
 	update_user_value(CACHE_UPDATEHABIT_FILEPATH, user_id, "new_habit_name", new_habit_name)
 	switch_screen(replies['22'], chat_id, message_id, keyboard=get_button('scr_22'))
 
-def show_choose_weekdays_for_habit(user_id, chat_id, message_id):
+def show_choose_weekdays_for_habit(user_id, chat_id, message_id, scr_name):
+	screen_id = '_'.join(scr_name.split('_')[1:])
 	delete_user_records(CACHE_BUTTON_SELECTION, user_id)
-	switch_screen(replies['22_1_1'], chat_id, message_id, keyboard=get_button('scr_22_1_1'))
+	switch_screen(replies[screen_id], chat_id, message_id, keyboard=get_button(scr_name))
 
-def show_choose_weekdays(user_id, chat_id, message_id, callback_data):
-	additional_actions = json.loads(get_button('scr_22_1_1'))['inline_keyboard'][2:]
+def show_choose_weekdays(user_id, chat_id, message_id, callback_data, scr_name):
+	additional_actions = json.loads(get_button(scr_name))['inline_keyboard'][2:]
 	select_multiple_days(callback_data, additional_actions, user_id, chat_id, message_id)
 
 def show_choose_time_for_habit(user_id, chat_id, message_id, type=None):
@@ -521,14 +523,27 @@ def show_habit_repetition(user_id, chat_id, message_id, callback_data=None, text
 	if text:
 		chosen_trigger = text
 		update_user_value(CACHE_UPDATEHABIT_FILEPATH, user_id, "trigger", chosen_trigger)
-	if callback_data:
+	if callback_data and callback_data!="scr_24":
 		trigger_options = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="trigger_options")
 		chosen_trigger_idx = int(callback_data.split('_')[-1])-1
 		chosen_trigger = trigger_options[chosen_trigger_idx]
 		update_user_value(CACHE_UPDATEHABIT_FILEPATH, user_id, "trigger", chosen_trigger)
+	if callback_data=="scr_24":
+		chosen_trigger = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="trigger")
 	reply = replies['24'].replace('[trigger]', chosen_trigger)
 	reply = reply.replace('[habit]', habit_name)
 	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_24'))
+
+def show_set_trigger_notification_confirmation(user_id, chat_id, message_id):
+	habit_name = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_name")
+	new_habit_name = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="new_habit_name")
+	trigger = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="trigger")
+	if new_habit_name:
+		habit_name = new_habit_name
+	reply = replies['27'].replace('[trigger]', trigger)
+	reply = reply.replace('[habit]', habit_name)
+
+	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_27'))
 
 def show_aspirations(chat_id, message_id):
 	aspirations_str = format_numbered_list(aspirations)
