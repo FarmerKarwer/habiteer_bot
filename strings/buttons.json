@@ -1100,9 +1100,68 @@
   "scr_26":{
     "inline_keyboard": [
       [
+          {
+            "text":"Через 15 мин",
+            "callback_data":"rep_15min"
+          },
+          {
+            "text":"Через 30 мин",
+            "callback_data":"rep_30min"
+          },
+          {
+            "text":"Через 1 ч",
+            "callback_data":"rep_1h"
+          }
+      ],
+        [
+          {
+            "text":"Через 2 ч",
+            "callback_data":"rep_2h"
+          },
+          {
+            "text":"Через 4 ч",
+            "callback_data":"rep_4h"
+          },
+          {
+            "text":"Через 8 ч",
+            "callback_data":"rep_8h"
+          }
+      ], 
+      [
+          {
+            "text":"Завтра",
+            "callback_data":"rep_1d"
+          },
+          {
+            "text":"Послезавтра",
+            "callback_data":"rep_2d"
+          },
+          {
+            "text":"Выберу сам >",
+            "callback_data":"scr_26_1"
+          }
+      ], 
+
+      [
         {
           "text": "Назад",
           "callback_data": "scr_25"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_26_1":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_26"
         }
       ],
       [

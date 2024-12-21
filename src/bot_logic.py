@@ -109,7 +109,7 @@ def handle_callback_query(message):
 		"scr_1", "scr_2", "scr_5", "scr_6",
 		"scr_9", "scr_10", "scr_12", "scr_13", "scr_3_3",
 		"scr_16", "scr_17", "scr_19", "scr_22", "scr_22_1",
-		 "scr_review", "scr_25", "scr_26", "scr_27",
+		 "scr_review", "scr_25", "scr_26", "scr_26_1", "scr_27",
 		"scr_28", "scr_30", "scr_31", "scr_32", "scr_33",
 		"scr_34", "scr_35", "scr_37", "scr_38", "scr_39",
 		"scr_40", "scr_41", "scr_44", "scr_plug"
