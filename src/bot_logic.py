@@ -109,7 +109,7 @@ def handle_callback_query(message):
 		"scr_1", "scr_2", "scr_5", "scr_6",
 		"scr_9", "scr_10", "scr_12", "scr_13", "scr_3_3",
 		"scr_16", "scr_17", "scr_19", "scr_22", "scr_22_1",
-		"scr_22_1_1", "scr_review", "scr_25", "scr_26", "scr_27",
+		 "scr_review", "scr_25", "scr_26", "scr_27",
 		"scr_28", "scr_30", "scr_31", "scr_32", "scr_33",
 		"scr_34", "scr_35", "scr_37", "scr_38", "scr_39",
 		"scr_40", "scr_41", "scr_44", "scr_plug"
@@ -128,6 +128,7 @@ def handle_callback_query(message):
 	"scr_15": lambda: show_proposed_habits(user_id, chat_id, message_id),
 	"scr_18": lambda: show_picked_habits(user_id, chat_id, message_id, timestamp),
 	"scr_21": lambda: show_choosing_habit_type(user_id, chat_id, message_id),
+	"scr_22_1_1": lambda: show_choose_weekdays_for_habit(user_id, chat_id, message_id),
 	"scr_23": lambda: show_enter_your_trigger(user_id, chat_id, message_id),
 	"scr_23_1": lambda: show_premade_triggers(user_id, chat_id, message_id),
 	"scr_review_sent": lambda: show_review_sent(user_id, chat_id, message_id, timestamp),
@@ -437,9 +438,12 @@ def show_reminding_options_after_making_habit_tiny(text, chat_id, message_id, us
 	update_user_value(CACHE_UPDATEHABIT_FILEPATH, user_id, "new_habit_name", new_habit_name)
 	switch_screen(replies['22'], chat_id, message_id, keyboard=get_button('scr_22'))
 
+def show_choose_weekdays_for_habit(user_id, chat_id, message_id):
+	delete_user_records(CACHE_BUTTON_SELECTION, user_id)
+	switch_screen(replies['22_1_1'], chat_id, message_id, keyboard=get_button('scr_22_1_1'))
+
 def show_choose_weekdays(user_id, chat_id, message_id, callback_data):
 	additional_actions = json.loads(get_button('scr_22_1_1'))['inline_keyboard'][2:]
-	#additional_actions = json.dumps(additional_actions)
 	select_multiple_days(callback_data, additional_actions, user_id, chat_id, message_id)
 
 def show_premade_triggers(user_id, chat_id, message_id):
@@ -885,19 +889,15 @@ def get_button(screen_name, buttons_filepath=BUTTONS_FILEPATH):
 def select_multiple_days(callback_data, additional_actions, user_id, chat_id, message_id):
 
 	user_selections = get_cached_data(CACHE_BUTTON_SELECTION, user_id, chat_id, "user_selections")
-	print(user_selections)
-
 	if user_selections is None:
-		new_data = {"user_id":user_id, "chat_id": chat_id, "user_selections":[]}
+		user_selections = []
+		new_data = {"user_id":user_id, "chat_id": chat_id, "user_selections":user_selections}
 		save_data_to_cache(CACHE_BUTTON_SELECTION, new_data)
-		#user_selections[user_id] = []
 
 	if callback_data in user_selections:
 		user_selections.remove(callback_data)
 	else:
 		user_selections.append(callback_data)
-
-	print(user_selections)
 
 	update_user_value(CACHE_BUTTON_SELECTION, user_id, "user_selections", user_selections)
 
@@ -915,8 +915,6 @@ def select_multiple_days(callback_data, additional_actions, user_id, chat_id, me
 	reply_markup = {
 		"inline_keyboard": [days, weekend]+additional_actions
 	}
-	print(additional_actions)
-	print(reply_markup)
 	tg_methods.edit_message_reply_markup(chat_id, message_id, reply_markup)
 
 
