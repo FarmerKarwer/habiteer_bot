@@ -2,7 +2,12 @@
     {
         "user_id": 940985788,
         "chat_id": 940985788,
-        "user_selections": [],
+        "user_selections": [
+            "wed",
+            "fri",
+            "sun",
+            "mon"
+        ],
         "id": 1
     }
 ]

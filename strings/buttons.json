@@ -926,9 +926,25 @@
       [
         {
           "text": "Подтвердить",
-          "callback_data": "choose_interval"
+          "callback_data": "scr_22_2"
         }
       ],
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_22_1"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_22_2":{
+    "inline_keyboard": [
       [
         {
           "text": "Назад",

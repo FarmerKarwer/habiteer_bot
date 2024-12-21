@@ -184,6 +184,14 @@ def handle_callback_query(message):
 	elif previous_screen=="scr_16" and callback_data=="scr_13":
 		switch_screen(replies['13'], chat_id, message_id, keyboard=get_button('16_scr_13'))
 
+	elif previous_screen=="scr_22_1" and callback_data=="scr_22_2":
+		show_choose_time_for_habit(user_id, chat_id, message_id, type="everyday")
+
+	elif previous_screen=="scr_22_1_1" and callback_data=="scr_22_2":
+		show_choose_time_for_habit(user_id, chat_id, message_id, type="everyday")
+	elif previous_screen in callback_weekdays and callback_data=="scr_22_2":
+		show_choose_time_for_habit(user_id, chat_id, message_id, type="selected_days")
+
 	elif callback_data in DEFAULT_CALLBACK_SCREENS:
 		screen_id = '_'.join(callback_data.split('_')[1:])
 		if screen_id in ("44"):
@@ -445,6 +453,35 @@ def show_choose_weekdays_for_habit(user_id, chat_id, message_id):
 def show_choose_weekdays(user_id, chat_id, message_id, callback_data):
 	additional_actions = json.loads(get_button('scr_22_1_1'))['inline_keyboard'][2:]
 	select_multiple_days(callback_data, additional_actions, user_id, chat_id, message_id)
+
+def show_choose_time_for_habit(user_id, chat_id, message_id, type=None):
+	if type=="everyday":
+		habit_reminder_time = callback_weekdays
+		update_user_value(CACHE_UPDATEHABIT_FILEPATH, user_id, "habit_reminder_time", habit_reminder_time)
+		reply = replies['22_2'].replace("[period]", "каждый день")
+	elif type=="selected_days":
+		weekdays_rus_dict = {
+			"mon":"понедельник",
+			"tue":"вторник",
+			"wed":"среда",
+			"thu":"четверг",
+			"fri":"пятница",
+			"sat":"суббота",
+			"sun":"воскресенье"
+		}
+		weekdays_order = list(weekdays_rus_dict.keys())
+		habit_reminder_time = tuple(get_cached_data(CACHE_BUTTON_SELECTION, user_id, chat_id, property="user_selections"))
+		update_user_value(CACHE_UPDATEHABIT_FILEPATH, user_id, "habit_reminder_time", habit_reminder_time)
+
+		if habit_reminder_time==callback_weekdays:
+			reply = replies['22_2'].replace("[period]", "каждый день")
+		else:
+			habit_reminder_time = sorted(habit_reminder_time, key=lambda day: weekdays_order.index(day))
+			habit_reminder_time_rus = [weekdays_rus_dict[day] for day in habit_reminder_time]
+			habit_reminder_time_str_rus = ", ".join(habit_reminder_time_rus)
+			reply = replies['22_2'].replace("[period]", habit_reminder_time_str_rus)
+	
+	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_22_2'))
 
 def show_premade_triggers(user_id, chat_id, message_id):
 	habit_name = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_name")

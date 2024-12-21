@@ -3,9 +3,15 @@
         "user_id": 940985788,
         "chat_id": 940985788,
         "habit_number": 0,
-        "habit_name": "\u0412\u044b\u043f\u0438\u0442\u044c \u0441\u0442\u0430\u043a\u0430\u043d \u0432\u043e\u0434\u044b",
+        "habit_name": "Выпить стакан воды",
         "status": null,
         "aspiration": "None",
-        "id": 19
+        "id": 20,
+        "habit_reminder_time": [
+            "wed",
+            "fri",
+            "sun",
+            "mon"
+        ]
     }
 ]
