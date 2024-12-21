@@ -96,6 +96,7 @@ def handle_callback_query(message):
 	previous_screen = get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")
 	if previous_screen:
 		is_previous_screen_in_magic_wanding = bool(re.match(r"^scr_12_proxy_\d+$", previous_screen))
+	previous_screen_button_selection = get_cached_data(CACHE_BUTTON_SELECTION, user_id, chat_id, property="previous_screen")
 	is_callback_in_magic_wanding = bool(re.match(r"^scr_12_proxy_\d+$", callback_data))
 	is_callback_in_suitability_eval = bool(re.match(r"^scr_13_proxy_\d+$", callback_data))
 	is_callback_in_effectiveness_eval = bool(re.match(r"^scr_14_proxy_\d+$", callback_data))
@@ -132,6 +133,7 @@ def handle_callback_query(message):
 	"scr_23": lambda: show_enter_your_trigger(user_id, chat_id, message_id),
 	"scr_23_1": lambda: show_premade_triggers(user_id, chat_id, message_id),
 	"scr_27": lambda: show_set_trigger_notification_confirmation(user_id, chat_id, message_id),
+	"scr_28_1": lambda: show_choose_weekdays_for_habit(user_id, chat_id, message_id, scr_name='scr_28_1'),
 	"scr_review_sent": lambda: show_review_sent(user_id, chat_id, message_id, timestamp),
 	"scr_42": lambda: show_delete_all_data_confirmation(user_id, chat_id, message_id),
 	"no_scr": lambda: tg_methods.delete_message(message_id, chat_id)
@@ -158,9 +160,6 @@ def handle_callback_query(message):
 	elif callback_data in callback_predefined_triggers or callback_data=="scr_24":
 		show_habit_repetition(user_id, chat_id, message_id, callback_data=callback_data, text=None)
 
-	elif callback_data in callback_weekdays:
-		show_choose_weekdays(user_id, chat_id, message_id, callback_data=callback_data, scr_name='scr_22_1_1')
-
 	elif previous_screen is not None and is_previous_screen_in_magic_wanding and callback_data=="scr_12":
 		behavior_options = None
 		update_user_value(CACHE_PICKHABIT_FILEPATH, user_id, "behavior_options", behavior_options)
@@ -185,13 +184,23 @@ def handle_callback_query(message):
 	elif previous_screen=="scr_16" and callback_data=="scr_13":
 		switch_screen(replies['13'], chat_id, message_id, keyboard=get_button('16_scr_13'))
 
+	elif (previous_screen=="scr_22_1_1" or previous_screen_button_selection=="scr_22_1_1") and callback_data in callback_weekdays:
+		show_choose_weekdays(user_id, chat_id, message_id, callback_data=callback_data, scr_name='scr_22_1_1')
 	elif previous_screen=="scr_22_1" and callback_data=="scr_22_2":
-		show_choose_time_for_habit(user_id, chat_id, message_id, type="everyday")
-
+		show_choose_time_for_habit(user_id, chat_id, message_id, "scr_22_2", type="everyday")
 	elif previous_screen=="scr_22_1_1" and callback_data=="scr_22_2":
-		show_choose_time_for_habit(user_id, chat_id, message_id, type="everyday")
+		show_choose_time_for_habit(user_id, chat_id, message_id, "scr_22_2", type="everyday")
 	elif previous_screen in callback_weekdays and callback_data=="scr_22_2":
-		show_choose_time_for_habit(user_id, chat_id, message_id, type="selected_days")
+		show_choose_time_for_habit(user_id, chat_id, message_id, "scr_22_2", type="selected_days")
+
+	elif (previous_screen=="scr_28_1"or previous_screen_button_selection=="scr_28_1") and callback_data in callback_weekdays:
+		show_choose_weekdays(user_id, chat_id, message_id, callback_data=callback_data, scr_name='scr_28_1')
+	elif previous_screen=="scr_28" and callback_data=="scr_28_2":
+		show_choose_time_for_habit(user_id, chat_id, message_id, "scr_28_2", type="everyday")
+	elif previous_screen=="scr_28_1" and callback_data=="scr_28_2":
+		show_choose_time_for_habit(user_id, chat_id, message_id, "scr_28_2", type="everyday")
+	elif previous_screen in callback_weekdays and callback_data=="scr_28_2":
+		show_choose_time_for_habit(user_id, chat_id, message_id, "scr_28_2", type="selected_days")
 
 	elif callback_data in DEFAULT_CALLBACK_SCREENS:
 		screen_id = '_'.join(callback_data.split('_')[1:])
@@ -456,11 +465,12 @@ def show_choose_weekdays(user_id, chat_id, message_id, callback_data, scr_name):
 	additional_actions = json.loads(get_button(scr_name))['inline_keyboard'][2:]
 	select_multiple_days(callback_data, additional_actions, user_id, chat_id, message_id)
 
-def show_choose_time_for_habit(user_id, chat_id, message_id, type=None):
+def show_choose_time_for_habit(user_id, chat_id, message_id, scr_name, type=None):
+	screen_id = '_'.join(scr_name.split('_')[1:])
 	if type=="everyday":
 		habit_reminder_time = callback_weekdays
 		update_user_value(CACHE_UPDATEHABIT_FILEPATH, user_id, "habit_reminder_time", habit_reminder_time)
-		reply = replies['22_2'].replace("[period]", "каждый день")
+		reply = replies[screen_id].replace("[period]", "каждый день")
 	elif type=="selected_days":
 		weekdays_rus_dict = {
 			"mon":"понедельник",
@@ -476,14 +486,15 @@ def show_choose_time_for_habit(user_id, chat_id, message_id, type=None):
 		update_user_value(CACHE_UPDATEHABIT_FILEPATH, user_id, "habit_reminder_time", habit_reminder_time)
 
 		if habit_reminder_time==callback_weekdays:
-			reply = replies['22_2'].replace("[period]", "каждый день")
+			reply = replies[screen_id].replace("[period]", "каждый день")
 		else:
 			habit_reminder_time = sorted(habit_reminder_time, key=lambda day: weekdays_order.index(day))
 			habit_reminder_time_rus = [weekdays_rus_dict[day] for day in habit_reminder_time]
 			habit_reminder_time_str_rus = ", ".join(habit_reminder_time_rus)
-			reply = replies['22_2'].replace("[period]", habit_reminder_time_str_rus)
-	
-	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_22_2'))
+			reply = replies[screen_id].replace("[period]", habit_reminder_time_str_rus)
+
+	delete_user_records(CACHE_BUTTON_SELECTION, user_id)
+	switch_screen(reply, chat_id, message_id, keyboard=get_button(scr_name))
 
 def show_premade_triggers(user_id, chat_id, message_id):
 	habit_name = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_name")
@@ -941,9 +952,10 @@ def get_button(screen_name, buttons_filepath=BUTTONS_FILEPATH):
 def select_multiple_days(callback_data, additional_actions, user_id, chat_id, message_id):
 
 	user_selections = get_cached_data(CACHE_BUTTON_SELECTION, user_id, chat_id, "user_selections")
+	previous_screen = get_cached_data(CACHE_FILEPATH, user_id, chat_id, "callback_data")
 	if user_selections is None:
 		user_selections = []
-		new_data = {"user_id":user_id, "chat_id": chat_id, "user_selections":user_selections}
+		new_data = {"user_id":user_id, "chat_id": chat_id, "user_selections":user_selections, "previous_screen":previous_screen}
 		save_data_to_cache(CACHE_BUTTON_SELECTION, new_data)
 
 	if callback_data in user_selections:
