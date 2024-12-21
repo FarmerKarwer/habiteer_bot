@@ -14,6 +14,7 @@ from exceptions import (
 from recommender import get_ai_response
 from utils import (
 	load_json,
+	save_to_json,
 	update_user_value,
 	delete_user_records,
 	sum_arrays,
@@ -38,6 +39,7 @@ CACHE_FILEPATH = "./cache/callback_history.json"
 CACHE_PICKHABIT_FILEPATH = "./cache/picking_habit.json"
 CACHE_UPDATEHABIT_FILEPATH = "./cache/updating_habit.json"
 CACHE_KEY_PHRASE = "./cache/key_phrase.json"
+CACHE_BUTTON_SELECTION = "./cache/button_selection.json"
 
 # Load JSON data
 replies = load_json(REPLIES_FILEPATH)
@@ -65,6 +67,8 @@ callback_effectiveness_evaluation = (
 	"effectiveness_1", "effectiveness_2", "effectiveness_3", "effectiveness_4", "effectiveness_5", 
 	"effectiveness_6", "effectiveness_7", "effectiveness_8", "effectiveness_9", "effectiveness_10"
 )
+
+callback_weekdays = ("mon", "tue", "wed", "thu", "fri", "sat", "sun")
 
 db = DatabaseClient()
 
@@ -104,8 +108,8 @@ def handle_callback_query(message):
 	DEFAULT_CALLBACK_SCREENS = (
 		"scr_1", "scr_2", "scr_5", "scr_6",
 		"scr_9", "scr_10", "scr_12", "scr_13", "scr_3_3",
-		"scr_16", "scr_17", "scr_19", "scr_22", "scr_review",
-		 "scr_25", "scr_26", "scr_27",
+		"scr_16", "scr_17", "scr_19", "scr_22", "scr_22_1",
+		"scr_22_1_1", "scr_review", "scr_25", "scr_26", "scr_27",
 		"scr_28", "scr_30", "scr_31", "scr_32", "scr_33",
 		"scr_34", "scr_35", "scr_37", "scr_38", "scr_39",
 		"scr_40", "scr_41", "scr_44", "scr_plug"
@@ -152,6 +156,9 @@ def handle_callback_query(message):
 	elif callback_data in callback_predefined_triggers:
 		show_habit_repetition(user_id, chat_id, message_id, callback_data=callback_data, text=None)
 
+	elif callback_data in callback_weekdays:
+		show_choose_weekdays(user_id, chat_id, message_id, callback_data=callback_data)
+
 	elif previous_screen is not None and is_previous_screen_in_magic_wanding and callback_data=="scr_12":
 		behavior_options = None
 		update_user_value(CACHE_PICKHABIT_FILEPATH, user_id, "behavior_options", behavior_options)
@@ -178,7 +185,7 @@ def handle_callback_query(message):
 
 	elif callback_data in DEFAULT_CALLBACK_SCREENS:
 		screen_id = '_'.join(callback_data.split('_')[1:])
-		if screen_id in ("8", "13", "44"):
+		if screen_id in ("44"):
 			show_callback_reply(screen_id, delete_previous=False)
 		else:
 			show_callback_reply(screen_id)
@@ -379,7 +386,7 @@ def show_habit_info(text, user_id, chat_id, message_id, message_info):
 			"user_id": user_id,
 			"chat_id": chat_id,
 			"habit_number": habit_idx,
-			"habit_name": habit_name,
+			"habit_name": habit_name.capitalize(),
 			"status":status,
 			"aspiration":aspiration
 		}
@@ -429,6 +436,11 @@ def show_reminding_options_after_making_habit_tiny(text, chat_id, message_id, us
 	new_habit_name = text
 	update_user_value(CACHE_UPDATEHABIT_FILEPATH, user_id, "new_habit_name", new_habit_name)
 	switch_screen(replies['22'], chat_id, message_id, keyboard=get_button('scr_22'))
+
+def show_choose_weekdays(user_id, chat_id, message_id, callback_data):
+	additional_actions = json.loads(get_button('scr_22_1_1'))['inline_keyboard'][2:]
+	#additional_actions = json.dumps(additional_actions)
+	select_multiple_days(callback_data, additional_actions, user_id, chat_id, message_id)
 
 def show_premade_triggers(user_id, chat_id, message_id):
 	habit_name = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_name")
@@ -869,6 +881,43 @@ def get_button(screen_name, buttons_filepath=BUTTONS_FILEPATH):
 	"""Retrieves the button configuration for a given screen."""
 	buttons = load_json(buttons_filepath)
 	return json.dumps(buttons[screen_name])
+
+def select_multiple_days(callback_data, additional_actions, user_id, chat_id, message_id):
+
+	user_selections = get_cached_data(CACHE_BUTTON_SELECTION, user_id, chat_id, "user_selections")
+	print(user_selections)
+
+	if user_selections is None:
+		new_data = {"user_id":user_id, "chat_id": chat_id, "user_selections":[]}
+		save_data_to_cache(CACHE_BUTTON_SELECTION, new_data)
+		#user_selections[user_id] = []
+
+	if callback_data in user_selections:
+		user_selections.remove(callback_data)
+	else:
+		user_selections.append(callback_data)
+
+	print(user_selections)
+
+	update_user_value(CACHE_BUTTON_SELECTION, user_id, "user_selections", user_selections)
+
+	days = [
+		{"text": "✅ Пн" if "mon" in user_selections else "Пн", "callback_data": "mon"},
+		{"text": "✅ Вт" if "tue" in user_selections else "Вт", "callback_data": "tue"},
+		{"text": "✅ Ср" if "wed" in user_selections else "Ср", "callback_data": "wed"},
+		{"text": "✅ Чт" if "thu" in user_selections else "Чт", "callback_data": "thu"},
+	]
+	weekend = [
+		{"text": "✅ Пт" if "fri" in user_selections else "Пт", "callback_data": "fri"},
+		{"text": "✅ Сб" if "sat" in user_selections else "Сб", "callback_data": "sat"},
+		{"text": "✅ Вс" if "sun" in user_selections else "Вс", "callback_data": "sun"},
+	]
+	reply_markup = {
+		"inline_keyboard": [days, weekend]+additional_actions
+	}
+	print(additional_actions)
+	print(reply_markup)
+	tg_methods.edit_message_reply_markup(chat_id, message_id, reply_markup)
 
 
 # Checking for conditions
