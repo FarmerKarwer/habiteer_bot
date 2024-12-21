@@ -172,6 +172,33 @@ def parse_numbers(text: str) -> List[int]:
                 raise ValueError(f"Invalid number format: '{part}'")
     return numbers
 
+def parse_time_from_string(input_string):
+    """
+    Validates and parses time in the format HH:MM from a string.
+    The string must contain only the time in this format, otherwise raises a ValueError.
+
+    :param input_string: The input string to validate and parse.
+    :return: A string representing time in HH:MM format.
+    """
+    # Regular expression for matching the exact format HH:MM
+    time_pattern = r'^([01]\d|2[0-3]):[0-5]\d$'
+    match = re.fullmatch(time_pattern, input_string.strip())
+    
+    if match:
+        return match.group(0)  # Return the matched time
+    else:
+        raise ValueError("Input string must contain only time in HH:MM format.")
+
+def weekdays_to_numbers(weekdays, start_from_sunday=False):
+    # Define the mapping
+    if start_from_sunday:
+        weekday_map = {'sun': 0, 'mon': 1, 'tue': 2, 'wed': 3, 'thu': 4, 'fri': 5, 'sat': 6}
+    else:  # ISO 8601 standard
+        weekday_map = {'mon': 1, 'tue': 2, 'wed': 3, 'thu': 4, 'fri': 5, 'sat': 6, 'sun': 7}
+    
+    # Convert the list of weekdays to corresponding numbers
+    return [weekday_map[day.lower()] for day in weekdays if day.lower() in weekday_map]
+
 # Getting cache data
 def get_cached_data(filepath, user_id, chat_id, property):
     # Check if file exists and read data if so

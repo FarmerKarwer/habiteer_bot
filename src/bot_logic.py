@@ -27,6 +27,8 @@ from utils import (
 	check_matching_lengths,
 	check_minimum_length,
 	parse_numbers,
+	parse_time_from_string,
+	weekdays_to_numbers,
 )
 
 # Constants for file paths
@@ -38,6 +40,7 @@ PREMADE_TRIGGERS_FILEPATH = "./strings/triggers.json"
 CACHE_FILEPATH = "./cache/callback_history.json"
 CACHE_PICKHABIT_FILEPATH = "./cache/picking_habit.json"
 CACHE_UPDATEHABIT_FILEPATH = "./cache/updating_habit.json"
+CACHE_REPORT = "./cache/creating_report.json"
 CACHE_KEY_PHRASE = "./cache/key_phrase.json"
 CACHE_BUTTON_SELECTION = "./cache/button_selection.json"
 
@@ -94,9 +97,9 @@ def handle_callback_query(message):
 	timestamp = unix_to_timestamp(unix_timestamp)
 
 	previous_screen = get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")
+	previous_screen_button_selection = get_cached_data(CACHE_BUTTON_SELECTION, user_id, chat_id, property="previous_screen") # Fix logging issue
 	if previous_screen:
 		is_previous_screen_in_magic_wanding = bool(re.match(r"^scr_12_proxy_\d+$", previous_screen))
-	previous_screen_button_selection = get_cached_data(CACHE_BUTTON_SELECTION, user_id, chat_id, property="previous_screen")
 	is_callback_in_magic_wanding = bool(re.match(r"^scr_12_proxy_\d+$", callback_data))
 	is_callback_in_suitability_eval = bool(re.match(r"^scr_13_proxy_\d+$", callback_data))
 	is_callback_in_effectiveness_eval = bool(re.match(r"^scr_14_proxy_\d+$", callback_data))
@@ -113,7 +116,7 @@ def handle_callback_query(message):
 		 "scr_review", "scr_25", "scr_26", "scr_26_1",
 		"scr_28", "scr_30", "scr_31", "scr_32", "scr_33",
 		"scr_34", "scr_35", "scr_37", "scr_38", "scr_39",
-		"scr_40", "scr_41", "scr_44", "scr_plug"
+		"scr_40", "scr_41_add_1", "scr_44", "scr_plug"
 		)
 
 	SPECIAL_CALLBACK_HANDLERS = {
@@ -129,13 +132,15 @@ def handle_callback_query(message):
 	"scr_15": lambda: show_proposed_habits(user_id, chat_id, message_id),
 	"scr_18": lambda: show_picked_habits(user_id, chat_id, message_id, timestamp),
 	"scr_21": lambda: show_choosing_habit_type(user_id, chat_id, message_id),
-	"scr_22_1_1": lambda: show_choose_weekdays_for_habit(user_id, chat_id, message_id, scr_name='scr_22_1_1'),
+	"scr_22_1_1": lambda: show_choose_weekdays(user_id, chat_id, message_id, scr_name='scr_22_1_1'),
 	"scr_23": lambda: show_enter_your_trigger(user_id, chat_id, message_id),
 	"scr_23_1": lambda: show_premade_triggers(user_id, chat_id, message_id),
 	"scr_27": lambda: show_set_trigger_notification_confirmation(user_id, chat_id, message_id),
-	"scr_28_1": lambda: show_choose_weekdays_for_habit(user_id, chat_id, message_id, scr_name='scr_28_1'),
+	"scr_28_1": lambda: show_choose_weekdays(user_id, chat_id, message_id, scr_name='scr_28_1'),
 	"scr_review_sent": lambda: show_review_sent(user_id, chat_id, message_id, timestamp),
+	"scr_41": lambda: show_all_reports_in_settings(user_id, chat_id, message_id),
 	"scr_42": lambda: show_delete_all_data_confirmation(user_id, chat_id, message_id),
+	"scr_41_add_2": lambda: show_choose_weekdays(user_id, chat_id, message_id, scr_name='scr_41_add_2'),
 	"no_scr": lambda: tg_methods.delete_message(message_id, chat_id)
 	}
 
@@ -185,7 +190,7 @@ def handle_callback_query(message):
 		switch_screen(replies['13'], chat_id, message_id, keyboard=get_button('16_scr_13'))
 
 	elif (previous_screen=="scr_22_1_1" or previous_screen_button_selection=="scr_22_1_1") and callback_data in callback_weekdays:
-		show_choose_weekdays(user_id, chat_id, message_id, callback_data=callback_data, scr_name='scr_22_1_1')
+		show_multiple_selection(user_id, chat_id, message_id, callback_data=callback_data, scr_name='scr_22_1_1')
 	elif previous_screen=="scr_22_1" and callback_data=="scr_22_2":
 		show_choose_time_for_habit(user_id, chat_id, message_id, "scr_22_2", type="everyday")
 	elif previous_screen=="scr_22_1_1" and callback_data=="scr_22_2":
@@ -194,13 +199,22 @@ def handle_callback_query(message):
 		show_choose_time_for_habit(user_id, chat_id, message_id, "scr_22_2", type="selected_days")
 
 	elif (previous_screen=="scr_28_1"or previous_screen_button_selection=="scr_28_1") and callback_data in callback_weekdays:
-		show_choose_weekdays(user_id, chat_id, message_id, callback_data=callback_data, scr_name='scr_28_1')
+		show_multiple_selection(user_id, chat_id, message_id, callback_data=callback_data, scr_name='scr_28_1')
 	elif previous_screen=="scr_28" and callback_data=="scr_28_2":
 		show_choose_time_for_habit(user_id, chat_id, message_id, "scr_28_2", type="everyday")
 	elif previous_screen=="scr_28_1" and callback_data=="scr_28_2":
 		show_choose_time_for_habit(user_id, chat_id, message_id, "scr_28_2", type="everyday")
 	elif previous_screen in callback_weekdays and callback_data=="scr_28_2":
 		show_choose_time_for_habit(user_id, chat_id, message_id, "scr_28_2", type="selected_days")
+
+	elif (previous_screen=="scr_41_add_2"or previous_screen_button_selection=="scr_41_add_2") and callback_data in callback_weekdays:
+		show_multiple_selection(user_id, chat_id, message_id, callback_data=callback_data, scr_name='scr_41_add_2')
+	elif previous_screen=="scr_41_add_1" and callback_data=="scr_41_add_3":
+		show_choose_time_for_report(user_id, chat_id, message_id, "scr_41_add_3", type="everyday")
+	elif previous_screen=="scr_41_add_2" and callback_data=="scr_41_add_3":
+		show_choose_time_for_report(user_id, chat_id, message_id, "scr_41_add_3", type="everyday")
+	elif previous_screen in callback_weekdays and callback_data=="scr_41_add_3":
+		show_choose_time_for_report(user_id, chat_id, message_id, "scr_41_add_3", type="selected_days")
 
 	elif callback_data in DEFAULT_CALLBACK_SCREENS:
 		screen_id = '_'.join(callback_data.split('_')[1:])
@@ -293,9 +307,8 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 			switch_screen(replies['43'], chat_id, message_id, 
 							delete_previous=False, keyboard=get_button('scr_43'))
 
-		elif previous_screen=='scr_41':
-			switch_screen(replies['43'], chat_id, message_id, 
-							delete_previous=False, keyboard=get_button('scr_43'))
+		elif previous_screen=='scr_41_add_3':
+			show_add_report(text, chat_id, message_id, user_id, timestamp, message_info)
 
 		elif previous_screen=='scr_42':
 			show_user_deletion_screen(text, chat_id, message_id, user_id, message_info)
@@ -456,12 +469,12 @@ def show_reminding_options_after_making_habit_tiny(text, chat_id, message_id, us
 	update_user_value(CACHE_UPDATEHABIT_FILEPATH, user_id, "new_habit_name", new_habit_name)
 	switch_screen(replies['22'], chat_id, message_id, keyboard=get_button('scr_22'))
 
-def show_choose_weekdays_for_habit(user_id, chat_id, message_id, scr_name):
+def show_choose_weekdays(user_id, chat_id, message_id, scr_name):
 	screen_id = '_'.join(scr_name.split('_')[1:])
 	delete_user_records(CACHE_BUTTON_SELECTION, user_id)
 	switch_screen(replies[screen_id], chat_id, message_id, keyboard=get_button(scr_name))
 
-def show_choose_weekdays(user_id, chat_id, message_id, callback_data, scr_name):
+def show_multiple_selection(user_id, chat_id, message_id, callback_data, scr_name):
 	additional_actions = json.loads(get_button(scr_name))['inline_keyboard'][2:]
 	select_multiple_days(callback_data, additional_actions, user_id, chat_id, message_id)
 
@@ -492,6 +505,43 @@ def show_choose_time_for_habit(user_id, chat_id, message_id, scr_name, type=None
 			habit_reminder_time_rus = [weekdays_rus_dict[day] for day in habit_reminder_time]
 			habit_reminder_time_str_rus = ", ".join(habit_reminder_time_rus)
 			reply = replies[screen_id].replace("[period]", habit_reminder_time_str_rus)
+
+	delete_user_records(CACHE_BUTTON_SELECTION, user_id)
+	switch_screen(reply, chat_id, message_id, keyboard=get_button(scr_name))
+
+def show_choose_time_for_report(user_id, chat_id, message_id, scr_name, type=None):
+	screen_id = '_'.join(scr_name.split('_')[1:])
+	if type=="everyday":
+		report_reminder_time = callback_weekdays
+		reply = replies[screen_id].replace("[period]", "каждый день")
+	elif type=="selected_days":
+		weekdays_rus_dict = {
+			"mon":"понедельник",
+			"tue":"вторник",
+			"wed":"среда",
+			"thu":"четверг",
+			"fri":"пятница",
+			"sat":"суббота",
+			"sun":"воскресенье"
+		}
+		weekdays_order = list(weekdays_rus_dict.keys())
+		report_reminder_time = tuple(get_cached_data(CACHE_BUTTON_SELECTION, user_id, chat_id, property="user_selections"))
+
+		if report_reminder_time==callback_weekdays:
+			reply = replies[screen_id].replace("[period]", "каждый день")
+		else:
+			report_reminder_time = sorted(report_reminder_time, key=lambda day: weekdays_order.index(day))
+			report_reminder_time_rus = [weekdays_rus_dict[day] for day in report_reminder_time]
+			report_reminder_time_str_rus = ", ".join(report_reminder_time_rus)
+			reply = replies[screen_id].replace("[period]", report_reminder_time_str_rus)
+
+	new_data = {
+			"user_id": user_id,
+			"chat_id": chat_id,
+			"report_reminder_period": report_reminder_time,
+		}
+
+	save_data_to_cache(CACHE_REPORT, new_data)
 
 	delete_user_records(CACHE_BUTTON_SELECTION, user_id)
 	switch_screen(reply, chat_id, message_id, keyboard=get_button(scr_name))
@@ -892,6 +942,33 @@ def show_updated_habits_after_deletion(text, chat_id, message_id, user_id, messa
 		reply = "Номер привычки не может быть нулевым. Попробуйте ввести еще раз."
 		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_44'))
 		message_info["callback_data"]="scr_44"
+
+def show_all_reports_in_settings(user_id, chat_id, message_id):
+	user_reports = db.view_reports(user_id)
+	no_reports = len(user_reports)==0
+	main_message = replies['41']['main_message']
+	keyboard = get_button('scr_41')
+	if no_reports:
+		additional_message = replies['41']['no_report']
+	else:
+		additional_message = replies['41']['reports_exist']
+
+	reply = main_message+additional_message
+	switch_screen(reply, chat_id, message_id, keyboard=keyboard)
+
+def show_add_report(text, chat_id, message_id, user_id, timestamp, message_info):
+	try:
+		parse_time_from_string(text)
+		report_period = get_cached_data(CACHE_REPORT, user_id, chat_id, property="report_reminder_period")
+		report_period = weekdays_to_numbers(report_period)
+		report_time = text
+		db.add_report(user_id, timestamp, report_period, report_time)
+		switch_screen(replies['41_added'], chat_id, message_id, keyboard=get_button('scr_41_added'))
+		delete_user_records(CACHE_REPORT, user_id)
+	except ValueError:
+		reply="Неверно указано время.\nВремя должно быть указано в формате HH:MM. Например: 21:45.\n\nПопробуйте еще раз."
+		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_41_add_3'))
+		message_info["callback_data"]="scr_41_add_3"
 
 def show_review_confirmation(text, chat_id, message_id, user_id, message_info):
 	reply = replies['review_confirmation'].replace('[review]', text)

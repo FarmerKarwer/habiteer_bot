@@ -314,7 +314,7 @@
       [
         {
           "text": "Отчетность",
-          "callback_data": "scr_plug"
+          "callback_data": "scr_41"
         }
       ],
       [
@@ -1302,13 +1302,13 @@
     "inline_keyboard": [
       [
         {
-          "text": "Пока не знаю/пропустить",
+          "text": "Создать новый отчет",
           "callback_data": "scr_29_1"
         }
       ],
       [
         {
-          "text": "Я не хочу заполнять отчет",
+          "text": "Назад",
           "callback_data": "scr_29_2"
         }
       ],
@@ -1600,8 +1600,172 @@
     "inline_keyboard": [
       [
         {
+          "text": "Создать новый отчет",
+          "callback_data": "scr_41_add_1"
+        }
+      ],
+      [
+        {
           "text": "Назад",
           "callback_data": "scr_6"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_41_add_1":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Каждый день",
+          "callback_data": "scr_41_add_3"
+        }
+      ],
+      [
+        {
+          "text": "Выбрать дни недели >>",
+          "callback_data": "scr_41_add_2"
+        }
+      ],
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_41"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_41_add_2":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Пн",
+          "callback_data": "mon"
+        },
+        {
+          "text": "Вт",
+          "callback_data": "tue"
+        },
+        {
+          "text": "Ср",
+          "callback_data": "wed"
+        },
+        {
+          "text": "Чт",
+          "callback_data": "thu"
+        }
+      ],
+      [
+        {
+          "text": "Пт",
+          "callback_data": "fri"
+        },
+        {
+          "text": "Сб",
+          "callback_data": "sat"
+        },
+        {
+          "text": "Вс",
+          "callback_data": "sun"
+        }
+      ],
+      [
+        {
+          "text": "Подтвердить",
+          "callback_data": "scr_41_add_3"
+        }
+      ],
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_41_add_1"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_41_add_3":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_41_add_1"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_41_added":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "К отчетам",
+          "callback_data": "scr_41"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_41_1":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Изменить",
+          "callback_data": "plug"
+        }
+      ],
+      [
+        {
+          "text": "Удалить",
+          "callback_data": "scr_41_1_conf_deletion"
+        }
+      ],
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_6"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_41_1_deleted":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "К отчетам",
+          "callback_data": "scr_41"
         }
       ],
       [

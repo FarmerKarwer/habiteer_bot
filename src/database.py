@@ -2,6 +2,7 @@ import os
 import requests
 import ydb
 import secrets
+from datetime import datetime
 
 class DatabaseClient:
 	def __init__(self):
@@ -65,6 +66,25 @@ class DatabaseClient:
 	def delete_user_data(self, user_id):
 		query = f"""
 		DELETE FROM habits WHERE user_id={user_id}
+		"""
+		self.execute_query(query)
+
+	def view_reports(self, user_id):
+		query = f"""
+		SELECT * 
+		FROM user_reports WHERE user_id={user_id}
+		"""
+		result = self.execute_query(query)[0].rows
+		return result
+
+	def add_report(self, user_id, timestamp, on_weekdays, on_time):
+		unique_id = self.autoincrement_id("id", "user_reports")
+		existing_reports_num = len(self.view_reports(user_id))
+		name = f"Отчет {existing_reports_num+1}"
+		date = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S.%fZ").strftime("%Y-%m-%d")
+		query = f"""
+		INSERT INTO user_reports (id, user_id, name, start_date, created_at, on_weekdays, on_time)
+		VALUES ({unique_id}, {user_id}, '{name}', CAST('{date}' AS Date), CAST('{timestamp}' AS Timestamp), '{on_weekdays}', '{on_time}');
 		"""
 		self.execute_query(query)
 
