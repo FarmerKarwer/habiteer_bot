@@ -744,7 +744,8 @@ def show_habit_is_tracked(user_id, chat_id, message_id, callback_data=None, text
 	habit_type = "regular"
 	habit_status="tracked"
 	trigger_reminder_period = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_reminder_time")
-	trigger_reminder_period = weekdays_to_numbers(trigger_reminder_period)
+	if trigger_reminder_period:
+		trigger_reminder_period = weekdays_to_numbers(trigger_reminder_period)
 	trigger_reminder_time = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="trigger_reminder_time")
 
 	data_to_update = {
