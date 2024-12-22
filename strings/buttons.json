@@ -1330,22 +1330,6 @@
       ]
     ]
   },
-  "scr_29_2":{
-    "inline_keyboard": [
-      [
-        {
-          "text": "Далее",
-          "callback_data": "scr_20"
-        }
-      ],
-      [
-        {
-          "text": "В главное меню",
-          "callback_data": "scr_1"
-        }
-      ]
-    ]
-  },
   "scr_30":{
     "inline_keyboard": [
       [
