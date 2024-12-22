@@ -463,6 +463,8 @@ def show_habit_info(text, user_id, chat_id, message_id, message_info):
 
 			habit_type = habits[habit_idx].get("type")
 			trigger_type = habits[habit_idx].get("trigger_type")
+			report_id = habits[habit_idx].get("report_id")
+			report_name = db.get_report_by_id(report_id)[0].get("name")
 			if trigger_type=="notification":
 				trigger_time = habits[habit_idx].get("trigger_reminder_time")
 				trigger_period = habits[habit_idx].get("trigger_reminder_period")
@@ -479,6 +481,7 @@ def show_habit_info(text, user_id, chat_id, message_id, message_info):
 				trigger_desc = habits[habit_idx].get("trigger_action_desc")
 
 			reply = reply.replace('[trigger]', trigger_desc)
+			reply = reply.replace('[report]', report_name)
 			if habit_type == "regular":
 				reply = reply.replace('[type]', "Обычная")
 			elif habit_type == "harmful":

@@ -105,6 +105,14 @@ class DatabaseClient:
 		result = self.execute_query(query)[0].rows
 		return result
 
+	def get_report_by_id(self, report_id):
+		query = f"""
+		SELECT * 
+		FROM user_reports WHERE id={report_id};
+		"""
+		result = self.execute_query(query)[0].rows
+		return result
+
 	def delete_report(self, report_id):
 		query = f"""
 		DELETE FROM user_reports WHERE id={report_id};
