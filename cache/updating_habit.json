@@ -2,15 +2,16 @@
     {
         "user_id": 940985788,
         "chat_id": 940985788,
-        "habit_number": 0,
-        "habit_name": "Выпить стакан воды",
+        "habit_number": 2,
+        "habit_name": "Ходить во время телефонных разговоров",
         "status": null,
-        "aspiration": "None",
-        "id": 23,
+        "aspiration": "вести подвижный образ жизни",
+        "id": 30,
         "habit_reminder_time": [
-            "mon",
             "sat",
-            "wed"
-        ]
+            "wed",
+            "tue"
+        ],
+        "trigger_reminder_time": "21:23"
     }
 ]

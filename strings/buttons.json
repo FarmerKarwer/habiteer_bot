@@ -1046,7 +1046,7 @@
       [
         {
           "text": "Я отрепетировал",
-          "callback_data": "scr_20"
+          "callback_data": "scr_29"
         }
       ],
       [
@@ -1183,7 +1183,7 @@
       [
         {
           "text": "Нет",
-          "callback_data": "scr_20"
+          "callback_data": "scr_29"
         }
       ],
       [
@@ -1303,13 +1303,7 @@
       [
         {
           "text": "Создать новый отчет",
-          "callback_data": "scr_29_1"
-        }
-      ],
-      [
-        {
-          "text": "Назад",
-          "callback_data": "scr_29_2"
+          "callback_data": "scr_plug"
         }
       ],
       [

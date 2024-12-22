@@ -140,6 +140,7 @@ def handle_callback_query(message):
 	"scr_23_1": lambda: show_premade_triggers(user_id, chat_id, message_id),
 	"scr_27": lambda: show_set_trigger_notification_confirmation(user_id, chat_id, message_id),
 	"scr_28_1": lambda: show_choose_weekdays(user_id, chat_id, message_id, scr_name='scr_28_1'),
+	"scr_29": lambda: show_pick_report_for_habit(user_id, chat_id, message_id, callback_data=callback_data),
 	"scr_review_sent": lambda: show_review_sent(user_id, chat_id, message_id, timestamp),
 	"scr_41": lambda: show_all_reports_in_settings(user_id, chat_id, message_id),
 	"scr_41_1": lambda: show_choose_report(callback_data, user_id, chat_id, message_id),
@@ -291,9 +292,8 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 			switch_screen(replies['20'], chat_id, message_id, 
 							delete_previous=False, keyboard=get_button('scr_20'))
 
-		elif previous_screen=='scr_28':
-			switch_screen(replies['20'], chat_id, message_id, 
-							delete_previous=False, keyboard=get_button('scr_20'))
+		elif previous_screen in ("scr_22_2", "scr_28_2"):
+			show_pick_report_for_habit(user_id, chat_id, message_id, text=text, message_info=message_info)
 
 		elif previous_screen=='scr_31':
 			switch_screen(replies['7'], chat_id, message_id, 
@@ -628,6 +628,58 @@ def show_set_trigger_notification_confirmation(user_id, chat_id, message_id):
 	reply = reply.replace('[habit]', habit_name)
 
 	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_27'))
+
+def show_pick_report_for_habit(user_id, chat_id, message_id, callback_data=None, text=None, message_info=None):
+	user_reports = db.view_reports(user_id)
+	no_reports = len(user_reports)==0
+	main_message = replies['29']['main_message']
+
+	if text:
+		try:
+			parse_time_from_string(text)
+			notification_time = text
+			update_user_value(CACHE_UPDATEHABIT_FILEPATH, user_id, "trigger_reminder_time", notification_time)
+		except ValueError:
+			previous_screen = get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")
+			reply="Неверно указано время.\nВремя должно быть указано в формате HH:MM. Например: 21:45.\n\nПопробуйте еще раз."
+			switch_screen(reply, chat_id, message_id, keyboard=get_button(previous_screen))
+			message_info["callback_data"]=previous_screen
+			return
+	
+	if no_reports:
+		additional_message = replies['29']['no_report']
+	else:
+		weekdays_rus_dict = {
+			"mon":"понедельник",
+			"tue":"вторник",
+			"wed":"среда",
+			"thu":"четверг",
+			"fri":"пятница",
+			"sat":"суббота",
+			"sun":"воскресенье"
+		}
+		weekdays_order = list(weekdays_rus_dict.keys())
+		additional_message = replies['29']['reports_exist']
+		report_strs = {}
+		for report in user_reports:
+			report_name = report.get("name")
+			report_time = report.get("on_time")
+			report_period = json.loads(report.get("on_weekdays"))
+			report_period = numbers_to_weekdays(report_period)
+			report_period = sorted(report_period, key=lambda day: weekdays_order.index(day))
+			if tuple(report_period) == callback_weekdays:
+				report_period_str_rus = "каждый день"+f" в {report_time}"
+			else:
+				report_period_rus = [weekdays_rus_dict[day] for day in report_period]
+				report_period_str_rus = ", ".join(report_period_rus)
+				report_period_str_rus = report_period_str_rus+f" в {report_time}"
+			report_strs.update({report_name:report_period_str_rus})
+		formatted_schedule = '\n'.join([f"*{report}*: _{time}_" for report, time in report_strs.items()])
+		additional_message = additional_message.replace('[reports]', formatted_schedule)
+
+	reply = main_message+additional_message
+	keyboard = add_report_buttons('scr_29', user_id)
+	switch_screen(reply, chat_id, message_id, keyboard=keyboard)
 
 def show_aspirations(chat_id, message_id):
 	aspirations_str = format_numbered_list(aspirations)
@@ -1043,15 +1095,21 @@ def show_report_deleted(user_id, chat_id, message_id):
 	switch_screen(replies['41_1_deleted'], chat_id, message_id, keyboard=get_button('scr_41_1_deleted'))
 
 def show_report_changed(text, user_id, chat_id, message_id, timestamp):
-	report_id = get_cached_data(CACHE_REPORT, user_id, chat_id, property="report_id")
-	report_reminder_period = get_cached_data(CACHE_REPORT, user_id, chat_id, property="report_reminder_period")
-	report_reminder_period = weekdays_to_numbers(report_reminder_period)
-	report_reminder_time = text
-	db.update_report(report_id, 'on_weekdays', f"'{report_reminder_period}'")
-	db.update_report(report_id, 'on_time', f"'{report_reminder_time}'")
-	db.update_report(report_id, 'updated_at', f"CAST('{timestamp}' AS Timestamp)")
+	try:
+		parse_time_from_string(text)
+		report_id = get_cached_data(CACHE_REPORT, user_id, chat_id, property="report_id")
+		report_reminder_period = get_cached_data(CACHE_REPORT, user_id, chat_id, property="report_reminder_period")
+		report_reminder_period = weekdays_to_numbers(report_reminder_period)
+		report_reminder_time = text
+		db.update_report(report_id, 'on_weekdays', f"'{report_reminder_period}'")
+		db.update_report(report_id, 'on_time', f"'{report_reminder_time}'")
+		db.update_report(report_id, 'updated_at', f"CAST('{timestamp}' AS Timestamp)")
 
-	switch_screen(replies['41_1_changed'], chat_id, message_id, keyboard=get_button('scr_41_1_changed'))
+		switch_screen(replies['41_1_changed'], chat_id, message_id, keyboard=get_button('scr_41_1_changed'))
+	except ValueError:
+		reply="Неверно указано время.\nВремя должно быть указано в формате HH:MM. Например: 21:45.\n\nПопробуйте еще раз."
+		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_41_1_change_3'))
+		message_info["callback_data"]="scr_41_1_change_3"
 
 def show_review_confirmation(text, chat_id, message_id, user_id, message_info):
 	reply = replies['review_confirmation'].replace('[review]', text)
