@@ -118,7 +118,8 @@ def handle_callback_query(message):
 		 "scr_review", "scr_25", "scr_26", "scr_26_1",
 		"scr_28", "scr_30", "scr_31", "scr_32", "scr_33",
 		"scr_34", "scr_35", "scr_37", "scr_38", "scr_39",
-		"scr_40", "scr_41_add_1", "scr_41_1_conf_deletion", "scr_44", "scr_plug"
+		"scr_40", "scr_41_add_1", "scr_41_1_conf_deletion", "scr_41_1_change_1", 
+		"scr_44", "scr_plug"
 		)
 
 	SPECIAL_CALLBACK_HANDLERS = {
@@ -145,6 +146,7 @@ def handle_callback_query(message):
 	"scr_41_1_deleted": lambda: show_report_deleted(user_id, chat_id, message_id),
 	"scr_42": lambda: show_delete_all_data_confirmation(user_id, chat_id, message_id),
 	"scr_41_add_2": lambda: show_choose_weekdays(user_id, chat_id, message_id, scr_name='scr_41_add_2'),
+	"scr_41_1_change_2": lambda: show_choose_weekdays(user_id, chat_id, message_id, scr_name='scr_41_1_change_2'),
 	"no_scr": lambda: tg_methods.delete_message(message_id, chat_id)
 	}
 
@@ -211,6 +213,18 @@ def handle_callback_query(message):
 	elif previous_screen in callback_weekdays and callback_data=="scr_28_2":
 		show_choose_time_for_habit(user_id, chat_id, message_id, "scr_28_2", type="selected_days")
 
+	elif (previous_screen=="scr_41_1_change_2"or previous_screen_button_selection=="scr_41_1_change_2") and callback_data in callback_weekdays:
+		show_multiple_selection(user_id, chat_id, message_id, callback_data=callback_data, scr_name='scr_41_1_change_2')
+	elif previous_screen=="scr_41_1_change_1" and callback_data=="scr_41_1_change_3":
+		show_choose_time_for_report(user_id, chat_id, message_id, "scr_41_1_change_3", type="everyday")
+	elif previous_screen=="scr_41_1_change_2" and callback_data=="scr_41_1_change_3":
+		show_choose_time_for_report(user_id, chat_id, message_id, "scr_41_add_3", type="everyday")
+	elif previous_screen in callback_weekdays and callback_data=="scr_41_1_change_3":
+		show_choose_time_for_report(user_id, chat_id, message_id, "scr_41_1_change_3", type="selected_days")
+
+	elif previous_screen=="scr_41" and is_callback_in_reports:
+		show_choose_report(callback_data, user_id, chat_id, message_id)
+
 	elif (previous_screen=="scr_41_add_2"or previous_screen_button_selection=="scr_41_add_2") and callback_data in callback_weekdays:
 		show_multiple_selection(user_id, chat_id, message_id, callback_data=callback_data, scr_name='scr_41_add_2')
 	elif previous_screen=="scr_41_add_1" and callback_data=="scr_41_add_3":
@@ -219,9 +233,6 @@ def handle_callback_query(message):
 		show_choose_time_for_report(user_id, chat_id, message_id, "scr_41_add_3", type="everyday")
 	elif previous_screen in callback_weekdays and callback_data=="scr_41_add_3":
 		show_choose_time_for_report(user_id, chat_id, message_id, "scr_41_add_3", type="selected_days")
-
-	elif previous_screen=="scr_41" and is_callback_in_reports:
-		show_choose_report(callback_data, user_id, chat_id, message_id)
 
 	elif callback_data in DEFAULT_CALLBACK_SCREENS:
 		screen_id = '_'.join(callback_data.split('_')[1:])
@@ -316,6 +327,9 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 
 		elif previous_screen=='scr_41_add_3':
 			show_add_report(text, chat_id, message_id, user_id, timestamp, message_info)
+
+		elif previous_screen=='scr_41_1_change_3':
+			show_report_changed(text, user_id, chat_id, message_id, timestamp)
 
 		elif previous_screen=='scr_42':
 			show_user_deletion_screen(text, chat_id, message_id, user_id, message_info)
@@ -547,8 +561,10 @@ def show_choose_time_for_report(user_id, chat_id, message_id, scr_name, type=Non
 			"chat_id": chat_id,
 			"report_reminder_period": report_reminder_time,
 		}
-
-	save_data_to_cache(CACHE_REPORT, new_data)
+	if get_cached_data(CACHE_REPORT, user_id, chat_id, property="report_id") is None:
+		save_data_to_cache(CACHE_REPORT, new_data)
+	else:
+		update_user_value(CACHE_REPORT, user_id, "report_reminder_period", report_reminder_time)
 
 	delete_user_records(CACHE_BUTTON_SELECTION, user_id)
 	switch_screen(reply, chat_id, message_id, keyboard=get_button(scr_name))
@@ -1025,6 +1041,17 @@ def show_report_deleted(user_id, chat_id, message_id):
 	report_id = get_cached_data(CACHE_REPORT, user_id, chat_id, property="report_id")
 	db.delete_report(report_id)
 	switch_screen(replies['41_1_deleted'], chat_id, message_id, keyboard=get_button('scr_41_1_deleted'))
+
+def show_report_changed(text, user_id, chat_id, message_id, timestamp):
+	report_id = get_cached_data(CACHE_REPORT, user_id, chat_id, property="report_id")
+	report_reminder_period = get_cached_data(CACHE_REPORT, user_id, chat_id, property="report_reminder_period")
+	report_reminder_period = weekdays_to_numbers(report_reminder_period)
+	report_reminder_time = text
+	db.update_report(report_id, 'on_weekdays', f"'{report_reminder_period}'")
+	db.update_report(report_id, 'on_time', f"'{report_reminder_time}'")
+	db.update_report(report_id, 'updated_at', f"CAST('{timestamp}' AS Timestamp)")
+
+	switch_screen(replies['41_1_changed'], chat_id, message_id, keyboard=get_button('scr_41_1_changed'))
 
 def show_review_confirmation(text, chat_id, message_id, user_id, message_info):
 	reply = replies['review_confirmation'].replace('[review]', text)

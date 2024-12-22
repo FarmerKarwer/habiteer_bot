@@ -1737,7 +1737,7 @@
       [
         {
           "text": "Изменить",
-          "callback_data": "plug"
+          "callback_data": "scr_41_1_change_1"
         }
       ],
       [
@@ -1749,6 +1749,120 @@
       [
         {
           "text": "Назад",
+          "callback_data": "scr_41"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_41_1_change_1":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Каждый день",
+          "callback_data": "scr_41_1_change_3"
+        }
+      ],
+      [
+        {
+          "text": "Выбрать дни недели >>",
+          "callback_data": "scr_41_1_change_2"
+        }
+      ],
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_41_1"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_41_1_change_2":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Пн",
+          "callback_data": "mon"
+        },
+        {
+          "text": "Вт",
+          "callback_data": "tue"
+        },
+        {
+          "text": "Ср",
+          "callback_data": "wed"
+        },
+        {
+          "text": "Чт",
+          "callback_data": "thu"
+        }
+      ],
+      [
+        {
+          "text": "Пт",
+          "callback_data": "fri"
+        },
+        {
+          "text": "Сб",
+          "callback_data": "sat"
+        },
+        {
+          "text": "Вс",
+          "callback_data": "sun"
+        }
+      ],
+      [
+        {
+          "text": "Подтвердить",
+          "callback_data": "scr_41_1_change_3"
+        }
+      ],
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_41_1_change_1"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_41_1_change_3":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_41_1_change_1"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_41_1_changed":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "К отчетам",
           "callback_data": "scr_41"
         }
       ],

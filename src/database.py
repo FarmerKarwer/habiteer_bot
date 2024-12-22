@@ -88,6 +88,14 @@ class DatabaseClient:
 		"""
 		self.execute_query(query)
 
+	def update_report(self, report_id, column, value):
+		query = f"""
+		UPDATE user_reports
+		SET {column} = {value}
+		WHERE id={report_id};
+		"""
+		self.execute_query(query)
+
 	def get_report(self, user_id, report_num):
 		name = f"Отчет {report_num}"
 		query = f"""
