@@ -430,6 +430,49 @@
     ]
   },
 
+  "scr_3_1_pending":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Начать репетицию",
+          "callback_data": "scr_3_2_proxy"
+        }
+      ],
+      [
+        {
+          "text": "Изменить название",
+          "callback_data": "scr_19"
+        }
+      ],
+      
+      [
+        {
+          "text": "Добавить стремление",
+          "callback_data": "scr_3_3"
+        }
+      ],
+
+      [
+        {
+          "text": "Изменить триггер",
+          "callback_data": "scr_3_8"
+        }
+      ],
+      [
+        {
+          "text": "К списку привычек",
+          "callback_data": "scr_3"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+
   "scr_3_3":{
     "inline_keyboard":[
         [
