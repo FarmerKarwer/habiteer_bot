@@ -952,6 +952,7 @@ def show_all_reports_in_settings(user_id, chat_id, message_id):
 		additional_message = replies['41']['no_report']
 	else:
 		additional_message = replies['41']['reports_exist']
+		keyboard = add_report_buttons('scr_41', user_id)
 
 	reply = main_message+additional_message
 	switch_screen(reply, chat_id, message_id, keyboard=keyboard)
@@ -1058,6 +1059,22 @@ def select_multiple_days(callback_data, additional_actions, user_id, chat_id, me
 	}
 	tg_methods.edit_message_reply_markup(chat_id, message_id, reply_markup)
 
+def add_report_buttons(keyboard_name, user_id):
+	keyboard = json.loads(get_button(keyboard_name))
+	reports = db.view_reports(user_id)
+	if len(reports)==0:
+		return None
+	else:
+		report_names = [report.get('name') for report in reports]
+		report_rows = []
+		for i in range(0, len(report_names), 3):
+			report_rows.append([
+				{"text": report, "callback_data": f"report_{index+1}"}
+				for index, report in enumerate(report_names[i:i+3], start=i)
+			])
+		keyboard["inline_keyboard"] = report_rows+keyboard["inline_keyboard"]
+		keyboard=json.dumps(keyboard)
+		return keyboard
 
 # Checking for conditions
 def text_message_is_entered(message):
