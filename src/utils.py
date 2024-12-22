@@ -1,7 +1,7 @@
 import json
 import os
 import re
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from typing import Any, Callable, Dict, List, Optional
 from exceptions import (
     ValueOutOfRangeError,
@@ -188,6 +188,67 @@ def parse_time_from_string(input_string):
         return match.group(0)  # Return the matched time
     else:
         raise ValueError("Input string must contain only time in HH:MM format.")
+
+def validate_marginal_datetime_entry(user_input):
+    """
+    Validates if the user input matches the format:
+    'Через X дн в HH:MM'
+    Example: 'через 0 дн в 21:25'
+    Negative values are NOT allowed.
+    
+    Args:
+        user_input (str): The user input to validate.
+    
+    Returns:
+        bool: True if the input matches the format, False otherwise.
+    """
+    # Define the regex pattern for validation
+    pattern = r"(?i)^через (\d{1,2}) дн в ([01]\d|2[0-3]):([0-5]\d)$"
+    
+    # Check if the input matches the pattern
+    if re.match(pattern, user_input):
+        return True
+    else:
+        raise ValueError("Input string must match 'Через X дн в HH:MM' format.")
+
+def calculate_datetime_margin_from_user_input(user_input, timestamp, user_timezone_offset=3):
+    """
+    Calculate a timestamp based on the input format 'Через X дн в HH:MM'.
+    
+    Args:
+        user_input (str): User input, e.g., 'Через 1 дн в 14:30'.
+    
+    Returns:
+        datetime: Future timestamp based on the input.
+    """
+    # Define the regex to extract values
+    pattern = r"^через (\d+) дн в ([01]?\d|2[0-3]):([0-5]\d)$"
+    match = re.match(pattern, user_input, re.IGNORECASE)
+
+    if not match:
+        raise ValueError("Invalid input format. Please use 'Через X дн в HH:MM'.")
+
+    # Extract values from input
+    days = int(match.group(1))
+    hours = int(match.group(2))
+    minutes = int(match.group(3))
+
+    # Get the current timestamp
+    current_time = timestamp
+    current_time = datetime.strptime(current_time, "%Y-%m-%dT%H:%M:%S.%fZ")
+
+    user_local_time = current_time + timedelta(hours=user_timezone_offset)
+
+    # Calculate the future timestamp
+    future_date = current_time + timedelta(days=days)
+    precise_time = future_date.replace(hour=hours, minute=minutes, second=0)
+
+    if precise_time<=user_local_time:
+        raise ValueOutOfRangeError
+
+    target_utc_time = precise_time - timedelta(hours=user_timezone_offset)
+
+    return target_utc_time
 
 def weekdays_to_numbers(weekdays, start_from_sunday=False):
     # Define the mapping

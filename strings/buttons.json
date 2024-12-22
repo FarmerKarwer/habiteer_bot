@@ -385,7 +385,7 @@
       [
         {
           "text": "Отметить привычку",
-          "callback_data": "scr_3_2_proxy"
+          "callback_data": "scr_plug"
         }
       ],
       [
@@ -405,14 +405,14 @@
       [
         {
           "text": "Изменить триггер",
-          "callback_data": "scr_3_8"
+          "callback_data": "scr_plug"
         }
       ],
       
       [
         {
           "text": "Настроить отчетность",
-          "callback_data": "scr_3_4"
+          "callback_data": "scr_plug"
         }
       ],
       [
@@ -435,7 +435,7 @@
       [
         {
           "text": "Начать репетицию",
-          "callback_data": "scr_3_2_proxy"
+          "callback_data": "scr_plug"
         }
       ],
       [
@@ -455,7 +455,7 @@
       [
         {
           "text": "Изменить триггер",
-          "callback_data": "scr_3_8"
+          "callback_data": "scr_plug"
         }
       ],
       [
@@ -1095,13 +1095,13 @@
       [
         {
           "text": "Хочу от нее отказаться",
-          "callback_data": "scr_30"
+          "callback_data": "scr_plug"
         }
       ],
       [
         {
           "text": "Хочу выполнить один раз",
-          "callback_data": "scr_38"
+          "callback_data": "scr_plug"
         }
       ],
       [
@@ -1449,6 +1449,16 @@
           "callback_data": "scr_26"
         }
       ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_26_2":{
+    "inline_keyboard": [
       [
         {
           "text": "В главное меню",
