@@ -29,6 +29,7 @@ from utils import (
 	parse_numbers,
 	parse_time_from_string,
 	weekdays_to_numbers,
+	numbers_to_weekdays,
 )
 
 # Constants for file paths
@@ -103,6 +104,7 @@ def handle_callback_query(message):
 	is_callback_in_magic_wanding = bool(re.match(r"^scr_12_proxy_\d+$", callback_data))
 	is_callback_in_suitability_eval = bool(re.match(r"^scr_13_proxy_\d+$", callback_data))
 	is_callback_in_effectiveness_eval = bool(re.match(r"^scr_14_proxy_\d+$", callback_data))
+	is_callback_in_reports = bool(re.match(r"^report_\d+$", callback_data))
 
 	def show_callback_reply(screen_id, delete_previous=True):
 		switch_screen(replies[screen_id], chat_id, message_id, delete_previous=delete_previous,
@@ -116,7 +118,7 @@ def handle_callback_query(message):
 		 "scr_review", "scr_25", "scr_26", "scr_26_1",
 		"scr_28", "scr_30", "scr_31", "scr_32", "scr_33",
 		"scr_34", "scr_35", "scr_37", "scr_38", "scr_39",
-		"scr_40", "scr_41_add_1", "scr_44", "scr_plug"
+		"scr_40", "scr_41_add_1", "41_1_conf_deletion", "scr_44", "scr_plug"
 		)
 
 	SPECIAL_CALLBACK_HANDLERS = {
@@ -215,6 +217,9 @@ def handle_callback_query(message):
 		show_choose_time_for_report(user_id, chat_id, message_id, "scr_41_add_3", type="everyday")
 	elif previous_screen in callback_weekdays and callback_data=="scr_41_add_3":
 		show_choose_time_for_report(user_id, chat_id, message_id, "scr_41_add_3", type="selected_days")
+
+	elif previous_screen=="scr_41" and is_callback_in_reports:
+		show_choose_report(callback_data, user_id, chat_id, message_id)
 
 	elif callback_data in DEFAULT_CALLBACK_SCREENS:
 		screen_id = '_'.join(callback_data.split('_')[1:])
@@ -970,6 +975,46 @@ def show_add_report(text, chat_id, message_id, user_id, timestamp, message_info)
 		reply="Неверно указано время.\nВремя должно быть указано в формате HH:MM. Например: 21:45.\n\nПопробуйте еще раз."
 		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_41_add_3'))
 		message_info["callback_data"]="scr_41_add_3"
+
+def show_choose_report(callback_data, user_id, chat_id, message_id):
+	weekdays_rus_dict = {
+			"mon":"понедельник",
+			"tue":"вторник",
+			"wed":"среда",
+			"thu":"четверг",
+			"fri":"пятница",
+			"sat":"суббота",
+			"sun":"воскресенье"
+		}
+	weekdays_order = list(weekdays_rus_dict.keys())
+
+	report_num = callback_data.split("_")[-1]
+	report = db.get_report(user_id, report_num)[0]
+	report_info = {"user_id": user_id,
+					"chat_id":chat_id,
+					"report_id":report.get("id"), 
+					"report_name":report.get("name"), 
+					"report_period":report.get("on_weekdays"),
+					"report_time":report.get("on_time")}
+
+	print(report_info)
+	save_data_to_cache(CACHE_REPORT, report_info)
+
+	reply = replies['41_1'].replace("[report_name]", report_info["report_name"])
+	report_period = json.loads(report_info["report_period"])
+	report_period = numbers_to_weekdays(report_period)
+	report_period = sorted(report_period, key=lambda day: weekdays_order.index(day))
+	if tuple(report_period) == callback_weekdays:
+		report_period_str_rus = "каждый день"+f" в {report_info["report_time"]}"
+		reply = reply.replace("[report_period]", report_period_str_rus)
+		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_41_1'))
+		return
+	report_period_rus = [weekdays_rus_dict[day] for day in report_period]
+	report_period_str_rus = ", ".join(report_period_rus)
+	report_period_str_rus = report_period_str_rus+f" в {report_info["report_time"]}"
+	reply = reply.replace("[report_period]", report_period_str_rus)
+
+	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_41_1'))
 
 def show_review_confirmation(text, chat_id, message_id, user_id, message_info):
 	reply = replies['review_confirmation'].replace('[review]', text)

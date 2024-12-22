@@ -1749,7 +1749,27 @@
       [
         {
           "text": "Назад",
-          "callback_data": "scr_6"
+          "callback_data": "scr_41"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_41_1_conf_deletion":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Да",
+          "callback_data": "scr_41_1_deleted"
+        },
+        {
+          "text": "Нет",
+          "callback_data": "scr_41_1"
         }
       ],
       [

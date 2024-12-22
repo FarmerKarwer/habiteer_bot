@@ -199,6 +199,16 @@ def weekdays_to_numbers(weekdays, start_from_sunday=False):
     # Convert the list of weekdays to corresponding numbers
     return [weekday_map[day.lower()] for day in weekdays if day.lower() in weekday_map]
 
+def numbers_to_weekdays(numbers, start_from_sunday=False):
+    # Define the mapping
+    if start_from_sunday:
+        number_map = {0: 'sun', 1: 'mon', 2: 'tue', 3: 'wed', 4: 'thu', 5: 'fri', 6: 'sat'}
+    else:  # ISO 8601 standard
+        number_map = {1: 'mon', 2: 'tue', 3: 'wed', 4: 'thu', 5: 'fri', 6: 'sat', 7: 'sun'}
+    
+    # Convert the list of numbers to corresponding weekdays
+    return [number_map[num] for num in numbers if num in number_map]
+
 # Getting cache data
 def get_cached_data(filepath, user_id, chat_id, property):
     # Check if file exists and read data if so

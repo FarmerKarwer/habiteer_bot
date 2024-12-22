@@ -88,6 +88,15 @@ class DatabaseClient:
 		"""
 		self.execute_query(query)
 
+	def get_report(self, user_id, report_num):
+		name = f"Отчет {report_num}"
+		query = f"""
+		SELECT * 
+		FROM user_reports WHERE user_id={user_id} AND name='{name}';
+		"""
+		result = self.execute_query(query)[0].rows
+		return result
+
 	def send_review(self, user_id, text, timestamp):
 		unique_id = self.autoincrement_id("id", "reviews")
 		query = f"""
