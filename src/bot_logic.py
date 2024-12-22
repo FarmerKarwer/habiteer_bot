@@ -438,6 +438,16 @@ def show_user_habits(user_id, chat_id, message_id):
 
 def show_habit_info(text, user_id, chat_id, message_id, message_info):
 	habits = db.view_habits(user_id)
+	weekdays_rus_dict = {
+			"mon":"понедельник",
+			"tue":"вторник",
+			"wed":"среда",
+			"thu":"четверг",
+			"fri":"пятница",
+			"sat":"суббота",
+			"sun":"воскресенье"
+		}
+	weekdays_order = list(weekdays_rus_dict.keys())
 	try:
 		habit_idx = int(text)-1
 		habit_id = habits[habit_idx].get("id")
@@ -450,6 +460,31 @@ def show_habit_info(text, user_id, chat_id, message_id, message_info):
 		elif status=="tracked":
 			reply = replies['3_1']['tracked'].replace('[habit]', habit_name)
 			keyboard = get_button('scr_3_1_tracked')
+
+			habit_type = habits[habit_idx].get("type")
+			trigger_type = habits[habit_idx].get("trigger_type")
+			if trigger_type=="notification":
+				trigger_time = habits[habit_idx].get("trigger_reminder_time")
+				trigger_period = habits[habit_idx].get("trigger_reminder_period")
+				trigger_period = json.loads(trigger_period)
+				trigger_period = numbers_to_weekdays(trigger_period)
+				trigger_period = sorted(trigger_period, key=lambda day: weekdays_order.index(day))
+				if tuple(trigger_period) == callback_weekdays:
+					trigger_desc = f"Каждый день в {trigger_time}"
+				else:
+					trigger_period = [weekdays_rus_dict[day] for day in trigger_period]
+					trigger_period = ", ".join(trigger_period)
+					trigger_desc = f"Каждый {trigger_period} в {trigger_time}"
+			elif trigger_type=="behavior":
+				trigger_desc = habits[habit_idx].get("trigger_action_desc")
+
+			reply = reply.replace('[trigger]', trigger_desc)
+			if habit_type == "regular":
+				reply = reply.replace('[type]', "Обычная")
+			elif habit_type == "harmful":
+				reply = reply.replace('[type]', "Вредная")
+			elif habit_type == "one-time":
+				reply = reply.replace('[type]', "Одноразовая")
 
 		if aspiration is None or aspiration=="None":
 			reply = reply.replace('[aspiration]', '_не указано_')
