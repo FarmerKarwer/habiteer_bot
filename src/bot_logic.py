@@ -118,7 +118,7 @@ def handle_callback_query(message):
 		 "scr_review", "scr_25", "scr_26", "scr_26_1",
 		"scr_28", "scr_30", "scr_31", "scr_32", "scr_33",
 		"scr_34", "scr_35", "scr_37", "scr_38", "scr_39",
-		"scr_40", "scr_41_add_1", "41_1_conf_deletion", "scr_44", "scr_plug"
+		"scr_40", "scr_41_add_1", "scr_41_1_conf_deletion", "scr_44", "scr_plug"
 		)
 
 	SPECIAL_CALLBACK_HANDLERS = {
@@ -141,6 +141,8 @@ def handle_callback_query(message):
 	"scr_28_1": lambda: show_choose_weekdays(user_id, chat_id, message_id, scr_name='scr_28_1'),
 	"scr_review_sent": lambda: show_review_sent(user_id, chat_id, message_id, timestamp),
 	"scr_41": lambda: show_all_reports_in_settings(user_id, chat_id, message_id),
+	"scr_41_1": lambda: show_choose_report(callback_data, user_id, chat_id, message_id),
+	"scr_41_1_deleted": lambda: show_report_deleted(user_id, chat_id, message_id),
 	"scr_42": lambda: show_delete_all_data_confirmation(user_id, chat_id, message_id),
 	"scr_41_add_2": lambda: show_choose_weekdays(user_id, chat_id, message_id, scr_name='scr_41_add_2'),
 	"no_scr": lambda: tg_methods.delete_message(message_id, chat_id)
@@ -987,8 +989,11 @@ def show_choose_report(callback_data, user_id, chat_id, message_id):
 			"sun":"воскресенье"
 		}
 	weekdays_order = list(weekdays_rus_dict.keys())
-
-	report_num = callback_data.split("_")[-1]
+	if callback_data == "scr_41_1":
+		report_num = get_cached_data(CACHE_REPORT, user_id, chat_id, property="report_name")
+		report_num = report_num.split(" ")[-1]
+	else:
+		report_num = callback_data.split("_")[-1]
 	report = db.get_report(user_id, report_num)[0]
 	report_info = {"user_id": user_id,
 					"chat_id":chat_id,
@@ -997,8 +1002,8 @@ def show_choose_report(callback_data, user_id, chat_id, message_id):
 					"report_period":report.get("on_weekdays"),
 					"report_time":report.get("on_time")}
 
-	print(report_info)
-	save_data_to_cache(CACHE_REPORT, report_info)
+	if callback_data != "scr_41_1":
+		save_data_to_cache(CACHE_REPORT, report_info)
 
 	reply = replies['41_1'].replace("[report_name]", report_info["report_name"])
 	report_period = json.loads(report_info["report_period"])
@@ -1015,6 +1020,11 @@ def show_choose_report(callback_data, user_id, chat_id, message_id):
 	reply = reply.replace("[report_period]", report_period_str_rus)
 
 	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_41_1'))
+
+def show_report_deleted(user_id, chat_id, message_id):
+	report_id = get_cached_data(CACHE_REPORT, user_id, chat_id, property="report_id")
+	db.delete_report(report_id)
+	switch_screen(replies['41_1_deleted'], chat_id, message_id, keyboard=get_button('scr_41_1_deleted'))
 
 def show_review_confirmation(text, chat_id, message_id, user_id, message_info):
 	reply = replies['review_confirmation'].replace('[review]', text)

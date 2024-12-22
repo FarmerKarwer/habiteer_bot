@@ -97,6 +97,12 @@ class DatabaseClient:
 		result = self.execute_query(query)[0].rows
 		return result
 
+	def delete_report(self, report_id):
+		query = f"""
+		DELETE FROM user_reports WHERE id={report_id};
+		"""
+		self.execute_query(query)
+
 	def send_review(self, user_id, text, timestamp):
 		unique_id = self.autoincrement_id("id", "reviews")
 		query = f"""
