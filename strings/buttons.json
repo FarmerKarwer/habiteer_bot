@@ -1545,7 +1545,7 @@
       [
         {
           "text": "Создать новый отчет",
-          "callback_data": "scr_plug"
+          "callback_data": "scr_29_add_1"
         }
       ],
       [
@@ -1556,12 +1556,94 @@
       ]
     ]
   },
-  "scr_29_1":{
+  "scr_29_add_1":{
     "inline_keyboard": [
       [
         {
-          "text": "Далее",
-          "callback_data": "scr_20"
+          "text": "Каждый день",
+          "callback_data": "scr_29_add_3"
+        }
+      ],
+      [
+        {
+          "text": "Выбрать дни недели >>",
+          "callback_data": "scr_29_add_2"
+        }
+      ],
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_29"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_29_add_2":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Пн",
+          "callback_data": "mon"
+        },
+        {
+          "text": "Вт",
+          "callback_data": "tue"
+        },
+        {
+          "text": "Ср",
+          "callback_data": "wed"
+        },
+        {
+          "text": "Чт",
+          "callback_data": "thu"
+        }
+      ],
+      [
+        {
+          "text": "Пт",
+          "callback_data": "fri"
+        },
+        {
+          "text": "Сб",
+          "callback_data": "sat"
+        },
+        {
+          "text": "Вс",
+          "callback_data": "sun"
+        }
+      ],
+      [
+        {
+          "text": "Подтвердить",
+          "callback_data": "scr_29_add_3"
+        }
+      ],
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_29_add_1"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_29_add_3":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_29_add_1"
         }
       ],
       [
