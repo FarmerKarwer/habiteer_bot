@@ -1,32 +1,19 @@
 ## Инструкция: как загрузить бота в Yandex Cloud (не протестирована)
-### Шаг 1: Создать папки
-Названия папок:
-- [ ] `cache`
-- [ ] `strings`
+### Шаг 1: Поместить все файлы из папки `cache` в Object Storage
 
-### Шаг 2: Загрузить файлы
-Список файлов в корневой директории:
-- [ ] `index.py`
-- [ ] `bot_logic.py`
-- [ ] `database.py`
-- [ ] `recommender.py`
-- [ ] `tg_methods.py`
-- [ ] `utils.py`
+### Шаг 2: Загрузить файлы в ZIP-архив
+Список файлов и папок в корневой директории:
+- [ ] Все файлы из папки src (не саму папку)
+- [ ] strings
 - [ ] `requirements.txt`
 
-В папку `cache` подгрузить файлы:
-- [ ] `callback_history.json`
-- [ ] `picking_habit.json`
-- [ ] `updating_habit.json`
+### Шаг 3: Загрузить архив в облачную функцию методом "ZIP-архив"
+- [ ] Прикрепить ZIP-архив
+- [ ] Указать точку входа: `index.handler`
 
-В папку `strings` подгрузить файлы:
-- [ ] `buttons.json`
-- [ ] `motivational_messages.json`
-- [ ] `premade_habits.json`
-- [ ] `replies.json`
-- [ ] `triggers.json`
+### Шаг 4: Изменить `index.py`
 
-### Шаг 3: Создать webhook
+### Шаг 3: Создать webhook (если еще нет)
 - [ ] Открыть `index.py`
 - [ ] Заменить `message = tg_methods.get_updates()['result'][-1]` на `json.loads(event['body'])`
 - [ ] Создать webhook по [этой инструкции](https://yandex.cloud/ru/docs/tutorials/serverless/telegram-bot-serverless#function-bind-bot), отправив POST-запрос
