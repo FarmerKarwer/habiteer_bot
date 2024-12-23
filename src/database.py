@@ -61,7 +61,6 @@ class DatabaseClient:
 		VALUES ({unique_id}, '{habit_name}', CAST('{creation_datetime}' AS Timestamp), 
 		'{type}', '{trigger_type}', '{trigger_action_desc}', {user_id}, '{status}', '{aspiration}', {report_id});
 		"""
-		print(query)
 		self.execute_query(query)
 
 	def add_habit_log(self, user_id, habit_id, status, timestamp):
