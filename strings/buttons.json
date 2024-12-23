@@ -385,7 +385,7 @@
       [
         {
           "text": "Отметить привычку ✅",
-          "callback_data": "scr_plug"
+          "callback_data": "scr_3_2_proxy"
         }
       ],
       [
@@ -535,7 +535,7 @@
       [
         {
           "text": "Начать репетицию ⏯️",
-          "callback_data": "scr_plug"
+          "callback_data": "scr_24_resume"
         }
       ],
       [
@@ -627,12 +627,94 @@
     ]
   },
 
+  "scr_3_2_proxy_reset":{
+    "inline_keyboard":[
+      [
+          {
+            "text":"Да",
+            "callback_data":"scr_3_2_reset"
+          },
+          {
+            "text":"Нет",
+            "callback_data":"scr_3_1"
+          }
+      ],
+        [
+          {
+            "text":"В главное меню",
+            "callback_data":"scr_1"
+          }
+      ]
+        
+    ]
+  },
+
+  "scr_3_2_proxy_resume":{
+    "inline_keyboard":[
+      [
+          {
+            "text":"Да",
+            "callback_data":"scr_3_2_resume"
+          },
+          {
+            "text":"Нет",
+            "callback_data":"scr_3_1"
+          }
+      ],
+        [
+          {
+            "text":"В главное меню",
+            "callback_data":"scr_1"
+          }
+      ]
+        
+    ]
+  },
+
   "scr_3_2":{
     "inline_keyboard":[
         [
           {
             "text":"Перейти в раздел привычек",
             "callback_data":"scr_3"
+          }
+      ],
+
+        [
+          {
+            "text":"В главное меню",
+            "callback_data":"scr_1"
+          }
+      ]
+        
+    ]
+  },
+
+  "scr_3_2_reset":{
+    "inline_keyboard":[
+        [
+          {
+            "text":"Вернуться к привычке",
+            "callback_data":"scr_3_1"
+          }
+      ],
+
+        [
+          {
+            "text":"В главное меню",
+            "callback_data":"scr_1"
+          }
+      ]
+        
+    ]
+  },
+
+  "scr_3_2_resume":{
+    "inline_keyboard":[
+        [
+          {
+            "text":"Вернуться к привычке",
+            "callback_data":"scr_3_1"
           }
       ],
 
@@ -1640,7 +1722,7 @@
     "inline_keyboard": [
       [
         {
-          "text": "Я отрепетировал",
+          "text": "Я отрепетировал!",
           "callback_data": "scr_29"
         }
       ],
@@ -1654,6 +1736,28 @@
         {
           "text": "Назад",
           "callback_data": "scr_23_1"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_24_resume":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Я отрепетировал!",
+          "callback_data": "scr_29"
+        }
+      ],
+      [
+        {
+          "text": "Пока не могу...",
+          "callback_data": "scr_3_1"
         }
       ],
       [

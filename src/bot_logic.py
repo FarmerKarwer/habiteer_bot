@@ -115,7 +115,7 @@ def handle_callback_query(message):
 
 	# Actual logic
 	DEFAULT_CALLBACK_SCREENS = (
-		"scr_2", "scr_3_4_change_1", "scr_5", "scr_6",
+		"scr_2", "scr_3_2_proxy", "scr_3_4_change_1", "scr_5", "scr_6",
 		"scr_9", "scr_10", "scr_12", "scr_13", "scr_3_3",
 		"scr_16", "scr_17", "scr_19", "scr_22", "scr_22_1",
 		 "scr_review", "scr_25", "scr_26", "scr_26_1", "scr_28", 
@@ -145,6 +145,7 @@ def handle_callback_query(message):
 	"scr_22_1_1": lambda: show_choose_weekdays(user_id, chat_id, message_id, scr_name='scr_22_1_1'),
 	"scr_23": lambda: show_enter_your_trigger(user_id, chat_id, message_id),
 	"scr_23_1": lambda: show_premade_triggers(user_id, chat_id, message_id),
+	"scr_24_resume": lambda: show_habit_repetition(user_id, chat_id, message_id, callback_data=callback_data, text=None),
 	"scr_27": lambda: show_set_trigger_notification_confirmation(user_id, chat_id, message_id),
 	"scr_28_1": lambda: show_choose_weekdays(user_id, chat_id, message_id, scr_name='scr_28_1'),
 	"scr_29": lambda: show_pick_report_for_habit(user_id, chat_id, message_id, callback_data=callback_data),
@@ -455,7 +456,6 @@ def show_user_habits(user_id, chat_id, message_id):
 		reply = replies['3_no_habits']
 		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_3_no_habits'))
 	else:
-		#all_habits = [item['name'] for item in user_habits]
 		all_habits = []
 		for item in user_habits:
 			if item['status'] in ("tracked", "marked"):
@@ -465,7 +465,7 @@ def show_user_habits(user_id, chat_id, message_id):
 			elif item['status']=="stopped":
 				all_habits.append("⏸️"+item['name'].capitalize())
 			else:
-				all_habits.append(item['name'].capitalize()+"\n")
+				all_habits.append(item['name'].capitalize())
 
 		habit_names_str = format_numbered_list(all_habits, capitalize=False)
 		reply = replies['3'].replace('[habits]', habit_names_str)
@@ -513,7 +513,7 @@ def show_habit_info(text, user_id, chat_id, message_id, message_info):
 
 			if status in ("tracked", "marked"):
 				report_id = habits[habit_idx].get("report_id")
-				if report_name is not None:
+				if report_id is not None:
 					report_name = db.get_report_by_id(report_id)[0].get("name")
 					reply = reply.replace('[report]', report_name)
 				else:
@@ -730,13 +730,22 @@ def show_habit_repetition(user_id, chat_id, message_id, callback_data=None, text
 	if text:
 		chosen_trigger = text
 		update_user_value(CACHE_UPDATEHABIT_FILEPATH, user_id, "trigger", chosen_trigger)
-	if callback_data and callback_data!="scr_24":
+	if callback_data and callback_data!="scr_24" and callback_data!="scr_24_resume":
 		trigger_options = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="trigger_options")
 		chosen_trigger_idx = int(callback_data.split('_')[-1])-1
 		chosen_trigger = trigger_options[chosen_trigger_idx]
 		update_user_value(CACHE_UPDATEHABIT_FILEPATH, user_id, "trigger", chosen_trigger)
 	if callback_data=="scr_24":
 		chosen_trigger = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="trigger")
+	if callback_data=="scr_24_resume":
+		habit_id = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_id")
+		chosen_trigger = db.get_habit_by_id(habit_id)[0].get("trigger_action_desc")
+		update_user_value(CACHE_UPDATEHABIT_FILEPATH, user_id, "trigger", chosen_trigger)
+
+		reply = replies['24_resume'].replace('[trigger]', chosen_trigger)
+		reply = reply.replace('[habit]', habit_name)
+		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_24_resume'))
+		return
 	reply = replies['24'].replace('[trigger]', chosen_trigger)
 	reply = reply.replace('[habit]', habit_name)
 	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_24'))

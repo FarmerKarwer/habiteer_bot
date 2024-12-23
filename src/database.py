@@ -65,6 +65,14 @@ class DatabaseClient:
 		result = self.execute_query(query)[0].rows
 		return result
 
+	def get_habit_by_id(self, habit_id):
+		query = f"""
+		SELECT * 
+		FROM habits WHERE id={habit_id}
+		"""
+		result = self.execute_query(query)[0].rows
+		return result
+
 	def delete_habit(self, unique_id):
 		query = f"""
 		DELETE FROM habits WHERE id={unique_id}
