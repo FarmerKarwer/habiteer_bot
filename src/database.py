@@ -33,6 +33,18 @@ class DatabaseClient:
 		result = self.execute_query(query)[0].rows
 		return result
 
+	def select_user(self, user_id):
+		query = f"SELECT * FROM users WHERE id={user_id}"
+		result = self.execute_query(query)[0].rows
+		return result
+
+	def add_user(self, user_id, username, first_name, last_name, language, created_at):
+		query = f"""
+		INSERT INTO users (id, username, first_name, last_name, language, created_at)
+		VALUES ({user_id}, {username}, {first_name}, {last_name}, {language}, {created_at});
+		"""
+		self.execute_query(query)
+
 	def add_habit(self, habit, creation_datetime, user_id, aspiration=None):
 		unique_id = self.autoincrement_id("id", "habits")
 		query = f"""

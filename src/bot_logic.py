@@ -115,6 +115,7 @@ def handle_callback_query(message):
 
 	# Actual logic
 	DEFAULT_CALLBACK_SCREENS = (
+		"scr_0_1", "scr_0_11","scr_0_2", "scr_0_3", "scr_0_4",
 		"scr_2", "scr_3_2_proxy", "scr_3_2_proxy_reset", "scr_3_2_proxy_resume",
 		"scr_3_4_change_1", "scr_5", "scr_6",
 		"scr_9", "scr_10", "scr_12", "scr_13", "scr_3_3",
@@ -415,7 +416,26 @@ def handle_text_message(message):
 	tg_methods.delete_message(message_id-1, chat_id)
 
 	if text=="/start":
-		switch_screen(replies['start'], chat_id, message_id, keyboard=get_button('start'))
+		user = db.select_user(user_id)
+		no_user = len(user)==0
+		if no_user:
+			if "last_name" in message['message']['from'].keys():
+				last_name = f"'{message['message']['from']['last_name']}'"
+			else:
+				last_name = "NULL"
+			user_data = {
+				"id":user_id,
+				"username":f"'{message['message']['from']['username']}'",
+				"first_name":f"'{message['message']['from']['first_name']}'",
+				"language":f"'{message['message']['from']['language_code']}'",
+				"last_name":last_name,
+				"created_at":f"CAST('{timestamp}' AS Timestamp)"
+			}
+
+			db.add_user(user_data['id'], user_data['username'], user_data['first_name'], user_data['last_name'], user_data['language'], user_data['created_at'])
+			switch_screen(replies['0'], chat_id, message_id, keyboard=get_button('scr_0'))
+		else:
+			switch_screen(replies['1'], chat_id, message_id, keyboard=get_button('scr_1'))
 	else:
 		handle_text_input(text, chat_id, message_id, user_id, timestamp, message_info)
 

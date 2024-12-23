@@ -36,12 +36,12 @@
       [
         {
           "text": "А у меня уже есть эта привычка...",
-          "callback_data": "scr_0_1_1"
+          "callback_data": "scr_0_11"
         }
       ]
     ]
   },
-  "scr_0_1_1": {
+  "scr_0_11": {
     "inline_keyboard": [
       [
         {
