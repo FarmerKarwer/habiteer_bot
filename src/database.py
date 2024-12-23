@@ -41,6 +41,15 @@ class DatabaseClient:
 		"""
 		self.execute_query(query)
 
+	def add_habit_log(self, user_id, habit_id, status, timestamp):
+		unique_id = self.autoincrement_id("id", "habit_logs")
+		date = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S.%fZ").strftime("%Y-%m-%d")
+		query = f"""
+		INSERT INTO habit_logs (id, user_id, habit_id, date, status, timestamp)
+		VALUES ({unique_id}, {user_id}, {habit_id}, CAST('{date}' AS Date), '{status}', CAST('{timestamp}' AS Timestamp));
+		"""
+		self.execute_query(query)
+
 	def update_habit(self, unique_id, column, value):
 		query = f"""
 		UPDATE habits
@@ -70,6 +79,19 @@ class DatabaseClient:
 		SELECT * 
 		FROM habits WHERE id={habit_id}
 		"""
+		result = self.execute_query(query)[0].rows
+		return result
+
+	def get_habit_logs_for_habit(self, user_id, habit_id, status=None):
+		query = f"""
+		SELECT * 
+		FROM habit_logs WHERE user_id={user_id} AND habit_id={habit_id} 
+		"""
+		if status:
+			query = f"""
+			SELECT * 
+			FROM habit_logs WHERE user_id={user_id} AND habit_id={habit_id} AND status='{status}'
+			"""
 		result = self.execute_query(query)[0].rows
 		return result
 

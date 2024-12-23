@@ -115,11 +115,12 @@ def handle_callback_query(message):
 
 	# Actual logic
 	DEFAULT_CALLBACK_SCREENS = (
-		"scr_2", "scr_3_2_proxy", "scr_3_4_change_1", "scr_5", "scr_6",
+		"scr_2", "scr_3_2_proxy", "scr_3_2_proxy_reset", "scr_3_2_proxy_resume",
+		"scr_3_4_change_1", "scr_5", "scr_6",
 		"scr_9", "scr_10", "scr_12", "scr_13", "scr_3_3",
 		"scr_16", "scr_17", "scr_19", "scr_22", "scr_22_1",
-		 "scr_review", "scr_25", "scr_26", "scr_26_1", "scr_28", 
-		 "scr_29_add_1", "scr_30", "scr_31", "scr_32", "scr_33",
+		"scr_review", "scr_25", "scr_26", "scr_26_1", "scr_28", 
+		"scr_29_add_1", "scr_30", "scr_31", "scr_32", "scr_33",
 		"scr_34", "scr_35", "scr_37", "scr_38", "scr_39",
 		"scr_40", "scr_41_add_1", "scr_41_1_conf_deletion", "scr_41_1_change_1", 
 		"scr_44", "scr_plug"
@@ -130,6 +131,11 @@ def handle_callback_query(message):
 	"scr_3": lambda: show_user_habits(user_id, chat_id, message_id),
 	"scr_3_1": lambda: get_back_to_habit(callback_data, user_id, chat_id, message_id),
 	"scr_3_1_trigger": lambda: show_enter_your_trigger(user_id, chat_id, message_id),
+	"scr_3_2": lambda: show_mark_habit_as_completed(user_id, chat_id, message_id, timestamp),
+	"scr_3_2_reset": lambda: show_reset_habit_completion(user_id, chat_id, message_id, timestamp),
+	"scr_3_2_resume": lambda: show_resume_tracking_habit(user_id, chat_id, message_id, timestamp),
+	"scr_3_2_stop_habit": lambda: show_stop_tracking_habit(user_id, chat_id, message_id, timestamp),
+	"scr_3_2_finish_habit": lambda: show_finish_tracking_habit(user_id, chat_id, message_id, timestamp),
 	"scr_3_4": lambda: show_pick_report_for_habit(user_id, chat_id, message_id, callback_data=callback_data),
 	"scr_3_4_change_2": lambda: show_choose_weekdays(user_id, chat_id, message_id, scr_name='scr_3_4_change_2'),
 	"scr_4": lambda: show_aspirations(chat_id, message_id),
@@ -570,17 +576,60 @@ def show_habit_info(text, user_id, chat_id, message_id, message_info):
 		reply = f"Пожалуйста, введите номер привычки, которую вы хотите выбрать числом.\n\nВаши привычки:\n\n{habit_names_str}"
 		switch_screen(reply, chat_id, message_id)
 		message_info["callback_data"]="scr_3"
-	# except IndexError:
-	# 	habit_names = [item['name'] for item in habits]
-	# 	habit_names_str = format_numbered_list(habit_names)
-	# 	reply = f"Такой привычки не существует. Попробуйте ещё раз.\n\nВаши привычки:\n\n{habit_names_str}"
-	# 	switch_screen(reply, chat_id, message_id)
-	# 	message_info["callback_data"]="scr_3"
+	except IndexError:
+		habit_names = [item['name'] for item in habits]
+		habit_names_str = format_numbered_list(habit_names)
+		reply = f"Такой привычки не существует. Попробуйте ещё раз.\n\nВаши привычки:\n\n{habit_names_str}"
+		switch_screen(reply, chat_id, message_id)
+		message_info["callback_data"]="scr_3"
 
 def get_back_to_habit(callback_data, user_id, chat_id, message_id):
 	message_info = None
 	text = str(get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_number")+1)
 	show_habit_info(text, user_id, chat_id, message_id, message_info)
+
+def show_mark_habit_as_completed(user_id, chat_id, message_id, timestamp):
+	habit_id = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_id")
+	status = "completed"
+	habit_status = "marked"
+
+	epoch_date = datetime(1970, 1, 1)
+	today = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S.%fZ").date()  # Simulated current date
+	yesterday = today - timedelta(days=1)
+
+	print(today, yesterday)
+
+	db.add_habit_log(user_id, habit_id, status, timestamp)
+
+	#Calculating streak
+	logs = db.get_habit_logs_for_habit(user_id, habit_id, status="completed")
+
+	if not logs:
+		current_streak = 0
+		max_streak = 0
+	else:
+		current_streak = 0
+		max_streak = 0
+		prev_date = None
+
+		for log in logs:
+			current_date = log["date"]
+
+			if prev_date is None or (current_date == (prev_date + 1)):
+				current_streak += 1
+			prev_date = current_date
+
+		max_streak = max(max_streak, current_streak)
+
+		actual_date = epoch_date + timedelta(days=current_date)
+		if logs and actual_date not in [today, yesterday]:
+			current_streak = 0
+
+	db.update_habit(habit_id, "status", f"'{habit_status}'")
+	print(f"Current Streak: {current_streak}")
+	print(f"Max Streak: {max_streak}")
+
+	#switch_screen(replies['3_2'], chat_id, message_id, keyboard=keyboard)
 
 def show_choosing_habit_type(user_id, chat_id, message_id):
 	habit_name = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_name")

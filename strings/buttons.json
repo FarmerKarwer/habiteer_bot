@@ -385,7 +385,7 @@
       [
         {
           "text": "Отметить привычку ✅",
-          "callback_data": "scr_3_2_proxy"
+          "callback_data": "scr_plug"
         }
       ],
       [
@@ -596,11 +596,11 @@
     "inline_keyboard":[
       [
           {
-            "text":"Да",
+            "text":"✅Да",
             "callback_data":"scr_3_2"
           },
           {
-            "text":"Нет",
+            "text":"❌Нет",
             "callback_data":"scr_3_1"
           }
       ],
@@ -631,11 +631,11 @@
     "inline_keyboard":[
       [
           {
-            "text":"Да",
+            "text":"✅Да",
             "callback_data":"scr_3_2_reset"
           },
           {
-            "text":"Нет",
+            "text":"❌Нет",
             "callback_data":"scr_3_1"
           }
       ],
@@ -653,11 +653,11 @@
     "inline_keyboard":[
       [
           {
-            "text":"Да",
+            "text":"✅Да",
             "callback_data":"scr_3_2_resume"
           },
           {
-            "text":"Нет",
+            "text":"❌Нет",
             "callback_data":"scr_3_1"
           }
       ],
