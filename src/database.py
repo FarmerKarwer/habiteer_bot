@@ -49,6 +49,14 @@ class DatabaseClient:
 		"""
 		self.execute_query(query)
 
+	def update_habit_with_null(self, unique_id, column):
+		query = f"""
+		UPDATE habits
+		SET {column} = NULL
+		WHERE id={unique_id};
+		"""
+		self.execute_query(query)
+
 	def view_habits(self, user_id):
 		query = f"""
 		SELECT * 
@@ -109,6 +117,16 @@ class DatabaseClient:
 		query = f"""
 		SELECT * 
 		FROM user_reports WHERE id={report_id};
+		"""
+		result = self.execute_query(query)[0].rows
+		return result
+
+	def get_user_habits_linked_to_report(self, report_id):
+		query = f"""
+		SELECT h.id
+		FROM habits h
+		JOIN user_reports ur ON h.report_id = ur.id
+		WHERE ur.id = {report_id};
 		"""
 		result = self.execute_query(query)[0].rows
 		return result

@@ -405,14 +405,14 @@
       [
         {
           "text": "Изменить триггер",
-          "callback_data": "scr_plug"
+          "callback_data": "scr_3_1_trigger"
         }
       ],
       
       [
         {
           "text": "Настроить отчетность",
-          "callback_data": "scr_plug"
+          "callback_data": "scr_3_4"
         }
       ],
       [
@@ -455,7 +455,7 @@
       [
         {
           "text": "Изменить триггер",
-          "callback_data": "scr_plug"
+          "callback_data": "scr_3_1_trigger"
         }
       ],
       [
@@ -470,6 +470,79 @@
           "callback_data": "scr_1"
         }
       ]
+    ]
+  },
+
+  "scr_3_1_trigger":{
+    "inline_keyboard":[
+        [
+          {
+            "text":"Назад",
+            "callback_data":"scr_3_1"
+          }
+      ],
+
+        [
+          {
+            "text":"В главное меню",
+            "callback_data":"scr_1"
+          }
+      ]
+        
+    ]
+  },
+
+  "scr_3_2_proxy":{
+    "inline_keyboard":[
+      [
+          {
+            "text":"Да",
+            "callback_data":"scr_3_2"
+          },
+          {
+            "text":"Нет",
+            "callback_data":"scr_3_1"
+          }
+      ],
+      [
+          {
+            "text":"Остановить отслеживание",
+            "callback_data":"scr_3_2_stop_habit"
+          }
+      ],
+        [
+          {
+            "text":"Я уже внедрил эту привычку",
+            "callback_data":"scr_3_2_finish_habit"
+          }
+      ],
+
+        [
+          {
+            "text":"В главное меню",
+            "callback_data":"scr_1"
+          }
+      ]
+        
+    ]
+  },
+
+  "scr_3_2":{
+    "inline_keyboard":[
+        [
+          {
+            "text":"Перейти в раздел привычек",
+            "callback_data":"scr_3"
+          }
+      ],
+
+        [
+          {
+            "text":"В главное меню",
+            "callback_data":"scr_1"
+          }
+      ]
+        
     ]
   },
 
@@ -489,6 +562,143 @@
           }
       ]
         
+    ]
+  },
+
+  "scr_3_4":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Создать новый отчет",
+          "callback_data": "scr_3_4_change_1"
+        }
+      ],
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_3_1"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_3_4_change_1":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Каждый день",
+          "callback_data": "scr_3_4_change_3"
+        }
+      ],
+      [
+        {
+          "text": "Выбрать дни недели >>",
+          "callback_data": "scr_3_4_change_2"
+        }
+      ],
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_3_4"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_3_4_change_2":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Пн",
+          "callback_data": "mon"
+        },
+        {
+          "text": "Вт",
+          "callback_data": "tue"
+        },
+        {
+          "text": "Ср",
+          "callback_data": "wed"
+        },
+        {
+          "text": "Чт",
+          "callback_data": "thu"
+        }
+      ],
+      [
+        {
+          "text": "Пт",
+          "callback_data": "fri"
+        },
+        {
+          "text": "Сб",
+          "callback_data": "sat"
+        },
+        {
+          "text": "Вс",
+          "callback_data": "sun"
+        }
+      ],
+      [
+        {
+          "text": "Подтвердить",
+          "callback_data": "scr_3_4_change_3"
+        }
+      ],
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_3_4_change_1"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_3_4_change_3":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_3_4_change_1"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_3_4_changed":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Вернуться к привычке",
+          "callback_data": "scr_3_1"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
     ]
   },
 

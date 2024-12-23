@@ -90,7 +90,6 @@ def use_logic(message):
 		message_info = handle_unknown_message(message)
 
 def handle_callback_query(message):
-
 	# Getting data
 	callback_query_id = message['callback_query']['id']
 	callback_data = message['callback_query']['data']
@@ -116,7 +115,7 @@ def handle_callback_query(message):
 
 	# Actual logic
 	DEFAULT_CALLBACK_SCREENS = (
-		"scr_2", "scr_5", "scr_6",
+		"scr_2", "scr_3_4_change_1", "scr_5", "scr_6",
 		"scr_9", "scr_10", "scr_12", "scr_13", "scr_3_3",
 		"scr_16", "scr_17", "scr_19", "scr_22", "scr_22_1",
 		 "scr_review", "scr_25", "scr_26", "scr_26_1", "scr_28", 
@@ -130,6 +129,9 @@ def handle_callback_query(message):
 	"scr_1": lambda: show_main_menu(user_id, chat_id, message_id),
 	"scr_3": lambda: show_user_habits(user_id, chat_id, message_id),
 	"scr_3_1": lambda: get_back_to_habit(callback_data, user_id, chat_id, message_id),
+	"scr_3_1_trigger": lambda: show_enter_your_trigger(user_id, chat_id, message_id),
+	"scr_3_4": lambda: show_pick_report_for_habit(user_id, chat_id, message_id, callback_data=callback_data),
+	"scr_3_4_change_2": lambda: show_choose_weekdays(user_id, chat_id, message_id, scr_name='scr_3_4_change_2'),
 	"scr_4": lambda: show_aspirations(chat_id, message_id),
 	"scr_8": lambda: show_is_habit_tiny(user_id, chat_id, message_id),
 	"scr_8_1": lambda: show_make_habit_tiny(user_id, chat_id, message_id),
@@ -163,6 +165,9 @@ def handle_callback_query(message):
 		action = SPECIAL_CALLBACK_HANDLERS.get(callback_data)
 		action()
 
+	elif previous_screen=="scr_3_4" and is_callback_in_reports:
+		show_report_updated_for_habit(user_id, chat_id, message_id, callback_data=callback_data, text=None, timestamp=timestamp)
+
 	elif callback_data in callback_predefined_habits:
 		show_predefined_habits(callback_data, user_id, chat_id, message_id)
 
@@ -177,6 +182,15 @@ def handle_callback_query(message):
 
 	elif callback_data in callback_predefined_triggers or callback_data=="scr_24":
 		show_habit_repetition(user_id, chat_id, message_id, callback_data=callback_data, text=None)
+
+	elif (previous_screen=="scr_3_4_change_2"or previous_screen_button_selection=="scr_3_4_change_2") and callback_data in callback_weekdays:
+		show_multiple_selection(user_id, chat_id, message_id, callback_data=callback_data, scr_name='scr_3_4_change_2')
+	elif previous_screen=="scr_3_4_change_1" and callback_data=="scr_3_4_change_3":
+		show_choose_time_for_report(user_id, chat_id, message_id, "scr_3_4_change_3", type="everyday")
+	elif previous_screen=="scr_3_4_change_2" and callback_data=="scr_3_4_change_3":
+		show_choose_time_for_report(user_id, chat_id, message_id, "scr_3_4_change_3", type="everyday")
+	elif previous_screen in callback_weekdays and callback_data=="scr_3_4_change_3":
+		show_choose_time_for_report(user_id, chat_id, message_id, "scr_3_4_change_3", type="selected_days")
 
 	elif previous_screen is not None and is_previous_screen_in_magic_wanding and callback_data=="scr_12":
 		behavior_options = None
@@ -240,7 +254,7 @@ def handle_callback_query(message):
 	elif previous_screen=="scr_41_1_change_1" and callback_data=="scr_41_1_change_3":
 		show_choose_time_for_report(user_id, chat_id, message_id, "scr_41_1_change_3", type="everyday")
 	elif previous_screen=="scr_41_1_change_2" and callback_data=="scr_41_1_change_3":
-		show_choose_time_for_report(user_id, chat_id, message_id, "scr_41_add_3", type="everyday")
+		show_choose_time_for_report(user_id, chat_id, message_id, "scr_41_1_change_3", type="everyday")
 	elif previous_screen in callback_weekdays and callback_data=="scr_41_1_change_3":
 		show_choose_time_for_report(user_id, chat_id, message_id, "scr_41_1_change_3", type="selected_days")
 
@@ -284,6 +298,9 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 
 		elif previous_screen=='scr_3':
 			show_habit_info(text, user_id, chat_id, message_id, message_info)
+
+		elif previous_screen=='scr_3_1_trigger':
+			show_trigger_updated(text, user_id, chat_id, message_id, timestamp)
 
 		elif previous_screen=='scr_3_3':
 			show_change_habit_aspiration(text, chat_id, message_id, user_id, timestamp)
@@ -468,6 +485,7 @@ def show_habit_info(text, user_id, chat_id, message_id, message_info):
 		habit_name = habits[habit_idx].get("name")
 		aspiration = habits[habit_idx].get("aspiration")
 		status = habits[habit_idx].get("status")
+		report_name = None
 		if status is None:
 			reply = replies['3_1']['not_tracked'].replace('[habit]', habit_name)
 			keyboard = get_button('scr_3_1_not_tracked')
@@ -487,8 +505,12 @@ def show_habit_info(text, user_id, chat_id, message_id, message_info):
 
 			if status in ("tracked", "marked"):
 				report_id = habits[habit_idx].get("report_id")
-				report_name = db.get_report_by_id(report_id)[0].get("name")
-				reply = reply.replace('[report]', report_name)
+				if report_name is not None:
+					report_name = db.get_report_by_id(report_id)[0].get("name")
+					reply = reply.replace('[report]', report_name)
+				else:
+					report_name = "Не указан"
+					reply = reply.replace('[report]', report_name)
 
 			if trigger_type=="notification":
 				trigger_time = habits[habit_idx].get("trigger_reminder_time")
@@ -528,7 +550,8 @@ def show_habit_info(text, user_id, chat_id, message_id, message_info):
 			"habit_number": habit_idx,
 			"habit_name": habit_name.capitalize(),
 			"status":status,
-			"aspiration":aspiration
+			"aspiration":aspiration,
+			"report_name":report_name
 		}
 
 		save_data_to_cache(CACHE_UPDATEHABIT_FILEPATH, new_data)
@@ -539,12 +562,12 @@ def show_habit_info(text, user_id, chat_id, message_id, message_info):
 		reply = f"Пожалуйста, введите номер привычки, которую вы хотите выбрать числом.\n\nВаши привычки:\n\n{habit_names_str}"
 		switch_screen(reply, chat_id, message_id)
 		message_info["callback_data"]="scr_3"
-	except IndexError:
-		habit_names = [item['name'] for item in habits]
-		habit_names_str = format_numbered_list(habit_names)
-		reply = f"Такой привычки не существует. Попробуйте ещё раз.\n\nВаши привычки:\n\n{habit_names_str}"
-		switch_screen(reply, chat_id, message_id)
-		message_info["callback_data"]="scr_3"
+	# except IndexError:
+	# 	habit_names = [item['name'] for item in habits]
+	# 	habit_names_str = format_numbered_list(habit_names)
+	# 	reply = f"Такой привычки не существует. Попробуйте ещё раз.\n\nВаши привычки:\n\n{habit_names_str}"
+	# 	switch_screen(reply, chat_id, message_id)
+	# 	message_info["callback_data"]="scr_3"
 
 def get_back_to_habit(callback_data, user_id, chat_id, message_id):
 	message_info = None
@@ -681,10 +704,15 @@ def show_premade_triggers(user_id, chat_id, message_id):
 def show_enter_your_trigger(user_id, chat_id, message_id):
 	habit_name = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_name")
 	new_habit_name = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="new_habit_name")
+	habit_status = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="status")
 	if new_habit_name:
 		habit_name = new_habit_name
-	reply = replies['23'].replace('[habit]', habit_name)
-	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_23'))
+	if habit_status not in ("tracked", "marked", "pending", "stopped"):
+		reply = replies['23'].replace('[habit]', habit_name)
+		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_23'))
+	else:
+		reply = replies['3_1_trigger'].replace('[habit]', habit_name)
+		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_3_1_trigger'))
 
 def show_habit_repetition(user_id, chat_id, message_id, callback_data=None, text=None):
 	habit_name = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_name")
@@ -776,6 +804,7 @@ def show_set_trigger_notification_confirmation(user_id, chat_id, message_id):
 	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_27'))
 
 def show_pick_report_for_habit(user_id, chat_id, message_id, callback_data=None, text=None, message_info=None):
+	habit_status = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="status")
 	user_reports = db.view_reports(user_id)
 	no_reports = len(user_reports)==0
 	main_message = replies['29']['main_message']
@@ -825,7 +854,12 @@ def show_pick_report_for_habit(user_id, chat_id, message_id, callback_data=None,
 		additional_message = additional_message.replace('[reports]', formatted_schedule)
 
 	reply = main_message+additional_message
-	keyboard = add_report_buttons('scr_29', user_id)
+	if habit_status not in ("tracked", "marked", "stopped"):
+		keyboard = add_report_buttons('scr_29', user_id)
+	else:
+		report_name = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="report_name")
+		reply = f"*Текущий отчет*: _{report_name}_\n\n"+reply
+		keyboard = add_report_buttons('scr_3_4', user_id)
 	switch_screen(reply, chat_id, message_id, keyboard=keyboard)
 
 def show_habit_is_tracked(user_id, chat_id, message_id, callback_data=None, text=None, timestamp=None, message_info=None):
@@ -1169,6 +1203,43 @@ def show_updated_habitname(text, chat_id, message_id, user_id, timestamp):
 
 	switch_screen(replies['3_7'], chat_id, message_id, keyboard=get_button('scr_3_7'))
 
+def show_trigger_updated(text, user_id, chat_id, message_id, timestamp):
+	updated_trigger = text
+	habit_id =get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_id")
+	db.update_habit(habit_id, "trigger_action_desc", f"'{updated_trigger}'")
+	db.update_habit(habit_id, "last_updated", f"CAST('{timestamp}'AS Timestamp)")
+
+	switch_screen(replies['3_7'], chat_id, message_id, keyboard=get_button('scr_3_7'))
+
+def show_report_updated_for_habit(user_id, chat_id, message_id, callback_data=None, text=None, timestamp=None):
+	if text:
+		previous_screen = get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")
+		try:
+			parse_time_from_string(text)
+			report_period = get_cached_data(CACHE_REPORT, user_id, chat_id, property="report_reminder_period")
+			report_period = weekdays_to_numbers(report_period)
+			report_time = text
+			db.add_report(user_id, timestamp, report_period, report_time)
+			delete_user_records(CACHE_REPORT, user_id)
+			user_reports = db.view_reports(user_id)
+			report_id = max(item['id'] for item in user_reports)
+		except ValueError:
+			reply="Неверно указано время.\nВремя должно быть указано в формате HH:MM. Например: 21:45.\n\nПопробуйте еще раз."
+			switch_screen(reply, chat_id, message_id, keyboard=get_button(previous_screen))
+			message_info["callback_data"]=previous_screen
+			return
+	if callback_data:
+		report_num = callback_data.split("_")[-1]
+		report = db.get_report(user_id, report_num)[0]
+		report_id = report.get("id")
+
+	habit_id = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_id")
+
+	db.update_habit(habit_id, "report_id", report_id)
+	db.update_habit(habit_id, "last_updated", f"CAST('{timestamp}'AS Timestamp)")
+
+	switch_screen(replies['3_4_changed'], chat_id, message_id, keyboard=get_button('scr_3_4_changed'))
+
 def show_change_habit_aspiration(text, chat_id, message_id, user_id, timestamp):
 	new_aspiration = text
 	habit_idx = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_number")
@@ -1296,6 +1367,12 @@ def show_choose_report(callback_data, user_id, chat_id, message_id):
 
 def show_report_deleted(user_id, chat_id, message_id):
 	report_id = get_cached_data(CACHE_REPORT, user_id, chat_id, property="report_id")
+	linked_habits = db.get_user_habits_linked_to_report(report_id)
+
+	for habit in linked_habits:
+		habit_id = habit['h.id']
+		db.update_habit_with_null(habit_id, "report_id")
+
 	db.delete_report(report_id)
 	switch_screen(replies['41_1_deleted'], chat_id, message_id, keyboard=get_button('scr_41_1_deleted'))
 
