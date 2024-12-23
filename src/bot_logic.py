@@ -116,7 +116,7 @@ def handle_callback_query(message):
 	# Actual logic
 	DEFAULT_CALLBACK_SCREENS = (
 		"scr_0_1", "scr_0_11", "scr_0_3", "scr_0_4", "scr_0_42", "scr_0_412",
-		"scr_0_7", "scr_0_421", "scr_0_413", "scr_2", "scr_3_2_proxy", 
+		"scr_0_5", "scr_0_5_add_1", "scr_0_7", "scr_0_421", "scr_0_422", "scr_0_413", "scr_2", "scr_3_2_proxy", 
 		"scr_3_2_proxy_reset", "scr_3_2_proxy_resume",	"scr_3_4_change_1", "scr_5", "scr_6",
 		"scr_9", "scr_10", "scr_12", "scr_13", "scr_3_3",
 		"scr_16", "scr_17", "scr_19", "scr_22", "scr_22_1",
@@ -133,6 +133,7 @@ def handle_callback_query(message):
 	"scr_0_4_back": lambda: tg_methods.edit_message_reply_markup(chat_id, message_id, json.loads(get_button('scr_0_4'))),
 	"scr_0_414": lambda: tg_methods.edit_message_reply_markup(chat_id, message_id, json.loads(get_button('scr_0_414'))),
 	"scr_0_413_back": lambda: tg_methods.edit_message_reply_markup(chat_id, message_id, json.loads(get_button('scr_0_413'))),
+	"scr_0_5_add_2": lambda: show_choose_weekdays(user_id, chat_id, message_id, scr_name='scr_0_5_add_2'),
 	"scr_1": lambda: show_main_menu(user_id, chat_id, message_id),
 	"scr_3": lambda: show_user_habits(user_id, chat_id, message_id),
 	"scr_3_1": lambda: get_back_to_habit(callback_data, user_id, chat_id, message_id),
@@ -177,6 +178,15 @@ def handle_callback_query(message):
 	if callback_data in SPECIAL_CALLBACK_SCREENS:
 		action = SPECIAL_CALLBACK_HANDLERS.get(callback_data)
 		action()
+
+	elif (previous_screen=="scr_0_5_add_2"or previous_screen_button_selection=="scr_0_5_add_2") and callback_data in callback_weekdays:
+		show_multiple_selection(user_id, chat_id, message_id, callback_data=callback_data, scr_name='scr_0_5_add_2')
+	elif previous_screen=="scr_0_5_add_1" and callback_data=="scr_0_5_add_3":
+		show_choose_time_for_report(user_id, chat_id, message_id, "scr_0_5_add_3", type="everyday")
+	elif previous_screen=="scr_0_5_add_2" and callback_data=="scr_0_5_add_3":
+		show_choose_time_for_report(user_id, chat_id, message_id, "scr_0_5_add_3", type="everyday")
+	elif previous_screen in callback_weekdays and callback_data=="scr_0_5_add_3":
+		show_choose_time_for_report(user_id, chat_id, message_id, "scr_0_5_add_3", type="selected_days")
 
 	elif previous_screen=="scr_3_4" and is_callback_in_reports:
 		show_report_updated_for_habit(user_id, chat_id, message_id, callback_data=callback_data, text=None, timestamp=timestamp)
@@ -306,7 +316,10 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 		else:
 			is_previous_screen_in_magic_wanding = False
 
-		if previous_screen=='scr_2':
+		if previous_screen=='scr_0_5_add_3':
+			show_onboarding_report_added(user_id, chat_id, message_id, text, timestamp, message_info)
+
+		elif previous_screen=='scr_2':
 			show_adding_habit(text, user_id, chat_id, message_id, timestamp)
 
 		elif previous_screen=='scr_3':
@@ -463,7 +476,7 @@ def handle_unknown_message(message):
 
 def show_onboarding_secret(user_id, chat_id, message_id):
 	habit_id = 0
-	habit_name = "Спрашивать себя:«За что я сегодня благодарен(а)?»"
+	habit_name = "Спрашивать себя: «За что я сегодня благодарен(а)?»"
 	trigger = "Когда лягу в кровать перед сном"
 	status = None
 	aspiration = "Чувствовать себя счастливее каждый день😊"
@@ -481,6 +494,34 @@ def show_onboarding_secret(user_id, chat_id, message_id):
 
 	save_data_to_cache(CACHE_UPDATEHABIT_FILEPATH, new_data)
 	switch_screen(replies['0_2'], chat_id, message_id, keyboard=get_button('scr_0_2'))
+
+def show_onboarding_report_added(user_id, chat_id, message_id, text, timestamp, message_info):
+	previous_screen = get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")
+	try:
+		parse_time_from_string(text)
+		report_period = get_cached_data(CACHE_REPORT, user_id, chat_id, property="report_reminder_period")
+		report_period = weekdays_to_numbers(report_period)
+		report_time = text
+		db.add_report(user_id, timestamp, report_period, report_time)
+		delete_user_records(CACHE_REPORT, user_id)
+		user_reports = db.view_reports(user_id)
+		report_id = max(item['id'] for item in user_reports)
+	except ValueError:
+		reply="Неверно указано время.\nВремя должно быть указано в формате HH:MM. Например: 21:45.\n\nПопробуйте еще раз."
+		switch_screen(reply, chat_id, message_id, keyboard=get_button(previous_screen))
+		message_info["callback_data"]=previous_screen
+		return
+
+	habit_name = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_name")
+	trigger_action_desc = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="trigger")
+	aspiration = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="aspiration")
+	habit_type="regular"
+	trigger_type="behavior"
+	status="tracked"
+
+	db.add_onboarding_habit(habit_name, timestamp, habit_type, trigger_type, trigger_action_desc, user_id, status, aspiration, report_id)
+
+	switch_screen(replies['0_6'], chat_id, message_id, keyboard=get_button('scr_0_6'))
 
 def show_main_menu(user_id, chat_id, message_id):
 	cache_list = [CACHE_REPORT, CACHE_BUTTON_SELECTION, CACHE_PICKHABIT_FILEPATH, CACHE_UPDATEHABIT_FILEPATH, CACHE_KEY_PHRASE]

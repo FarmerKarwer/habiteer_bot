@@ -54,6 +54,16 @@ class DatabaseClient:
 		"""
 		self.execute_query(query)
 
+	def add_onboarding_habit(self, habit_name, creation_datetime, type, trigger_type, trigger_action_desc, user_id, status, aspiration, report_id):
+		unique_id = self.autoincrement_id("id", "habits")
+		query = f"""
+		INSERT INTO habits (id, name, creation_datetime, type, trigger_type, trigger_action_desc, user_id, status, aspiration, report_id)
+		VALUES ({unique_id}, '{habit_name}', CAST('{creation_datetime}' AS Timestamp), 
+		'{type}', '{trigger_type}', '{trigger_action_desc}', {user_id}, '{status}', '{aspiration}', {report_id});
+		"""
+		print(query)
+		self.execute_query(query)
+
 	def add_habit_log(self, user_id, habit_id, status, timestamp):
 		unique_id = self.autoincrement_id("id", "habit_logs")
 		date = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S.%fZ").strftime("%Y-%m-%d")
