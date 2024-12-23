@@ -455,14 +455,19 @@ def show_user_habits(user_id, chat_id, message_id):
 		reply = replies['3_no_habits']
 		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_3_no_habits'))
 	else:
-		all_habits = [item['name'] for item in user_habits]
-		# pending_habits = ["⏳"+item['name'].capitalize() for item in user_habits if item['status']=='pending']
-		# all_habits.extend(pending_habits)
-		# tracked_habits = ["🔄"+item['name'].capitalize() for item in user_habits if item['status']=='tracked']
-		# all_habits.extend(tracked_habits)
-		# not_tracked_habits = [item['name'].capitalize() for item in user_habits if item['status'] is None]
-		# all_habits.extend(not_tracked_habits)
-		habit_names_str = format_numbered_list(all_habits)
+		#all_habits = [item['name'] for item in user_habits]
+		all_habits = []
+		for item in user_habits:
+			if item['status'] in ("tracked", "marked"):
+				all_habits.append("🔄"+item['name'].capitalize())
+			elif item['status']=="pending":
+				all_habits.append("⏳"+item['name'].capitalize())
+			elif item['status']=="stopped":
+				all_habits.append("⏸️"+item['name'].capitalize())
+			else:
+				all_habits.append(item['name'].capitalize()+"\n")
+
+		habit_names_str = format_numbered_list(all_habits, capitalize=False)
 		reply = replies['3'].replace('[habits]', habit_names_str)
 		keyboard = get_button('scr_3')
 		switch_screen(reply, chat_id, message_id, keyboard=keyboard, protect_content=False)
@@ -499,6 +504,9 @@ def show_habit_info(text, user_id, chat_id, message_id, message_info):
 			elif status=="marked":
 				reply = replies['3_1']['marked'].replace('[habit]', habit_name)
 				keyboard = get_button('scr_3_1_tracked')
+			elif status=="stopped":
+				reply = replies['3_1']['stopped'].replace('[habit]', habit_name)
+				keyboard = get_button('scr_3_1_stopped')
 
 			habit_type = habits[habit_idx].get("type")
 			trigger_type = habits[habit_idx].get("trigger_type")

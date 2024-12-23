@@ -384,7 +384,107 @@
     "inline_keyboard": [
       [
         {
-          "text": "Отметить привычку",
+          "text": "Отметить привычку ✅",
+          "callback_data": "scr_plug"
+        }
+      ],
+      [
+        {
+          "text": "Изменить название",
+          "callback_data": "scr_19"
+        }
+      ],
+      
+      [
+        {
+          "text": "Добавить стремление",
+          "callback_data": "scr_3_3"
+        }
+      ],
+
+      [
+        {
+          "text": "Изменить триггер",
+          "callback_data": "scr_3_1_trigger"
+        }
+      ],
+      
+      [
+        {
+          "text": "Настроить отчетность",
+          "callback_data": "scr_3_4"
+        }
+      ],
+      [
+        {
+          "text": "К списку привычек",
+          "callback_data": "scr_3"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+
+  "scr_3_1_marked_today":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Сбросить выполнение за сегодня ↩️",
+          "callback_data": "scr_plug"
+        }
+      ],
+      [
+        {
+          "text": "Изменить название",
+          "callback_data": "scr_19"
+        }
+      ],
+      
+      [
+        {
+          "text": "Добавить стремление",
+          "callback_data": "scr_3_3"
+        }
+      ],
+
+      [
+        {
+          "text": "Изменить триггер",
+          "callback_data": "scr_3_1_trigger"
+        }
+      ],
+      
+      [
+        {
+          "text": "Настроить отчетность",
+          "callback_data": "scr_3_4"
+        }
+      ],
+      [
+        {
+          "text": "К списку привычек",
+          "callback_data": "scr_3"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+
+  "scr_3_1_stopped":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Возобновить отслеживание ▶️",
           "callback_data": "scr_plug"
         }
       ],
@@ -434,7 +534,7 @@
     "inline_keyboard": [
       [
         {
-          "text": "Начать репетицию",
+          "text": "Начать репетицию ⏯️",
           "callback_data": "scr_plug"
         }
       ],
