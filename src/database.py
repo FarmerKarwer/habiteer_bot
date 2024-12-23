@@ -3,6 +3,7 @@ import requests
 import ydb
 import secrets
 from datetime import datetime
+from ydb.issues import GenericError
 
 class DatabaseClient:
 	def __init__(self):
@@ -114,8 +115,14 @@ class DatabaseClient:
 		self.execute_query(query)
 
 	def delete_user_data(self, user_id):
+		user_tables = ["bot_usage", "habit_logs", "habit_strength", "habits", "user_reports", "user_settings"]
+		for table in user_tables:
+			query = f"""
+			DELETE FROM {table} WHERE user_id={user_id}
+			"""
+			self.execute_query(query)
 		query = f"""
-		DELETE FROM habits WHERE user_id={user_id}
+		DELETE FROM users WHERE id={user_id}
 		"""
 		self.execute_query(query)
 

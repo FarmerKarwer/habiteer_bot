@@ -115,7 +115,7 @@ def handle_callback_query(message):
 
 	# Actual logic
 	DEFAULT_CALLBACK_SCREENS = (
-		"scr_0_1", "scr_0_11","scr_0_2", "scr_0_3", "scr_0_4",
+		"scr_0_1", "scr_0_11", "scr_0_3", "scr_0_4",
 		"scr_2", "scr_3_2_proxy", "scr_3_2_proxy_reset", "scr_3_2_proxy_resume",
 		"scr_3_4_change_1", "scr_5", "scr_6",
 		"scr_9", "scr_10", "scr_12", "scr_13", "scr_3_3",
@@ -128,6 +128,7 @@ def handle_callback_query(message):
 		)
 
 	SPECIAL_CALLBACK_HANDLERS = {
+	"scr_0_2": lambda: show_onboarding_secret(user_id, chat_id, message_id),
 	"scr_1": lambda: show_main_menu(user_id, chat_id, message_id),
 	"scr_3": lambda: show_user_habits(user_id, chat_id, message_id),
 	"scr_3_1": lambda: get_back_to_habit(callback_data, user_id, chat_id, message_id),
@@ -455,6 +456,27 @@ def handle_unknown_message(message):
 	"callback_data": None,
 	"text": None
 	}
+
+def show_onboarding_secret(user_id, chat_id, message_id):
+	habit_id = 0
+	habit_name = "Спрашивать себя:«За что я сегодня благодарен(а)?»"
+	trigger = "Когда лягу в кровать перед сном"
+	status = None
+	aspiration = "Чувствовать себя счастливее каждый день😊"
+	report_name = None
+	new_data = {
+			"user_id": user_id,
+			"chat_id": chat_id,
+			"habit_id":habit_id,
+			"habit_name": habit_name.capitalize(),
+			"status":status,
+			"aspiration":aspiration,
+			"report_name":report_name,
+			"trigger":trigger
+		}
+
+	save_data_to_cache(CACHE_UPDATEHABIT_FILEPATH, new_data)
+	switch_screen(replies['0_2'], chat_id, message_id, keyboard=get_button('scr_0_2'))
 
 def show_main_menu(user_id, chat_id, message_id):
 	cache_list = [CACHE_REPORT, CACHE_BUTTON_SELECTION, CACHE_PICKHABIT_FILEPATH, CACHE_UPDATEHABIT_FILEPATH, CACHE_KEY_PHRASE]
