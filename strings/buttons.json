@@ -94,54 +94,119 @@
       [
         {
           "text": "У меня нет возможности...",
-          "callback_data": "scr_0_4_1"
+          "callback_data": "scr_0_41"
         }
       ]
     ]
   },
-  "scr_0_4_1": {
+  "scr_0_41": {
     "inline_keyboard": [
       [
         {
           "text": "Не могу сейчас",
-          "callback_data": "scr_0_4_1_1"
+          "callback_data": "scr_0_412"
         }
       ],
       [
         {
           "text": "Я просто не хочу репетировать",
-          "callback_data": "scr_0_4_2 "
+          "callback_data": "scr_0_42"
         }
       ],
       [
         {
           "text": "Назад",
-          "callback_data": "scr_0_4"
+          "callback_data": "scr_0_4_back"
         }
       ]
     ]
   },
-  "scr_0_4_1_1": {
+  "scr_0_411":{
+    "inline_keyboard": [
+      [
+          {
+            "text":"Через 15 мин",
+            "callback_data":"rep_15min"
+          },
+          {
+            "text":"Через 30 мин",
+            "callback_data":"rep_30min"
+          },
+          {
+            "text":"Через 1 ч",
+            "callback_data":"rep_1h"
+          }
+      ],
+        [
+          {
+            "text":"Через 2 ч",
+            "callback_data":"rep_2h"
+          },
+          {
+            "text":"Через 4 ч",
+            "callback_data":"rep_4h"
+          },
+          {
+            "text":"Через 8 ч",
+            "callback_data":"rep_8h"
+          }
+      ], 
+      [
+          {
+            "text":"Завтра",
+            "callback_data":"rep_1d"
+          },
+          {
+            "text":"Послезавтра",
+            "callback_data":"rep_2d"
+          },
+          {
+            "text":"Выберу сам >",
+            "callback_data":"scr_0_411_1"
+          }
+      ], 
+
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_25"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_0_411_1":{
     "inline_keyboard": [
       [
         {
           "text": "Назад",
-          "callback_data": "scr_0_4_1"
+          "callback_data": "scr_0_411"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
         }
       ]
     ]
   },
-  "scr_0_4_1_2": {
+  "scr_0_412": {
     "inline_keyboard": [
       [
         {
           "text": "Могу отрепетировать сейчас",
-          "callback_data": "scr_0_4_1_3"
+          "callback_data": "scr_0_413"
         }
       ]
     ]
   },
-  "scr_0_4_1_3": {
+  "scr_0_413": {
     "inline_keyboard": [
       [
         {
@@ -152,45 +217,45 @@
       [
         {
           "text": "У меня нет возможности...",
-          "callback_data": "scr_0_4_1_4"
+          "callback_data": "scr_0_414"
         }
       ]
     ]
   },
-  "scr_0_4_1_4": {
+  "scr_0_414": {
     "inline_keyboard": [
       [
         {
           "text": "💪Я отрепетировал!",
-          "callback_data": "scr_0_4_1_1"
+          "callback_data": "scr_0_411"
         }
       ],
       [
         {
           "text": "У меня нет возможности...",
-          "callback_data": "scr_0_4_2"
+          "callback_data": "scr_0_42"
         }
       ],
       [
         {
           "text": "Назад",
-          "callback_data": "scr_0_4_1_3"
+          "callback_data": "scr_0_413"
         }
       ]
     ]
   },
-  "scr_0_4_2": {
+  "scr_0_42": {
     "inline_keyboard": [
       [
         {
           "text": "Я попробовал!🕺",
-          "callback_data": "scr_0_4_2_1"
+          "callback_data": "scr_0_421"
         }
       ],
       [
         {
           "text": "Всё ещё не хочу репетировать...",
-          "callback_data": "scr_0_4_2_2"
+          "callback_data": "scr_0_422"
         }
       ],
       [
@@ -201,7 +266,7 @@
       ]
     ]
   },
-  "scr_0_4_2_1": {
+  "scr_0_421": {
     "inline_keyboard": [
       [
         {
@@ -211,18 +276,18 @@
       ]
     ]
   },
-  "scr_0_4_2_2": {
+  "scr_0_422": {
     "inline_keyboard": [
       [
         {
-          "text": "Спасибо, мне не нужны напоминания",
+          "text": "Продолжить",
           "callback_data": "scr_0_5"
         }
       ],
       [
         {
           "text": "Назад",
-          "callback_data": "scr_0_4_2"
+          "callback_data": "scr_0_42"
         }
       ]
     ]

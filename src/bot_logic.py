@@ -115,9 +115,9 @@ def handle_callback_query(message):
 
 	# Actual logic
 	DEFAULT_CALLBACK_SCREENS = (
-		"scr_0_1", "scr_0_11", "scr_0_3", "scr_0_4",
-		"scr_2", "scr_3_2_proxy", "scr_3_2_proxy_reset", "scr_3_2_proxy_resume",
-		"scr_3_4_change_1", "scr_5", "scr_6",
+		"scr_0_1", "scr_0_11", "scr_0_3", "scr_0_4", "scr_0_42", "scr_0_412",
+		"scr_0_7", "scr_0_421", "scr_0_413", "scr_2", "scr_3_2_proxy", 
+		"scr_3_2_proxy_reset", "scr_3_2_proxy_resume",	"scr_3_4_change_1", "scr_5", "scr_6",
 		"scr_9", "scr_10", "scr_12", "scr_13", "scr_3_3",
 		"scr_16", "scr_17", "scr_19", "scr_22", "scr_22_1",
 		"scr_review", "scr_25", "scr_26", "scr_26_1", "scr_28", 
@@ -129,6 +129,10 @@ def handle_callback_query(message):
 
 	SPECIAL_CALLBACK_HANDLERS = {
 	"scr_0_2": lambda: show_onboarding_secret(user_id, chat_id, message_id),
+	"scr_0_41": lambda: tg_methods.edit_message_reply_markup(chat_id, message_id, json.loads(get_button('scr_0_41'))),
+	"scr_0_4_back": lambda: tg_methods.edit_message_reply_markup(chat_id, message_id, json.loads(get_button('scr_0_4'))),
+	"scr_0_414": lambda: tg_methods.edit_message_reply_markup(chat_id, message_id, json.loads(get_button('scr_0_414'))),
+	"scr_0_413_back": lambda: tg_methods.edit_message_reply_markup(chat_id, message_id, json.loads(get_button('scr_0_413'))),
 	"scr_1": lambda: show_main_menu(user_id, chat_id, message_id),
 	"scr_3": lambda: show_user_habits(user_id, chat_id, message_id),
 	"scr_3_1": lambda: get_back_to_habit(callback_data, user_id, chat_id, message_id),
@@ -874,6 +878,7 @@ def show_repetition_reminder_set(user_id, chat_id, message_id, callback_data=Non
 			switch_screen(reply, chat_id, message_id, keyboard=get_button(previous_screen))
 			message_info["callback_data"]=previous_screen
 			return
+
 	habit_id = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_id")
 	habit_name = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_name")
 	habit_type = "regular"
