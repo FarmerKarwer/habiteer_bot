@@ -36,10 +36,10 @@ from utils import (
 )
 
 # Constants for file paths
-REPLIES_FILEPATH = "./strings/replies.json"
-BUTTONS_FILEPATH = "./strings/buttons.json"
-PREMADE_HABITS_FILEPATH = "./strings/premade_habits.json"
-PREMADE_TRIGGERS_FILEPATH = "./strings/triggers.json"
+REPLIES_FILEPATH = "./ui/replies.json"
+BUTTONS_FILEPATH = "./ui/buttons.json"
+PREMADE_HABITS_FILEPATH = "./ui/premade_habits.json"
+PREMADE_TRIGGERS_FILEPATH = "./ui/triggers.json"
 
 CACHE_FILEPATH = "./cache/callback_history.json"
 CACHE_PICKHABIT_FILEPATH = "./cache/picking_habit.json"
