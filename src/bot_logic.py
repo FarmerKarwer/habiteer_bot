@@ -5,7 +5,7 @@ from logic import *
 from common import (
 	switch_screen, 
 	get_button, 
-	unix_to_timestamp,
+	unix_to_timestamp
 	)
 from tg_methods import edit_message_reply_markup, delete_message
 from utils import (
@@ -21,26 +21,6 @@ from config import (
 replies = load_json(REPLIES_FILEPATH)
 
 # Sets of buttons
-callback_predefined_habits = (
-	"hab_1", "hab_2", "hab_3", "hab_4", "hab_5", 
-	"hab_6", "hab_7", "hab_8", "hab_9", "hab_10"
-)
-
-callback_predefined_triggers = (
-	"beh_1", "beh_2", "beh_3", "beh_4", "beh_5", 
-	"beh_6", "beh_7", "beh_8", "beh_9", "beh_10"
-)
-
-callback_suitability_evaluation = (
-	"suitability_1", "suitability_2", "suitability_3", "suitability_4", "suitability_5", 
-	"suitability_6", "suitability_7", "suitability_8", "suitability_9", "suitability_10"
-)
-
-callback_effectiveness_evaluation = (
-	"effectiveness_1", "effectiveness_2", "effectiveness_3", "effectiveness_4", "effectiveness_5", 
-	"effectiveness_6", "effectiveness_7", "effectiveness_8", "effectiveness_9", "effectiveness_10"
-)
-
 callback_weekdays = ("mon", "tue", "wed", "thu", "fri", "sat", "sun")
 
 callback_screens_weekdays_and_time = [
@@ -118,17 +98,11 @@ def handle_callback_query(message):
 	# Retrieve previous screen info
 	previous_screen = get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")
 	previous_screen_button_selection = get_cached_data(CACHE_BUTTON_SELECTION, user_id, chat_id, property="previous_screen") # Fix logging issue
-
 	transition = (previous_screen, callback_data)
 	
 	# Determine current callback type
-	is_previous_screen_in_magic_wanding = False
-	if previous_screen:
-		is_previous_screen_in_magic_wanding = bool(re.match(r"^scr_12_proxy_\d+$", previous_screen))
+	is_previous_screen_in_magic_wanding = bool(re.match(r"^scr_12_proxy_\d+$", previous_screen))
 	is_callback_in_screens_weekdays_and_time = any(callback_data in sublist or previous_screen_button_selection in sublist for sublist in callback_screens_weekdays_and_time) or callback_data in callback_weekdays
-	is_callback_in_magic_wanding = bool(re.match(r"^scr_12_proxy_\d+$", callback_data))
-	is_callback_in_suitability_eval = bool(re.match(r"^scr_13_proxy_\d+$", callback_data))
-	is_callback_in_effectiveness_eval = bool(re.match(r"^scr_14_proxy_\d+$", callback_data))
 	is_callback_in_repetition_reminders = bool(re.match(r"^rep_\w+$", callback_data))
 	is_callback_in_reports = bool(re.match(r"^report_\d+$", callback_data))
 
@@ -147,65 +121,65 @@ def handle_callback_query(message):
 		)
 
 	SPECIAL_CALLBACK_HANDLERS = {
-	"scr_0_2": lambda: show_onboarding_secret(user_id, chat_id, message_id),
-	"scr_0_41": lambda: edit_message_reply_markup(chat_id, message_id, json.loads(get_button('scr_0_41'))),
-	"scr_0_4_back": lambda: edit_message_reply_markup(chat_id, message_id, json.loads(get_button('scr_0_4'))),
-	"scr_0_414": lambda: edit_message_reply_markup(chat_id, message_id, json.loads(get_button('scr_0_414'))),
-	"scr_0_414_back": lambda: edit_message_reply_markup(chat_id, message_id, json.loads(get_button('scr_0_413'))),
-	"scr_0_5_add_2": lambda: show_choose_weekdays(user_id, chat_id, message_id, scr_name='scr_0_5_add_2'),
-	"scr_1": lambda: show_main_menu(user_id, chat_id, message_id),
-	"scr_3": lambda: show_user_habits(user_id, chat_id, message_id),
-	"scr_3_1": lambda: get_back_to_habit(callback_data, user_id, chat_id, message_id),
-	"scr_3_1_trigger": lambda: show_enter_your_trigger(user_id, chat_id, message_id),
-	"scr_3_2": lambda: show_mark_habit_as_completed(user_id, chat_id, message_id, timestamp),
-	"scr_3_2_reset": lambda: show_reset_habit_completion(user_id, chat_id, message_id, timestamp),
-	"scr_3_2_resume": lambda: show_resume_tracking_habit(user_id, chat_id, message_id, timestamp),
-	"scr_3_2_stop_habit": lambda: show_stop_tracking_habit(user_id, chat_id, message_id, timestamp),
-	"scr_3_2_finish_habit": lambda: show_finish_tracking_habit(user_id, chat_id, message_id, timestamp),
-	"scr_3_4": lambda: show_pick_report_for_habit(user_id, chat_id, message_id, callback_data=callback_data),
-	"scr_3_4_change_2": lambda: show_choose_weekdays(user_id, chat_id, message_id, scr_name='scr_3_4_change_2'),
-	"scr_4": lambda: show_aspirations(chat_id, message_id),
-	"scr_8": lambda: show_is_habit_tiny(user_id, chat_id, message_id),
-	"scr_8_1": lambda: show_make_habit_tiny(user_id, chat_id, message_id),
-	"scr_11": lambda: show_aspiration_confirmation(chat_id, message_id, user_id, callback_data=callback_data),
-	"scr_12_1": lambda: show_ai_recommended_habits(user_id, chat_id, message_id),
-	"scr_13": lambda: show_evaluation(callback_data, user_id, chat_id, message_id, type="suitability"),
-	"scr_14": lambda: show_evaluation(callback_data, user_id, chat_id, message_id, type="effectiveness"),
-	"scr_15": lambda: show_proposed_habits(user_id, chat_id, message_id),
-	"scr_18": lambda: show_picked_habits(user_id, chat_id, message_id, timestamp),
-	"scr_21": lambda: show_choosing_habit_type(user_id, chat_id, message_id),
-	"scr_22_1_1": lambda: show_choose_weekdays(user_id, chat_id, message_id, scr_name='scr_22_1_1'),
-	"scr_23": lambda: show_enter_your_trigger(user_id, chat_id, message_id),
-	"scr_23_1": lambda: show_premade_triggers(user_id, chat_id, message_id),
-	"scr_24_resume": lambda: show_habit_repetition(user_id, chat_id, message_id, callback_data=callback_data, text=None),
-	"scr_27": lambda: show_set_trigger_notification_confirmation(user_id, chat_id, message_id),
-	"scr_28_1": lambda: show_choose_weekdays(user_id, chat_id, message_id, scr_name='scr_28_1'),
-	"scr_29": lambda: show_pick_report_for_habit(user_id, chat_id, message_id, callback_data=callback_data),
-	"scr_29_add_2": lambda: show_choose_weekdays(user_id, chat_id, message_id, scr_name='scr_29_add_2'),
-	"scr_review_sent": lambda: show_review_sent(user_id, chat_id, message_id, timestamp),
-	"scr_41": lambda: show_all_reports_in_settings(user_id, chat_id, message_id),
-	"scr_41_1": lambda: show_choose_report(callback_data, user_id, chat_id, message_id),
-	"scr_41_1_deleted": lambda: show_report_deleted(user_id, chat_id, message_id),
-	"scr_42": lambda: show_delete_all_data_confirmation(user_id, chat_id, message_id),
-	"scr_41_add_2": lambda: show_choose_weekdays(user_id, chat_id, message_id, scr_name='scr_41_add_2'),
-	"scr_41_1_change_2": lambda: show_choose_weekdays(user_id, chat_id, message_id, scr_name='scr_41_1_change_2'),
-	"no_scr": lambda: delete_message(message_id, chat_id),
-	("scr_12_1", "scr_12"): lambda: show_magic_wanding_return_back_to_start(chat_id, message_id, user_id, 'scr_12'),
-	("scr_9", "scr_12"): lambda: switch_screen(replies['12'], chat_id, message_id, keyboard=get_button('9_scr_12')),
-	("scr_11", "scr_12"): lambda: switch_screen(replies['12'], chat_id, message_id, keyboard=get_button('scr_12')),
-	("scr_16", "scr_13"): lambda: switch_screen(replies['13'], chat_id, message_id, keyboard=get_button('16_scr_13'))
+		"scr_0_2": lambda: show_onboarding_secret(user_id, chat_id, message_id),
+		"scr_0_41": lambda: edit_message_reply_markup(chat_id, message_id, json.loads(get_button('scr_0_41'))),
+		"scr_0_4_back": lambda: edit_message_reply_markup(chat_id, message_id, json.loads(get_button('scr_0_4'))),
+		"scr_0_414": lambda: edit_message_reply_markup(chat_id, message_id, json.loads(get_button('scr_0_414'))),
+		"scr_0_414_back": lambda: edit_message_reply_markup(chat_id, message_id, json.loads(get_button('scr_0_413'))),
+		"scr_0_5_add_2": lambda: show_choose_weekdays(user_id, chat_id, message_id, scr_name='scr_0_5_add_2'),
+		"scr_1": lambda: show_main_menu(user_id, chat_id, message_id),
+		"scr_3": lambda: show_user_habits(user_id, chat_id, message_id),
+		"scr_3_1": lambda: get_back_to_habit(callback_data, user_id, chat_id, message_id),
+		"scr_3_1_trigger": lambda: show_enter_your_trigger(user_id, chat_id, message_id),
+		"scr_3_2": lambda: show_mark_habit_as_completed(user_id, chat_id, message_id, timestamp),
+		"scr_3_2_reset": lambda: show_reset_habit_completion(user_id, chat_id, message_id, timestamp),
+		"scr_3_2_resume": lambda: show_resume_tracking_habit(user_id, chat_id, message_id, timestamp),
+		"scr_3_2_stop_habit": lambda: show_stop_tracking_habit(user_id, chat_id, message_id, timestamp),
+		"scr_3_2_finish_habit": lambda: show_finish_tracking_habit(user_id, chat_id, message_id, timestamp),
+		"scr_3_4": lambda: show_pick_report_for_habit(user_id, chat_id, message_id, callback_data=callback_data),
+		"scr_3_4_change_2": lambda: show_choose_weekdays(user_id, chat_id, message_id, scr_name='scr_3_4_change_2'),
+		"scr_4": lambda: show_aspirations(chat_id, message_id),
+		"scr_8": lambda: show_is_habit_tiny(user_id, chat_id, message_id),
+		"scr_8_1": lambda: show_make_habit_tiny(user_id, chat_id, message_id),
+		"scr_11": lambda: show_aspiration_confirmation(chat_id, message_id, user_id, callback_data=callback_data),
+		"scr_12_1": lambda: show_ai_recommended_habits(user_id, chat_id, message_id),
+		"scr_13": lambda: show_evaluation(callback_data, user_id, chat_id, message_id, type="suitability"),
+		"scr_14": lambda: show_evaluation(callback_data, user_id, chat_id, message_id, type="effectiveness"),
+		"scr_15": lambda: show_proposed_habits(user_id, chat_id, message_id),
+		"scr_18": lambda: show_picked_habits(user_id, chat_id, message_id, timestamp),
+		"scr_21": lambda: show_choosing_habit_type(user_id, chat_id, message_id),
+		"scr_22_1_1": lambda: show_choose_weekdays(user_id, chat_id, message_id, scr_name='scr_22_1_1'),
+		"scr_23": lambda: show_enter_your_trigger(user_id, chat_id, message_id),
+		"scr_23_1": lambda: show_premade_triggers(user_id, chat_id, message_id),
+		"scr_24": lambda: show_habit_repetition(user_id, chat_id, message_id, callback_data=callback_data, text=None),
+		"scr_24_resume": lambda: show_habit_repetition(user_id, chat_id, message_id, callback_data=callback_data, text=None),
+		"scr_27": lambda: show_set_trigger_notification_confirmation(user_id, chat_id, message_id),
+		"scr_28_1": lambda: show_choose_weekdays(user_id, chat_id, message_id, scr_name='scr_28_1'),
+		"scr_29": lambda: show_pick_report_for_habit(user_id, chat_id, message_id, callback_data=callback_data),
+		"scr_29_add_2": lambda: show_choose_weekdays(user_id, chat_id, message_id, scr_name='scr_29_add_2'),
+		"scr_review_sent": lambda: show_review_sent(user_id, chat_id, message_id, timestamp),
+		"scr_41": lambda: show_all_reports_in_settings(user_id, chat_id, message_id),
+		"scr_41_1": lambda: show_choose_report(callback_data, user_id, chat_id, message_id),
+		"scr_41_1_deleted": lambda: show_report_deleted(user_id, chat_id, message_id),
+		"scr_42": lambda: show_delete_all_data_confirmation(user_id, chat_id, message_id),
+		"scr_41_add_2": lambda: show_choose_weekdays(user_id, chat_id, message_id, scr_name='scr_41_add_2'),
+		"scr_41_1_change_2": lambda: show_choose_weekdays(user_id, chat_id, message_id, scr_name='scr_41_1_change_2'),
+		"no_scr": lambda: delete_message(message_id, chat_id),
+		("scr_12_1", "scr_12"): lambda: show_magic_wanding_return_back_to_start(chat_id, message_id, user_id, 'scr_12'),
+		("scr_9", "scr_12"): lambda: switch_screen(replies['12'], chat_id, message_id, keyboard=get_button('9_scr_12')),
+		("scr_11", "scr_12"): lambda: switch_screen(replies['12'], chat_id, message_id, keyboard=get_button('scr_12')),
+		("scr_16", "scr_13"): lambda: switch_screen(replies['13'], chat_id, message_id, keyboard=get_button('16_scr_13'))
 	}
 	SPECIAL_CALLBACK_SCREENS = SPECIAL_CALLBACK_HANDLERS.keys()
 
 	CONDITIONAL_CALLBACK_HANDLERS = {
 		"scr_12_proxy_": lambda: show_magic_wanding_return_back(callback_data, user_id, chat_id, message_id),
 		"hab_": lambda: show_predefined_habits(callback_data, user_id, chat_id, message_id),
-		"scr_13_proxy_":"",
-		"scr_14_proxy_":"",
-		"rep_":"",
-		"beh_":"",
-		"suitability_":"",
-		"effectiveness_":"",
+		"suitability_": lambda: show_evaluation(callback_data, user_id, chat_id, message_id, type="suitability"),
+		"scr_13_proxy_": lambda: show_evaluation(callback_data, user_id, chat_id, message_id, type="suitability"),
+		"effectiveness_": lambda: show_evaluation(callback_data, user_id, chat_id, message_id, type="effectiveness"),
+		"scr_14_proxy_": lambda: show_evaluation(callback_data, user_id, chat_id, message_id, type="effectiveness"),
+		"beh_": lambda: show_habit_repetition(user_id, chat_id, message_id, callback_data=callback_data, text=None),
 	}
 	CONDITIONAL_CALLBACK_SCREENS = tuple(CONDITIONAL_CALLBACK_HANDLERS.keys())
 	
@@ -221,19 +195,10 @@ def handle_callback_query(message):
 	elif previous_screen=="scr_3_4" and is_callback_in_reports:
 		show_report_updated_for_habit(user_id, chat_id, message_id, callback_data=callback_data, text=None, timestamp=timestamp)
 
-	elif callback_data in callback_suitability_evaluation or is_callback_in_suitability_eval:
-		show_evaluation(callback_data, user_id, chat_id, message_id, type="suitability")
-
-	elif callback_data in callback_effectiveness_evaluation or is_callback_in_effectiveness_eval:
-		show_evaluation(callback_data, user_id, chat_id, message_id, type="effectiveness")
-
-	elif callback_data in callback_predefined_triggers or callback_data=="scr_24":
-		show_habit_repetition(user_id, chat_id, message_id, callback_data=callback_data, text=None)
-
 	elif is_previous_screen_in_magic_wanding and callback_data=="scr_12":
 		show_magic_wanding_return_back_to_start(chat_id, message_id, user_id, 'scr_12')
 
-	elif previous_screen in callback_predefined_habits and callback_data == "scr_12":
+	elif previous_screen.startswith("hab_") and callback_data == "scr_12":
 		show_magic_wanding_return_back_to_start(chat_id, message_id, user_id, '9_scr_12')
 
 	elif previous_screen=="scr_26" and is_callback_in_repetition_reminders:
@@ -259,105 +224,70 @@ def handle_callback_query(message):
 
 def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_info):
 
-		previous_screen = get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")
+	def handle_special_input(special_handlers_dict, transition):
+		action = special_handlers_dict.get(transition)
+		action()
 
-		is_previous_screen_in_magic_wanding = False
-		if previous_screen:
-			is_previous_screen_in_magic_wanding = bool(re.match(r"^scr_12_proxy_\d+$", previous_screen))
+	def handle_conditional_input(conditional_handlers_dict, conditional_screens, transition):
+		matching_prefix = next((prefix for prefix in conditional_screens if transition.startswith(prefix)), None)
+		action = conditional_handlers_dict.get(matching_prefix)
+		action()
 
-		if previous_screen=='scr_0_5_add_3':
-			show_onboarding_report_added(user_id, chat_id, message_id, text, timestamp, message_info)
+	previous_screen = get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")
 
-		elif previous_screen=='scr_2':
-			show_adding_habit(text, user_id, chat_id, message_id, timestamp)
+	SPECIAL_INPUT_HANDLERS = {
+		"scr_0_5_add_3": lambda: show_onboarding_report_added(user_id, chat_id, message_id, text, timestamp, message_info),
+		"scr_2": lambda: show_adding_habit(text, user_id, chat_id, message_id, timestamp),
+		"scr_3": lambda: show_habit_info(text, user_id, chat_id, message_id, message_info),
+		"scr_3_1_trigger": lambda: show_trigger_updated(text, user_id, chat_id, message_id, timestamp),
+		"scr_3_3": lambda: show_change_habit_aspiration(text, chat_id, message_id, user_id, timestamp),
+		"scr_8_1": lambda: show_reminding_options_after_making_habit_tiny(text, chat_id, message_id, user_id),
+		"scr_9": lambda: show_picked_predefined_habits(text, chat_id, message_id, user_id, timestamp, message_info),
+		"scr_10": lambda: show_aspiration_confirmation(chat_id, message_id, user_id, text=text),
+		"scr_12": lambda: show_magic_wanding(text, chat_id, message_id, user_id, message_info),
+		"scr_17": lambda: show_magic_wanding(text, chat_id, message_id, user_id, message_info),
+		"scr_19": lambda: show_updated_habitname(text, chat_id, message_id, user_id, timestamp),
+		"scr_22_2": lambda: show_pick_report_for_habit(user_id, chat_id, message_id, text=text, message_info=message_info),
+		"scr_23": lambda: show_habit_repetition(user_id, chat_id, message_id, callback_data=None, text=text),
+		"scr_26_1": lambda: show_repetition_reminder_set(user_id, chat_id, message_id, callback_data=None, text=text, timestamp=timestamp, message_info=message_info),
+		#"scr_26": lambda: switch_screen(replies['20'], chat_id, message_id, delete_previous=False, keyboard=get_button('scr_20')),
+		"scr_28_2": lambda: show_pick_report_for_habit(user_id, chat_id, message_id, text=text, message_info=message_info),
+		"scr_29": lambda: show_habit_is_tracked(user_id, chat_id, message_id, callback_data=None, text=text, timestamp=timestamp, message_info=message_info),
+		"scr_29_add_3": lambda: show_habit_is_tracked(user_id, chat_id, message_id, callback_data=None, text=text, timestamp=timestamp, message_info=message_info),
+		"scr_31": lambda: switch_screen(replies['7'], chat_id, message_id, keyboard=get_button('scr_7')),
+		"scr_36": lambda: switch_screen(replies['20'], chat_id, message_id, keyboard=get_button('scr_20')),
+		"scr_37": lambda: switch_screen(replies['20'], chat_id, message_id, keyboard=get_button('scr_20')),
+		"scr_38": lambda: switch_screen(replies['20'], chat_id, message_id, keyboard=get_button('scr_20')),
+		"scr_40": lambda: switch_screen(replies['43'], chat_id, message_id, keyboard=get_button('scr_43')),
+		"scr_41_add_3": lambda: show_add_report(text, chat_id, message_id, user_id, timestamp, message_info),
+		"scr_41_1_change_3": lambda: show_report_changed(text, user_id, chat_id, message_id, timestamp, message_info),
+		"scr_42": lambda: show_user_deletion_screen(text, chat_id, message_id, user_id, message_info),
+		"scr_44": lambda: show_updated_habits_after_deletion(text, chat_id, message_id, user_id, message_info),
+		"scr_review": lambda: show_review_confirmation(text, chat_id, message_id, user_id, message_info),
+	}
+	SPECIAL_INPUT_SCREENS = SPECIAL_INPUT_HANDLERS.keys()
 
-		elif previous_screen=='scr_3':
-			show_habit_info(text, user_id, chat_id, message_id, message_info)
+	CONDITIONAL_INPUT_HANDLERS = {
+		"hab_": lambda: show_picked_predefined_habits(text, chat_id, message_id, user_id, timestamp, message_info),
+		"scr_12_proxy_": lambda: show_magic_wanding(text, chat_id, message_id, user_id, message_info),
+	}
+	CONDITIONAL_INPUT_SCREENS = tuple(CONDITIONAL_INPUT_HANDLERS.keys())
 
-		elif previous_screen=='scr_3_1_trigger':
-			show_trigger_updated(text, user_id, chat_id, message_id, timestamp)
+	if previous_screen in SPECIAL_INPUT_SCREENS:
+		handle_special_input(SPECIAL_INPUT_HANDLERS, previous_screen)
 
-		elif previous_screen=='scr_3_3':
-			show_change_habit_aspiration(text, chat_id, message_id, user_id, timestamp)
+	elif previous_screen.startswith(CONDITIONAL_INPUT_SCREENS):
+		handle_conditional_input(CONDITIONAL_INPUT_HANDLERS, CONDITIONAL_INPUT_SCREENS, previous_screen)
 
-		elif previous_screen=='scr_8_1':
-			show_reminding_options_after_making_habit_tiny(text, chat_id, message_id, user_id)
-
-		elif previous_screen in callback_predefined_habits or previous_screen =="scr_9":
-			show_picked_predefined_habits(text, chat_id, message_id, user_id, timestamp, message_info)
-
-		elif previous_screen=='scr_10':
-			show_aspiration_confirmation(chat_id, message_id, user_id, text=text)
-			
-		elif previous_screen=='scr_12' or is_previous_screen_in_magic_wanding:
-			show_magic_wanding(text, chat_id, message_id, user_id, message_info)
-
-		elif previous_screen=='scr_17': 
-			show_magic_wanding(text, chat_id, message_id, user_id, message_info)
-
-		elif previous_screen=='scr_19':
-			show_updated_habitname(text, chat_id, message_id, user_id, timestamp)
-
-		elif previous_screen=='scr_23':
-			show_habit_repetition(user_id, chat_id, message_id, callback_data=None, text=text)
-
-		elif previous_screen=='scr_26_1':
-			show_repetition_reminder_set(user_id, chat_id, message_id, callback_data=None, text=text, timestamp=timestamp, message_info=message_info)
-
-		elif previous_screen=='scr_26':
-			switch_screen(replies['20'], chat_id, message_id, 
-							delete_previous=False, keyboard=get_button('scr_20'))
-
-		elif previous_screen in ("scr_22_2", "scr_28_2"):
-			show_pick_report_for_habit(user_id, chat_id, message_id, text=text, message_info=message_info)
-
-		elif previous_screen in ("scr_29", "scr_29_add_3"):
-			show_habit_is_tracked(user_id, chat_id, message_id, callback_data=None, text=text, timestamp=timestamp, message_info=message_info)
-
-		elif previous_screen=='scr_31':
-			switch_screen(replies['7'], chat_id, message_id, 
-							delete_previous=False, keyboard=get_button('scr_7'))
-
-		elif previous_screen=='scr_33':
-			switch_screen(replies['36'], chat_id, message_id, 
-							delete_previous=False, keyboard=get_button('scr_36'))
-			message_info["callback_data"]="scr_36"
-			print(text)
-		elif previous_screen=='scr_35':
-			switch_screen(replies['36'], chat_id, message_id, 
-							delete_previous=False, keyboard=get_button('scr_36'))
-			message_info["callback_data"]="scr_36"
-
-		elif previous_screen=='scr_36':
-			switch_screen(replies['20'], chat_id, message_id, 
-							delete_previous=False, keyboard=get_button('scr_20'))
-
-		elif previous_screen=='scr_37':
-			switch_screen(replies['20'], chat_id, message_id, 
-							delete_previous=False, keyboard=get_button('scr_20'))
-
-		elif previous_screen=='scr_38':
-			switch_screen(replies['20'], chat_id, message_id, 
-							delete_previous=False, keyboard=get_button('scr_20'))
-
-		elif previous_screen=='scr_40':
-			switch_screen(replies['43'], chat_id, message_id, 
-							delete_previous=False, keyboard=get_button('scr_43'))
-
-		elif previous_screen=='scr_41_add_3':
-			show_add_report(text, chat_id, message_id, user_id, timestamp, message_info)
-
-		elif previous_screen=='scr_41_1_change_3':
-			show_report_changed(text, user_id, chat_id, message_id, timestamp, message_info)
-
-		elif previous_screen=='scr_42':
-			show_user_deletion_screen(text, chat_id, message_id, user_id, message_info)
-
-		elif previous_screen=='scr_44':
-			show_updated_habits_after_deletion(text, chat_id, message_id, user_id, message_info)
-
-		elif previous_screen=='scr_review':
-			show_review_confirmation(text, chat_id, message_id, user_id, message_info)
+	elif previous_screen=='scr_33':
+		switch_screen(replies['36'], chat_id, message_id, 
+						delete_previous=False, keyboard=get_button('scr_36'))
+		message_info["callback_data"]="scr_36"
+		print(text)
+	elif previous_screen=='scr_35':
+		switch_screen(replies['36'], chat_id, message_id, 
+						delete_previous=False, keyboard=get_button('scr_36'))
+		message_info["callback_data"]="scr_36"
 
 def handle_text_message(message):
 	"""Handles the text message from the user."""
@@ -373,7 +303,7 @@ def handle_text_message(message):
 	"user_id": user_id,
 	"chat_id": chat_id,
 	"message_id": message_id,
-	"callback_data": None,
+	"callback_data": "None", # I did it with a string specifically to avoid 'NoneType' errors
 	"text": text
 	}
 

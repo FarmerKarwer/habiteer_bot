@@ -97,4 +97,3 @@ def check_minimum_length(input_list, min_length=5):
     """Ensures the list meets the minimum required length."""
     if len(input_list) < min_length:
         raise ListTooShortError(f"The list has fewer than {min_length} entries.")
-        
