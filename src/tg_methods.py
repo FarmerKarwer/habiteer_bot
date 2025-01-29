@@ -62,7 +62,7 @@ def get_updates(offset=None, timeout=None):
 	url = URL+"getUpdates"
 	params = {"offset": offset, "timeout": timeout}
 	update_array = requests.get(url, params=params)
-	return json.loads(update_array.content)
+	return update_array.json()
 
 if __name__ == "__main__":
     print(get_updates())

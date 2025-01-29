@@ -36,7 +36,7 @@ def handler_long(event, context):
 			if last_update_id:
 				offset = last_update_id+1
 
-			updates = get_updates(offset = offset, timeout=30)
+			updates = get_updates(offset = offset, timeout=3)
 
 			if updates["ok"] and updates["result"]:
 				logging.debug(f"Received updates: {updates}")
