@@ -28,6 +28,44 @@ class CacheManager:
         response = self.message_history_table.get_item(Key={'user_id': user_id})
         return response.get('Item')
 
+    def save_picking_habit_info(self, data):
+        self.picking_habit_table.put_item(Item=data)
+
+    def get_picking_habit_info(self, user_id):
+        response = self.picking_habit_table.get_item(Key={'user_id': user_id})
+        return response.get('Item')
+
+    def update_picking_habit_info(self, user_id, updates):
+        """
+        Update specific attributes of an item in the `picking_habit` table.
+        
+        Args:
+            user_id (str): The primary key of the item to update.
+            updates (dict): A dictionary of attributes to update.
+                            Example: {"aspiration": "I want to be healthy", "habits": '["habit1"]'}
+        """
+        try:
+            # Construct the update expression
+            update_expression = "SET " + ", ".join([f"#{k} = :{k}" for k in updates.keys()])
+            expression_attr_names = {f"#{k}": k for k in updates.keys()}
+            expression_attr_values = {f":{k}": v for k, v in updates.items()}
+
+            response = self.picking_habit_table.update_item(
+                Key={'user_id': user_id},
+                UpdateExpression=update_expression,
+                ExpressionAttributeNames=expression_attr_names,
+                ExpressionAttributeValues=expression_attr_values,
+                ReturnValues='UPDATED_NEW'  # Return the updated attributes
+            )
+            return response.get('Attributes')
+        
+        except Exception as e:
+            print(f"Error updating item: {e}")
+            return None
+
+    def delete_picking_habit_info(self, user_id):
+        self.picking_habit_table.delete_item(Key={'user_id': user_id})
+
     # Save data to the table
     def save(self, user_id, value, ttl=None):
         item = {'user_id': user_id, 'data': value}

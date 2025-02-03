@@ -40,11 +40,11 @@ callback_screens_weekdays_and_time = [
 def use_logic(message):
 	if button_is_pressed(message):
 		message_info = handle_callback_query(message)
-		save_data_to_cache(filepath=CACHE_FILEPATH, data=message_info)
+		save_data_to_cache(filepath=CACHE_FILEPATH, data=message_info) # DELETE
 		cache.save_previous_message(message_info)
 	elif text_message_is_entered(message):
 		message_info = handle_text_message(message)
-		save_data_to_cache(filepath=CACHE_FILEPATH, data=message_info)
+		save_data_to_cache(filepath=CACHE_FILEPATH, data=message_info) # DELETE
 		cache.save_previous_message(message_info)
 	else:
 		message_info = handle_unknown_message(message)
@@ -102,7 +102,7 @@ def handle_callback_query(message):
 	timestamp = unix_to_timestamp(unix_timestamp)
 
 	# Retrieve previous screen info
-	previous_screen = get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")
+	previous_screen = cache.get_previous_message(user_id)['callback_data']
 	previous_screen_button_selection = get_cached_data(CACHE_BUTTON_SELECTION, user_id, chat_id, property="previous_screen") # Fix logging issue
 	transition = (previous_screen, callback_data)
 	
@@ -239,7 +239,7 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 		action = conditional_handlers_dict.get(matching_prefix)
 		action()
 
-	previous_screen = get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")
+	previous_screen = cache.get_previous_message(user_id)['callback_data']
 
 	SPECIAL_INPUT_HANDLERS = {
 		"scr_0_5_add_3": lambda: show_onboarding_report_added(user_id, chat_id, message_id, text, timestamp, message_info),
