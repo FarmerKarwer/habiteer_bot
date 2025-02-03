@@ -1,6 +1,9 @@
+from dotenv import load_dotenv
 import os
 import requests
 import json
+
+load_dotenv()
 
 def get_ai_response(aspiration): 
 	'''
@@ -14,7 +17,7 @@ def get_ai_response(aspiration):
 
 	'''
 
-	api_token = os.getenv('API_TOKEN')
+	api_token = os.getenv('YANDEX_GPT_TOKEN')
 
 	url = "https://llm.api.cloud.yandex.net/foundationModels/v1/completion"
 
@@ -31,7 +34,7 @@ def get_ai_response(aspiration):
 			"temperature": 0.3,
 			"maxTokens": 1000
 		},
-		"modelUri": "gpt://b1gn0kf4hjuuqk9lr9nu/yandexgpt-lite/rc"
+		"modelUri": "gpt://b1g1t50oitea02k1015v/yandexgpt-lite/rc"
 	}
 
 	headers = {
