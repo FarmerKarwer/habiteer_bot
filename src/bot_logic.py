@@ -2,6 +2,7 @@ import json
 import re
 
 from logic import *
+from cache_manager import CacheManager
 from common import (
 	switch_screen, 
 	get_button, 
@@ -16,6 +17,9 @@ from config import (
 	CACHE_FILEPATH, REPLIES_FILEPATH, 
 	CACHE_BUTTON_SELECTION, CACHE_PICKHABIT_FILEPATH
 	)
+
+# Load cache manager
+cache = CacheManager()
 
 # Load JSON data
 replies = load_json(REPLIES_FILEPATH)
@@ -37,9 +41,11 @@ def use_logic(message):
 	if button_is_pressed(message):
 		message_info = handle_callback_query(message)
 		save_data_to_cache(filepath=CACHE_FILEPATH, data=message_info)
+		cache.save_previous_message(message_info)
 	elif text_message_is_entered(message):
 		message_info = handle_text_message(message)
 		save_data_to_cache(filepath=CACHE_FILEPATH, data=message_info)
+		cache.save_previous_message(message_info)
 	else:
 		message_info = handle_unknown_message(message)
 
