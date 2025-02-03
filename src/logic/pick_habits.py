@@ -14,12 +14,6 @@ from common import (
 from common.exceptions import ListTooShortError
 from recommender import get_ai_response
 from tg_methods import delete_message
-from utils import (
-	get_cached_data, 
-	save_data_to_cache, 
-	update_user_value,
-	delete_user_records
-	)
 
 def show_aspirations(chat_id, message_id):
 	aspirations_str = format_numbered_list(aspirations)
@@ -33,51 +27,54 @@ def show_predefined_habits(callback_data, user_id, chat_id, message_id):
 	random_habits_str = format_numbered_list(random_habits)
 	reply = replies['9'].replace("[habits]", random_habits_str)
 
-	new_data = {"user_id":user_id,"chat_id":chat_id, "aspiration":aspiration, "habits":None, "behavior_options":random_habits, "suitability":None, "effectiveness":None}
-	save_data_to_cache(CACHE_PICKHABIT_FILEPATH, new_data)
+	new_data = {"user_id":user_id,"chat_id":chat_id, "aspiration":aspiration, 
+	"habits":None, "behavior_options":json.dumps(random_habits), 
+	"suitability":None, "effectiveness":None}
+	cache.save_picking_habit_info(new_data)
 
 	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_9'))
 
 def show_ai_recommended_habits(user_id, chat_id, message_id):
-	aspiration = get_cached_data(CACHE_PICKHABIT_FILEPATH, user_id, chat_id, property="aspiration")
+	aspiration = cache.get_picking_habit_info(user_id)['aspiration']
 	habits = get_ai_response(aspiration=aspiration)
 	numbered_habits = format_numbered_list(habits.values())
 	behavior_options_list = [habit for habit in habits.values()]
 	reply = "Возможно, вам подойдут эти варианты:\n\n"+numbered_habits+'\n\n---\n\n'+replies['ai_warn']
 
 	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_12_1'))
-	update_user_value(CACHE_PICKHABIT_FILEPATH, user_id, "behavior_options", behavior_options_list)
+	cache.update_picking_habit_info(user_id, {"behavior_options":json.dumps(behavior_options_list)})
 
 def show_picked_habits(user_id, chat_id, message_id, timestamp):
-	habits = get_cached_data(CACHE_PICKHABIT_FILEPATH, user_id, chat_id, property="habits")
+	habits = cache.get_picking_habit_info(user_id)['habits']
+	habits = json.loads(habits)
 	habits_str = format_numbered_list(habits)
 	for habit in habits:
 		db.add_habit(habit=habit, creation_datetime=timestamp, user_id=user_id)	
-	delete_user_records(CACHE_PICKHABIT_FILEPATH, user_id)
+	cache.delete_picking_habit_info(user_id)
 	reply = replies['18']+f"\n\nСохраненные привычки:\n{habits_str}"
 
 	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_18'))
 
 def show_picked_predefined_habits(text, chat_id, message_id, user_id, timestamp, message_info):
 	try:
-		entered_numbers = parse_numbers(text)
-		habit_options = get_cached_data(CACHE_PICKHABIT_FILEPATH, user_id, chat_id, property="behavior_options")	
+		entered_numbers = parse_numbers(text)	
+		habit_options = cache.get_picking_habit_info(user_id)['behavior_options']
+		habit_options = json.loads(habit_options)
 		filtered_habits = [i-1 for i in entered_numbers if i < len(habit_options)+1]
 		selected_habits = [habit_options[i] for i in filtered_habits]
 		filtered_habits_str = format_numbered_list(selected_habits)
 		check_minimum_length(selected_habits, min_length=1)
-		update_user_value(CACHE_PICKHABIT_FILEPATH, user_id, "habits", selected_habits)
-		
-		aspiration = get_cached_data(CACHE_PICKHABIT_FILEPATH, user_id, chat_id, property="aspiration")
+		cache.update_picking_habit_info(user_id, {"habits":json.dumps(selected_habits)})
+
+		aspiration = cache.get_picking_habit_info(user_id)['aspiration']
 
 		# Save to DB
 		for habit in selected_habits:
 			db.add_habit(habit=habit, creation_datetime=timestamp, user_id=user_id, aspiration=aspiration)
-		delete_user_records(CACHE_PICKHABIT_FILEPATH, user_id)
+		cache.delete_picking_habit_info(user_id)
 
 		reply = replies['18']+f"\n\nСохраненные привычки:\n{filtered_habits_str}"
-		switch_screen(reply, chat_id, message_id, 
-					delete_previous=False, keyboard=get_button('scr_18'))				
+		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_18'))				
 
 	except ValueError:
 		reply = "Введенный текст должен содержать числа, введеные через запятую. Возможно, у вас лишние пробелы. Попробуйте ввести еще раз."
@@ -99,33 +96,31 @@ def show_picked_predefined_habits(text, chat_id, message_id, user_id, timestamp,
 
 def show_aspiration_confirmation(chat_id, message_id, user_id, callback_data=None, text=None):
 	if callback_data:
-		aspiration = get_cached_data(CACHE_PICKHABIT_FILEPATH, user_id, chat_id, property="aspiration")
+		aspiration = cache.get_picking_habit_info(user_id)['aspiration']
 		reply = replies['11'].replace("[aspiration]", aspiration)
 		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_11'))
 	elif text:
 		new_data = {"user_id":user_id,"chat_id":chat_id, "aspiration":text, 
 					"habits":None, "behavior_options":None, "suitability":None, 
 					"effectiveness":None}
-		save_data_to_cache(CACHE_PICKHABIT_FILEPATH, new_data)
+		cache.save_picking_habit_info(new_data)
 
 		reply = replies['11'].replace("[aspiration]", text)
 		delete_message(message_id-1, chat_id)
 		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_11'))
-	else:
-		print("It is impossible to switch screen because the message does not contain text or callback")
 
 def show_magic_wanding_return_back_to_start(chat_id, message_id, user_id, keyboard_name):
 	behavior_options = None
-	update_user_value(CACHE_PICKHABIT_FILEPATH, user_id, "behavior_options", behavior_options)
+	cache.update_picking_habit_info(user_id, {"behavior_options":behavior_options})
 	switch_screen(replies['12'], chat_id, message_id, keyboard=get_button(keyboard_name))
 
 def show_magic_wanding(text, chat_id, message_id, user_id, message_info):
 	# TO-DO After returning back to a screen, I should remove the old behaviours
-	behavior_options = get_cached_data(CACHE_PICKHABIT_FILEPATH, user_id, chat_id, property="behavior_options")
+	behavior_options = cache.get_picking_habit_info(user_id).get('behavior_options', None)
 	if behavior_options is None:
 		behaviors = [text]
 		behaviors_str = format_numbered_list(behaviors)
-		update_user_value(CACHE_PICKHABIT_FILEPATH, user_id, "behavior_options", behaviors)
+		cache.update_picking_habit_info(user_id, {"behavior_options":json.dumps(behaviors)})
 		main_message = replies['12_proxy']['main_message'].replace('[behaviors]', behaviors_str)
 		praise = random.choice(replies['12_proxy']['praises'])
 		reply = main_message + praise
@@ -133,11 +128,12 @@ def show_magic_wanding(text, chat_id, message_id, user_id, message_info):
 		message_info["callback_data"]="scr_12_proxy_1"
 
 	else:
+		behavior_options = json.loads(behavior_options)
 		entered_options_cnt = len(behavior_options)+1
 		if entered_options_cnt<5:
 			behavior_options.append(text)
 			behaviors_str = format_numbered_list(behavior_options)
-			update_user_value(CACHE_PICKHABIT_FILEPATH, user_id, "behavior_options", behavior_options)
+			cache.update_picking_habit_info(user_id, {"behavior_options": json.dumps(behavior_options)})
 			main_message = replies['12_proxy']['main_message'].replace('[behaviors]', behaviors_str)
 			praise = random.choice(replies['12_proxy']['praises'])
 			reply = main_message + praise
@@ -150,7 +146,7 @@ def show_magic_wanding(text, chat_id, message_id, user_id, message_info):
 		elif entered_options_cnt==5:
 			behavior_options.append(text)
 			behaviors_str = format_numbered_list(behavior_options)
-			update_user_value(CACHE_PICKHABIT_FILEPATH, user_id, "behavior_options", behavior_options)
+			cache.update_picking_habit_info(user_id, {"behavior_options": json.dumps(behavior_options)})
 			main_message = replies['12_proxy']['main_message'].replace('[behaviors]', behaviors_str)
 			praise = replies['12_proxy']['5_options']
 			reply = main_message + praise
@@ -163,7 +159,7 @@ def show_magic_wanding(text, chat_id, message_id, user_id, message_info):
 		elif entered_options_cnt>5:
 			behavior_options.append(text)
 			behaviors_str = format_numbered_list(behavior_options)
-			update_user_value(CACHE_PICKHABIT_FILEPATH, user_id, "behavior_options", behavior_options)
+			cache.update_picking_habit_info(user_id, {"behavior_options": json.dumps(behavior_options)})
 			main_message = replies['12_proxy']['main_message'].replace('[behaviors]', behaviors_str)
 			praise = random.choice(replies['12_proxy']['praises'])
 			reply = main_message + praise
@@ -179,12 +175,13 @@ def show_magic_wanding(text, chat_id, message_id, user_id, message_info):
 
 def show_magic_wanding_return_back(callback_data, user_id, chat_id, message_id):
 	# Updating behavior options to allow changing an option
-	behavior_options = get_cached_data(CACHE_PICKHABIT_FILEPATH, user_id, chat_id, property="behavior_options")
-	previous_callback = get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")
+	behavior_options = cache.get_picking_habit_info(user_id).get('behavior_options', None)
+	behavior_options = json.loads(behavior_options)
+	previous_callback = cache.get_previous_message(user_id).get("callback_data")
 	if not previous_callback in ("scr_13","scr_13_proxy_1"):	
 		behavior_options.pop()
 	behaviors_str = format_numbered_list(behavior_options)
-	update_user_value(CACHE_PICKHABIT_FILEPATH, user_id, "behavior_options", behavior_options)
+	cache.update_picking_habit_info(user_id, {"behavior_options":json.dumps(behavior_options)})
 	# Updating message
 	main_message = replies['12_proxy']['main_message'].replace('[behaviors]', behaviors_str)
 	praise = random.choice(replies['12_proxy']['praises'])
@@ -220,24 +217,27 @@ def show_evaluation(callback_data, user_id, chat_id, message_id, type):
 		next_keyboard_name = 'scr_15'
 
 
-	behavior_options = get_cached_data(CACHE_PICKHABIT_FILEPATH, user_id, chat_id, property="behavior_options")
-	ratings = get_cached_data(CACHE_PICKHABIT_FILEPATH, user_id, chat_id, property=type)
+	behavior_options = cache.get_picking_habit_info(user_id).get('behavior_options', None)
+	behavior_options = json.loads(behavior_options)
+	ratings = cache.get_picking_habit_info(user_id).get(type, None)
+	if ratings:
+		ratings = json.loads(ratings)
 	is_callback_in_type_eval = bool(re.match(pattern, callback_data))
 
 	if is_callback_in_type_eval and callback_data not in back_to_first_scr:
 		ratings.pop()
-		update_user_value(CACHE_PICKHABIT_FILEPATH, user_id, type, ratings)
+		cache.update_picking_habit_info(user_id, {type:json.dumps(ratings)})
 
 	elif callback_data in back_to_first_scr:
 		ratings = None
-		update_user_value(CACHE_PICKHABIT_FILEPATH, user_id, type, ratings)
+		cache.update_picking_habit_info(user_id, {type:ratings})
 
 	if ratings is None:
 		behavior_idx = 0
 		cur_progress = 1
 		if type in callback_data:
 			grade = int(callback_data.split('_')[-1])
-			update_user_value(CACHE_PICKHABIT_FILEPATH, user_id, type, [grade])
+			cache.update_picking_habit_info(user_id, {type:json.dumps([grade])})
 			behavior_idx = 1
 			cur_progress = 2
 		behavior_str = behavior_options[behavior_idx].capitalize()
@@ -264,20 +264,21 @@ def show_evaluation(callback_data, user_id, chat_id, message_id, type):
 		if not is_callback_in_type_eval:
 			grade = int(callback_data.split('_')[-1])
 			ratings.append(grade)
-			update_user_value(CACHE_PICKHABIT_FILEPATH, user_id, type, ratings)
+			cache.update_picking_habit_info(user_id, {type:json.dumps(ratings)})
 		if len(ratings)==len(behavior_options):
 			if type=="suitability":
-				update_user_value(CACHE_PICKHABIT_FILEPATH, user_id, "effectiveness", None)
+				cache.update_picking_habit_info(user_id, {"effectiveness":None})
 				show_evaluation(callback_data, user_id, chat_id, message_id, type="effectiveness")
 			elif type=="effectiveness":
-				suitability_ratings = get_cached_data(CACHE_PICKHABIT_FILEPATH, user_id, chat_id, property="suitability")
+				suitability_ratings = cache.get_picking_habit_info(user_id)['suitability']
+				suitability_ratings = json.loads(suitability_ratings)
 				effectiveness_ratings = ratings
 				habit_grades = sum_arrays(suitability_ratings, effectiveness_ratings)
 				top_habits = [habit for _, habit in sorted(zip(habit_grades, behavior_options), reverse=True)[:3]]
 				top_habits_str = format_numbered_list(top_habits)
 
 				reply = replies[scr_next].replace("[habits]", top_habits_str)
-				update_user_value(CACHE_PICKHABIT_FILEPATH, user_id, "habits", top_habits)
+				cache.update_picking_habit_info(user_id, {"habits":json.dumps(top_habits)})
 				switch_screen(reply, chat_id, message_id, keyboard=get_button(next_keyboard_name))
 			return
 
@@ -293,7 +294,8 @@ def show_evaluation(callback_data, user_id, chat_id, message_id, type):
 		switch_screen(main_message, chat_id, message_id, keyboard=keyboard)
 
 def show_proposed_habits(user_id, chat_id, message_id):
-	top_habits = get_cached_data(CACHE_PICKHABIT_FILEPATH, user_id, chat_id, property="habits")
+	top_habits = cache.get_picking_habit_info(user_id)['habits']
+	top_habits = json.loads(top_habits)
 	top_habits_str = format_numbered_list(top_habits)
 	reply = replies['15'].replace("[habits]", top_habits_str)
 	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_15'))
