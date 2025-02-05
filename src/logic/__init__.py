@@ -29,6 +29,7 @@ from .my_habits import (
 	show_habit_is_tracked,
 	show_updated_habitname,
 	show_trigger_updated,
+	show_habit_reminder_updated,
 	show_report_updated_for_habit,
 	show_change_habit_aspiration,
 	show_updated_habits_after_deletion
@@ -87,6 +88,7 @@ __all__ = [
 "show_habit_is_tracked",
 "show_updated_habitname",
 "show_trigger_updated",
+"show_habit_reminder_updated",
 "show_report_updated_for_habit",
 "show_change_habit_aspiration",
 "show_updated_habits_after_deletion",

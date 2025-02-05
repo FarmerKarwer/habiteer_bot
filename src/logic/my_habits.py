@@ -565,6 +565,28 @@ def show_trigger_updated(text, user_id, chat_id, message_id, timestamp):
 
 	switch_screen(replies['3_7'], chat_id, message_id, keyboard=get_button('scr_3_7'))
 
+def show_habit_reminder_updated(text, user_id, chat_id, message_id, timestamp, message_info=None):
+	previous_screen = cache.get_previous_message(user_id)['callback_data']
+	try:
+		parse_time_from_string(text)
+		notification_period = cache.get_updating_habit_info(user_id, "habit_reminder_time")
+		notification_period = weekdays_to_numbers(notification_period)
+		notification_time = text
+		habit_id = cache.get_updating_habit_info(user_id, "habit_id")
+
+		db.update_habit(habit_id, "trigger_reminder_period", f"'{notification_period}'")
+		db.update_habit(habit_id, "trigger_reminder_time", f"'{notification_time}'")
+		db.update_habit(habit_id, "trigger_type", "'notification'")
+		db.update_habit(habit_id, "last_updated", f"CAST('{timestamp}'AS Timestamp)")
+		db.update_habit(habit_id, "trigger_action_desc", "NULL")
+		
+		switch_screen(replies['3_7'], chat_id, message_id, keyboard=get_button('scr_3_7'))
+		
+	except ValueError:
+		reply="Неверно указано время.\nВремя должно быть указано в формате HH:MM. Например: 21:45.\n\nПопробуйте еще раз."
+		switch_screen(reply, chat_id, message_id, keyboard=get_button(previous_screen))
+		message_info["callback_data"]=previous_screen
+
 def show_report_updated_for_habit(user_id, chat_id, message_id, callback_data=None, text=None, timestamp=None, message_info=None):
 	if text:
 		previous_screen = cache.get_previous_message(user_id)['callback_data']

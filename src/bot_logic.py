@@ -32,6 +32,7 @@ callback_screens_weekdays_and_time = {
 		],
 	"habit":
 		[
+			("scr_3_1_reminder_1", "scr_3_1_reminder_2", "scr_3_1_reminder_3"),
 			("scr_22_1", "scr_22_1_1", "scr_22_2"),
 			("scr_28", "scr_28_1", "scr_28_2"),
 		]
@@ -126,7 +127,7 @@ def handle_callback_query(message):
 	DEFAULT_CALLBACK_SCREENS = (
 		"scr_0_1", "scr_0_11", "scr_0_3", "scr_0_4", "scr_0_42", "scr_0_412",
 		"scr_0_5", "scr_0_5_add_1", "scr_0_7", "scr_0_421", "scr_0_422", "scr_0_413", 
-		"scr_2", "scr_3_2_proxy", "scr_3_1_trigger_type",
+		"scr_2", "scr_3_2_proxy", "scr_3_1_trigger_type", "scr_3_1_reminder_1",
 		"scr_3_2_proxy_reset", "scr_3_2_proxy_resume",	"scr_3_4_change_1", "scr_5", "scr_6",
 		"scr_9", "scr_10", "scr_12", "scr_13", "scr_3_3",
 		"scr_16", "scr_17", "scr_19", "scr_22", "scr_22_1",
@@ -147,6 +148,7 @@ def handle_callback_query(message):
 		"scr_1": lambda: show_main_menu(user_id, chat_id, message_id),
 		"scr_3": lambda: show_user_habits(user_id, chat_id, message_id),
 		"scr_3_1": lambda: get_back_to_habit(callback_data, user_id, chat_id, message_id),
+		"scr_3_1_reminder_2": lambda: show_choose_weekdays(user_id, chat_id, message_id, scr_name='scr_3_1_reminder_2'),
 		"scr_3_1_trigger": lambda: show_enter_your_trigger(user_id, chat_id, message_id),
 		"scr_3_2": lambda: show_mark_habit_as_completed(user_id, chat_id, message_id, timestamp),
 		"scr_3_2_reset": lambda: show_reset_habit_completion(user_id, chat_id, message_id, timestamp),
@@ -259,6 +261,7 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 		"scr_2": lambda: show_adding_habit(text, user_id, chat_id, message_id, timestamp),
 		"scr_3": lambda: show_habit_info(text, user_id, chat_id, message_id, message_info),
 		"scr_3_1_trigger": lambda: show_trigger_updated(text, user_id, chat_id, message_id, timestamp),
+		"scr_3_1_reminder_3": lambda: show_habit_reminder_updated(text, user_id, chat_id, message_id, timestamp, message_info=message_info),
 		"scr_3_3": lambda: show_change_habit_aspiration(text, chat_id, message_id, user_id, timestamp),
 		"scr_3_4_change_3": lambda: show_report_updated_for_habit(user_id, chat_id, message_id, text=text, timestamp=timestamp, message_info=message_info),
 		"scr_8_1": lambda: show_reminding_options_after_making_habit_tiny(text, chat_id, message_id, user_id),
