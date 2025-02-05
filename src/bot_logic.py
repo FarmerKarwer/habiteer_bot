@@ -259,6 +259,7 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 		"scr_3": lambda: show_habit_info(text, user_id, chat_id, message_id, message_info),
 		"scr_3_1_trigger": lambda: show_trigger_updated(text, user_id, chat_id, message_id, timestamp),
 		"scr_3_3": lambda: show_change_habit_aspiration(text, chat_id, message_id, user_id, timestamp),
+		"scr_3_4_change_3": lambda: show_report_updated_for_habit(user_id, chat_id, message_id, text=text, timestamp=timestamp, message_info=message_info),
 		"scr_8_1": lambda: show_reminding_options_after_making_habit_tiny(text, chat_id, message_id, user_id),
 		"scr_9": lambda: show_picked_predefined_habits(text, chat_id, message_id, user_id, timestamp, message_info),
 		"scr_10": lambda: show_aspiration_confirmation(chat_id, message_id, user_id, text=text),
