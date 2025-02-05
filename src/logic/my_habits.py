@@ -4,11 +4,9 @@ import random
 
 from ._common_imports import *
 from ._common_imports import premade_triggers, callback_weekdays
-from config import (
-	CACHE_UPDATEHABIT_FILEPATH, 
+from config import ( 
 	CACHE_BUTTON_SELECTION,
 	CACHE_REPORT,
-	CACHE_FILEPATH
 	)
 from common import (
 	add_report_buttons,
@@ -140,7 +138,6 @@ def show_habit_info(text, user_id, chat_id, message_id, message_info):
 			"report_name":report_name
 		}
 
-		#save_data_to_cache(CACHE_UPDATEHABIT_FILEPATH, new_data)
 		cache.save_updating_habit_info(user_id, new_data)
 		switch_screen(reply, chat_id, message_id, keyboard=keyboard)
 	except ValueError:
@@ -158,16 +155,13 @@ def show_habit_info(text, user_id, chat_id, message_id, message_info):
 
 def get_back_to_habit(callback_data, user_id, chat_id, message_id):
 	message_info = None
-	#text = str(get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_number")+1)
 	text = str(cache.get_updating_habit_info(user_id, "habit_number")+1)
 	show_habit_info(text, user_id, chat_id, message_id, message_info)
 
 def show_choosing_habit_type(user_id, chat_id, message_id):
-	#habit_name = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_name")
 	habit_name = cache.get_updating_habit_info(user_id, "habit_name")
 	reply = replies['21'].replace('[habit]', habit_name)
 	keyboard = get_button('scr_21')
-	#habit_idx = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_number")
 	habit_idx = cache.get_updating_habit_info(user_id, "habit_number")
 	if habit_idx == "no_number":
 		keyboard = json.loads(keyboard)
@@ -176,20 +170,17 @@ def show_choosing_habit_type(user_id, chat_id, message_id):
 	switch_screen(reply, chat_id, message_id, keyboard=keyboard)
 
 def show_is_habit_tiny(user_id, chat_id, message_id):
-	#habit_name = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_name")
 	habit_name = cache.get_updating_habit_info(user_id, "habit_name")
 	reply = replies['8'].replace('[habit]', habit_name)
 	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_8'))
 
 def show_make_habit_tiny(user_id, chat_id, message_id):
-	#habit_name = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_name")
 	habit_name = cache.get_updating_habit_info(user_id, "habit_name")
 	reply = replies['8_1'].replace('[habit]', habit_name)
 	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_8_1'))
 
 def show_reminding_options_after_making_habit_tiny(text, chat_id, message_id, user_id):
 	new_habit_name = text
-	#update_user_value(CACHE_UPDATEHABIT_FILEPATH, user_id, "new_habit_name", new_habit_name)
 	cache.update_updating_habit_info(user_id, "new_habit_name", new_habit_name)
 	switch_screen(replies['22'], chat_id, message_id, keyboard=get_button('scr_22'))
 
@@ -197,7 +188,6 @@ def show_choose_time_for_habit(user_id, chat_id, message_id, scr_name, type=None
 	screen_id = '_'.join(scr_name.split('_')[1:])
 	if type=="everyday":
 		habit_reminder_time = callback_weekdays
-		#update_user_value(CACHE_UPDATEHABIT_FILEPATH, user_id, "habit_reminder_time", habit_reminder_time)
 		cache.update_updating_habit_info(user_id, "habit_reminder_time", habit_reminder_time)
 		reply = replies[screen_id].replace("[period]", "каждый день")
 	elif type=="selected_days":
@@ -211,8 +201,8 @@ def show_choose_time_for_habit(user_id, chat_id, message_id, scr_name, type=None
 			"sun":"воскресенье"
 		}
 		weekdays_order = list(weekdays_rus_dict.keys())
-		habit_reminder_time = tuple(get_cached_data(CACHE_BUTTON_SELECTION, user_id, chat_id, property="user_selections"))
-		#update_user_value(CACHE_UPDATEHABIT_FILEPATH, user_id, "habit_reminder_time", habit_reminder_time)
+		#habit_reminder_time = tuple(get_cached_data(CACHE_BUTTON_SELECTION, user_id, chat_id, property="user_selections"))
+		habit_reminder_time = tuple(cache.get_button_selection(user_id, "user_selections"))
 		cache.update_updating_habit_info(user_id, "habit_reminder_time", habit_reminder_time)
 
 		if habit_reminder_time==callback_weekdays:
@@ -223,7 +213,8 @@ def show_choose_time_for_habit(user_id, chat_id, message_id, scr_name, type=None
 			habit_reminder_time_str_rus = ", ".join(habit_reminder_time_rus)
 			reply = replies[screen_id].replace("[period]", habit_reminder_time_str_rus)
 
-	delete_user_records(CACHE_BUTTON_SELECTION, user_id)
+	#delete_user_records(CACHE_BUTTON_SELECTION, user_id)
+	cache.delete_button_selection(user_id)
 	switch_screen(reply, chat_id, message_id, keyboard=get_button(scr_name))
 
 def show_choose_time_for_report(user_id, chat_id, message_id, scr_name, type=None):
@@ -242,7 +233,8 @@ def show_choose_time_for_report(user_id, chat_id, message_id, scr_name, type=Non
 			"sun":"воскресенье"
 		}
 		weekdays_order = list(weekdays_rus_dict.keys())
-		report_reminder_time = tuple(get_cached_data(CACHE_BUTTON_SELECTION, user_id, chat_id, property="user_selections"))
+		#report_reminder_time = tuple(get_cached_data(CACHE_BUTTON_SELECTION, user_id, chat_id, property="user_selections"))
+		report_reminder_time = tuple(cache.get_button_selection(user_id, "user_selections"))
 
 		if report_reminder_time==callback_weekdays:
 			reply = replies[screen_id].replace("[period]", "каждый день")
@@ -262,13 +254,12 @@ def show_choose_time_for_report(user_id, chat_id, message_id, scr_name, type=Non
 	else:
 		update_user_value(CACHE_REPORT, user_id, "report_reminder_period", report_reminder_time)
 
-	delete_user_records(CACHE_BUTTON_SELECTION, user_id)
+	#delete_user_records(CACHE_BUTTON_SELECTION, user_id)
+	cache.delete_button_selection(user_id)
 	switch_screen(reply, chat_id, message_id, keyboard=get_button(scr_name))
 
 def show_premade_triggers(user_id, chat_id, message_id):
-	#habit_name = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_name")
 	habit_name = cache.get_updating_habit_info(user_id, "habit_name")
-	#new_habit_name = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="new_habit_name")
 	new_habit_name = cache.get_updating_habit_info(user_id, "new_habit_name")
 	if new_habit_name:
 		habit_name = new_habit_name
@@ -283,7 +274,6 @@ def show_premade_triggers(user_id, chat_id, message_id):
 	for trigger_type in [morning_triggers, commuting_triggers, at_work_triggers, break_time_triggers, evening_triggers]:
 		for trigger in trigger_type:
 			chosen_triggers.append(trigger)
-	#update_user_value(CACHE_UPDATEHABIT_FILEPATH, user_id, "trigger_options", chosen_triggers)
 	cache.update_updating_habit_info(user_id, "trigger_options", chosen_triggers)
 	triggers_str = format_numbered_list(chosen_triggers)
 	reply = replies['23_1'].replace('[triggers]', triggers_str)
@@ -291,9 +281,6 @@ def show_premade_triggers(user_id, chat_id, message_id):
 	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_23_1'))
 
 def show_enter_your_trigger(user_id, chat_id, message_id):
-	#habit_name = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_name")
-	#new_habit_name = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="new_habit_name")
-	#habit_status = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="status")
 	habit_info = cache.get_updating_habit_info(user_id)
 	habit_name = habit_info.get("habit_name")
 	new_habit_name = habit_info.get("new_habit_name")
@@ -308,31 +295,23 @@ def show_enter_your_trigger(user_id, chat_id, message_id):
 		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_3_1_trigger'))
 
 def show_habit_repetition(user_id, chat_id, message_id, callback_data=None, text=None):
-	#habit_name = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_name")
-	#new_habit_name = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="new_habit_name")
 	habit_name = cache.get_updating_habit_info(user_id, "habit_name")
 	new_habit_name = cache.get_updating_habit_info(user_id, "new_habit_name")
 	if new_habit_name:
 		habit_name = new_habit_name
 	if text:
 		chosen_trigger = text
-		#update_user_value(CACHE_UPDATEHABIT_FILEPATH, user_id, "trigger", chosen_trigger)
 		cache.update_updating_habit_info(user_id, "trigger", chosen_trigger)
 	if callback_data and callback_data!="scr_24" and callback_data!="scr_24_resume":
-		#trigger_options = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="trigger_options")
 		trigger_options = cache.get_updating_habit_info(user_id, "trigger_options")
 		chosen_trigger_idx = int(callback_data.split('_')[-1])-1
 		chosen_trigger = trigger_options[chosen_trigger_idx]
-		#update_user_value(CACHE_UPDATEHABIT_FILEPATH, user_id, "trigger", chosen_trigger)
 		cache.update_updating_habit_info(user_id, "trigger", chosen_trigger)
 	if callback_data=="scr_24":
-		#chosen_trigger = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="trigger")
 		chosen_trigger = cache.get_updating_habit_info(user_id, "trigger")
 	if callback_data=="scr_24_resume":
-		#habit_id = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_id")
 		habit_id = cache.get_updating_habit_info(user_id, "habit_id")
 		chosen_trigger = db.get_habit_by_id(habit_id)[0].get("trigger_action_desc")
-		#update_user_value(CACHE_UPDATEHABIT_FILEPATH, user_id, "trigger", chosen_trigger)
 		cache.update_updating_habit_info(user_id, "trigger", chosen_trigger)
 
 		reply = replies['24_resume'].replace('[trigger]', chosen_trigger)
@@ -365,14 +344,12 @@ def show_repetition_reminder_set(user_id, chat_id, message_id, callback_data=Non
 			validate_marginal_datetime_entry(text)
 			reminder_time = calculate_datetime_margin_from_user_input(text, timestamp)
 		except ValueError:
-			#previous_screen = get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")
 			previous_screen = cache.get_previous_message(user_id)['callback_data']
 			reply="Неверно указан период.\nУкажите в формате: “Через X дн в HH:MM”. Например, если хотите отрепетировать сегодня: “через 0 дн в 21:25”.\n\nПопробуйте еще раз."
 			switch_screen(reply, chat_id, message_id, keyboard=get_button(previous_screen))
 			message_info["callback_data"]=previous_screen
 			return
 		except ValueOutOfRangeError:
-			#previous_screen = get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")
 			previous_screen = cache.get_previous_message(user_id)['callback_data']
 			reply="Указанный период меньше текущего времени.\nУкажите в формате: “Через X дн в HH:MM”.\n\nПопробуйте еще раз."
 			switch_screen(reply, chat_id, message_id, keyboard=get_button(previous_screen))
@@ -385,12 +362,8 @@ def show_repetition_reminder_set(user_id, chat_id, message_id, callback_data=Non
 	new_habit_name = habit_info.get('new_habit_name', None)
 	trigger = habit_info.get('trigger', None)
 
-	#habit_id = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_id")
-	#habit_name = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_name")
 	habit_type = "regular"
 	trigger_type = "behavior"
-	#new_habit_name = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="new_habit_name")
-	#trigger = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="trigger")
 	if new_habit_name:
 		habit_name = new_habit_name
 	habit_status="pending"
@@ -417,9 +390,6 @@ def show_set_trigger_notification_confirmation(user_id, chat_id, message_id):
 	habit_name = habit_info['habit_name']
 	new_habit_name = habit_info['new_habit_name']
 	trigger = habit_info['trigger']
-	#habit_name = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_name")
-	#new_habit_name = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="new_habit_name")
-	#trigger = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="trigger")
 	if new_habit_name:
 		habit_name = new_habit_name
 	reply = replies['27'].replace('[trigger]', trigger)
@@ -428,7 +398,6 @@ def show_set_trigger_notification_confirmation(user_id, chat_id, message_id):
 	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_27'))
 
 def show_pick_report_for_habit(user_id, chat_id, message_id, callback_data=None, text=None, message_info=None):
-	#habit_status = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="status")
 	habit_status = cache.get_updating_habit_info(user_id, "status")
 	user_reports = db.view_reports(user_id)
 	no_reports = len(user_reports)==0
@@ -438,11 +407,9 @@ def show_pick_report_for_habit(user_id, chat_id, message_id, callback_data=None,
 		try:
 			parse_time_from_string(text)
 			notification_time = text
-			#update_user_value(CACHE_UPDATEHABIT_FILEPATH, user_id, "trigger_reminder_time", notification_time)
 			cache.update_updating_habit_info(user_id, "trigger_reminder_time", notification_time)
 			message_info['callback_data'] = 'scr_29'
 		except ValueError:
-			#previous_screen = get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")
 			previous_screen = cache.get_previous_message(user_id)['callback_data']
 			reply="Неверно указано время.\nВремя должно быть указано в формате HH:MM. Например: 21:45.\n\nПопробуйте еще раз."
 			switch_screen(reply, chat_id, message_id, keyboard=get_button(previous_screen))
@@ -484,7 +451,6 @@ def show_pick_report_for_habit(user_id, chat_id, message_id, callback_data=None,
 	if habit_status not in ("tracked", "marked", "stopped"):
 		keyboard = add_report_buttons('scr_29', user_id)
 	else:
-		#report_name = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="report_name")
 		report_name = cache.get_updating_habit_info(user_id, "report_name")
 		reply = f"*Текущий отчет*: _{report_name}_\n\n"+reply
 		keyboard = add_report_buttons('scr_3_4', user_id)
@@ -492,7 +458,6 @@ def show_pick_report_for_habit(user_id, chat_id, message_id, callback_data=None,
 
 def show_habit_is_tracked(user_id, chat_id, message_id, callback_data=None, text=None, timestamp=None, message_info=None):
 	if text:
-		#previous_screen = get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")
 		previous_screen = cache.get_previous_message(user_id)['callback_data']
 		try:
 			parse_time_from_string(text)
@@ -524,22 +489,16 @@ def show_habit_is_tracked(user_id, chat_id, message_id, callback_data=None, text
 	trigger_reminder_period = habit_info.get("habit_reminder_time", None)
 	trigger_reminder_time = habit_info.get("trigger_reminder_time", None)
 
-	#habit_id = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_id")
-	#habit_name = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_name")
-	#new_habit_name = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="new_habit_name")
 	if new_habit_name:
 		habit_name = new_habit_name
-	#trigger = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="trigger")
 	if trigger:
 		trigger_type="behavior"
 	else:
 		trigger_type="notification"
 	habit_type = "regular"
 	habit_status="tracked"
-	#trigger_reminder_period = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_reminder_time")
 	if trigger_reminder_period:
 		trigger_reminder_period = weekdays_to_numbers(trigger_reminder_period)
-	#trigger_reminder_time = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="trigger_reminder_time")
 
 	data_to_update = {
 		"name":f"'{habit_name}'",
@@ -560,7 +519,6 @@ def show_habit_is_tracked(user_id, chat_id, message_id, callback_data=None, text
 
 
 def show_mark_habit_as_completed(user_id, chat_id, message_id, timestamp):
-	#habit_id = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_id")
 	habit_id = cache.get(user_id, "habit_id")
 	status = "completed"
 	habit_status = "marked"
@@ -606,7 +564,6 @@ def show_mark_habit_as_completed(user_id, chat_id, message_id, timestamp):
 # TO-DO: change these two functions to one function
 def show_updated_habitname(text, chat_id, message_id, user_id, timestamp):
 	new_name = text
-	#habit_idx = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_number")
 	habit_idx = cache.get_updating_habit_info(user_id, "habit_number")
 	unique_id = db.view_habits(user_id)[habit_idx].get("id")
 	db.update_habit(unique_id, "name", f"'{new_name}'")
@@ -616,7 +573,6 @@ def show_updated_habitname(text, chat_id, message_id, user_id, timestamp):
 
 def show_trigger_updated(text, user_id, chat_id, message_id, timestamp):
 	updated_trigger = text
-	#habit_id =get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_id")
 	habit_id = cache.get_updating_habit_info(user_id, "habit_id")
 	db.update_habit(habit_id, "trigger_action_desc", f"'{updated_trigger}'")
 	db.update_habit(habit_id, "last_updated", f"CAST('{timestamp}'AS Timestamp)")
@@ -625,7 +581,6 @@ def show_trigger_updated(text, user_id, chat_id, message_id, timestamp):
 
 def show_report_updated_for_habit(user_id, chat_id, message_id, callback_data=None, text=None, timestamp=None, message_info=None):
 	if text:
-		#previous_screen = get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")
 		previous_screen = cache.get_previous_message(user_id)['callback_data']
 		try:
 			parse_time_from_string(text)
@@ -646,7 +601,6 @@ def show_report_updated_for_habit(user_id, chat_id, message_id, callback_data=No
 		report = db.get_report(user_id, report_num)[0]
 		report_id = report.get("id")
 
-	#habit_id = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_id")
 	habit_id = cache.get_updating_habit_info(user_id, "habit_id")
 
 	db.update_habit(habit_id, "report_id", report_id)
@@ -656,7 +610,6 @@ def show_report_updated_for_habit(user_id, chat_id, message_id, callback_data=No
 
 def show_change_habit_aspiration(text, chat_id, message_id, user_id, timestamp):
 	new_aspiration = text
-	#habit_idx = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_number")
 	habit_idx = cache.get_updating_habit_info(user_id, "habit_number")
 	unique_id = db.view_habits(user_id)[habit_idx].get("id")
 	db.update_habit(unique_id, "aspiration", f"'{new_aspiration}'")

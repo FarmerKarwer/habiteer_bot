@@ -2,10 +2,10 @@ import json
 from typing import Any, Callable, Dict, List, Optional
 
 import tg_methods
-from config import BUTTONS_FILEPATH, CACHE_BUTTON_SELECTION, CACHE_FILEPATH
+from config import BUTTONS_FILEPATH
 from database import DatabaseClient
 from cache_manager import CacheManager
-from utils import load_json, get_cached_data, save_data_to_cache, update_user_value
+from utils import load_json
 
 def switch_screen(
     reply: str,
@@ -38,20 +38,19 @@ def get_button(screen_name, buttons_filepath=BUTTONS_FILEPATH):
 
 def select_multiple_days(callback_data, additional_actions, user_id, chat_id, message_id):
 	cache = CacheManager()
-	user_selections = get_cached_data(CACHE_BUTTON_SELECTION, user_id, chat_id, "user_selections")
-	#previous_screen = get_cached_data(CACHE_FILEPATH, user_id, chat_id, "callback_data")
+	user_selections = cache.get_button_selection(user_id, "user_selections")
 	previous_screen = cache.get_previous_message(user_id)['callback_data']
 	if user_selections is None:
 		user_selections = []
-		new_data = {"user_id":user_id, "chat_id": chat_id, "user_selections":user_selections, "previous_screen":previous_screen}
-		save_data_to_cache(CACHE_BUTTON_SELECTION, new_data)
+		new_data = {"user_id":user_id, "user_selections":json.dumps(user_selections), "previous_screen":previous_screen}
+		cache.save_button_selection(new_data)
 
 	if callback_data in user_selections:
 		user_selections.remove(callback_data)
 	else:
 		user_selections.append(callback_data)
 
-	update_user_value(CACHE_BUTTON_SELECTION, user_id, "user_selections", user_selections)
+	cache.update_button_selection(user_id, {"user_selections":json.dumps(user_selections)})
 
 	days = [
 		{"text": "✅ Пн" if "mon" in user_selections else "Пн", "callback_data": "mon"},

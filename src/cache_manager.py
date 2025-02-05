@@ -112,6 +112,49 @@ class CacheManager:
     def delete_updating_habit_info(self, user_id):
         self.updating_habit_table.delete_item(Key={'user_id': user_id})
 
+    def get_button_selection(self, user_id, prop=None):
+        response = self.button_selection_table.get_item(Key={'user_id': user_id}).get('Item')
+        if prop and response:
+            response = response.get(prop, None)
+            if prop=="user_selections":
+                response = json.loads(response)
+            return response
+        return response
+
+    def save_button_selection(self, data):
+        self.button_selection_table.put_item(Item=data)
+
+    def update_button_selection(self, user_id, updates):
+        """
+        Update specific attributes of an item in the `button_selection` table.
+        
+        Args:
+            user_id (str): The primary key of the item to update.
+            updates (dict): A dictionary of attributes to update.
+                            Example: {"previous_screen": "scr_2", "user_selections": '["sat", "sun"]'}
+        """
+        try:
+            # Construct the update expression
+            update_expression = "SET " + ", ".join([f"#{k} = :{k}" for k in updates.keys()])
+            expression_attr_names = {f"#{k}": k for k in updates.keys()}
+            expression_attr_values = {f":{k}": v for k, v in updates.items()}
+
+            response = self.button_selection_table.update_item(
+                Key={'user_id': user_id},
+                UpdateExpression=update_expression,
+                ExpressionAttributeNames=expression_attr_names,
+                ExpressionAttributeValues=expression_attr_values,
+                ReturnValues='UPDATED_NEW'  # Return the updated attributes
+            )
+            return response.get('Attributes')
+        
+        except Exception as e:
+            print(f"Error updating item: {e}")
+            return None
+
+    def delete_button_selection(self, user_id):
+        self.button_selection_table.delete_item(Key={'user_id': user_id})
+
     # Save data to the table
     def save(self, user_id, value):
         item = {'user_id': user_id, 'data': value}

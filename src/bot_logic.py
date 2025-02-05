@@ -9,14 +9,8 @@ from common import (
 	unix_to_timestamp
 	)
 from tg_methods import edit_message_reply_markup, delete_message
-from utils import (
-	load_json, update_user_value,
-	get_cached_data, save_data_to_cache,
-)
-from config import (
-	CACHE_FILEPATH, REPLIES_FILEPATH, 
-	CACHE_BUTTON_SELECTION, CACHE_PICKHABIT_FILEPATH
-	)
+from utils import load_json
+from config import REPLIES_FILEPATH
 
 # Load cache manager
 cache = CacheManager()
@@ -46,11 +40,9 @@ callback_screens_weekdays_and_time = {
 def use_logic(message):
 	if button_is_pressed(message):
 		message_info = handle_callback_query(message)
-		save_data_to_cache(filepath=CACHE_FILEPATH, data=message_info) # DELETE
 		cache.save_previous_message(message_info)
 	elif text_message_is_entered(message):
 		message_info = handle_text_message(message)
-		save_data_to_cache(filepath=CACHE_FILEPATH, data=message_info) # DELETE
 		cache.save_previous_message(message_info)
 	else:
 		message_info = handle_unknown_message(message)
@@ -120,7 +112,8 @@ def handle_callback_query(message):
 
 	# Retrieve previous screen info
 	previous_screen = cache.get_previous_message(user_id)['callback_data']
-	previous_screen_button_selection = get_cached_data(CACHE_BUTTON_SELECTION, user_id, chat_id, property="previous_screen") # Fix logging issue
+	#previous_screen_button_selection = get_cached_data(CACHE_BUTTON_SELECTION, user_id, chat_id, property="previous_screen") # Fix logging issue
+	previous_screen_button_selection = cache.get_button_selection(user_id, "previous_screen")
 	transition = (previous_screen, callback_data)
 	
 	# Determine current callback type
