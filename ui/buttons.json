@@ -724,6 +724,35 @@
     ]
   },
 
+  "scr_3_1_trigger_type":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Другое поведение (рекомендуется)",
+          "callback_data": "scr_3_1_trigger"
+        }
+      ],
+      [
+        {
+          "text": "Уведомление в телефоне",
+          "callback_data": "scr_3_1_reminder"
+        }
+      ],
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_3_1"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+
   "scr_3_1_trigger":{
     "inline_keyboard":[
         [

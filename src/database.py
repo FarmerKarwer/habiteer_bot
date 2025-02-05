@@ -54,6 +54,7 @@ class DatabaseClient:
 		VALUES ({unique_id}, '{habit}', CAST('{creation_datetime}' AS Timestamp), {user_id}, '{aspiration}');
 		"""
 		self.execute_query(query)
+		return unique_id
 
 	def add_onboarding_habit(self, habit_name, creation_datetime, type, trigger_type, trigger_action_desc, user_id, status, aspiration, report_id):
 		unique_id = self.autoincrement_id("id", "habits")

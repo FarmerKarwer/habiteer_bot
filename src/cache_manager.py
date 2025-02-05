@@ -222,5 +222,5 @@ class CacheManager:
 
 if __name__ == "__main__":
     cache = CacheManager()
-    res = cache.get_report_info(940985788, 'report_period')
+    res = cache.get_updating_habit_info(940985788)
     print(res)
