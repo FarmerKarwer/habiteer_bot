@@ -155,21 +155,72 @@ class CacheManager:
     def delete_button_selection(self, user_id):
         self.button_selection_table.delete_item(Key={'user_id': user_id})
 
-    # Save data to the table
-    def save(self, user_id, value):
-        item = {'user_id': user_id, 'data': value}
-        self.table.put_item(Item=item)
+    def get_report_info(self, user_id, prop=None):
+        response = self.creating_report_table.get_item(Key={'user_id': user_id}).get('Item')
+        if response is None:
+            return response
+        if prop:
+            return json.loads(response.get('data')).get(prop, None)
+        return json.loads(response.get('data'))
 
-    # Get data from the table
-    def get(self, user_id):
-        response = self.table.get_item(Key={'user_id': user_id})
-        return response.get('Item')
+    def save_report_info(self, user_id, data):
+        item = {'user_id': user_id, 'data': json.dumps(data)}
+        self.creating_report_table.put_item(Item=item)
 
-    # Delete data from the table
-    def delete(self, user_id):
-        self.table.delete_item(Key={'user_id': user_id})
+    def update_report_info(self, user_id, key, value):
+        try:
+            response = self.creating_report_table.get_item(Key={'user_id': user_id})
+            item = response.get('Item')
+            if not item:
+                print(f"No item found for user_id: {user_id}")
+                return
+
+            # Deserialize the JSON string into a Python dictionary
+            data = json.loads(item.get('data', '{}'))
+
+            # Update the specific key-value pair
+            data[key] = value
+
+            # Serialize the dictionary back into a JSON string
+            updated_data_json = json.dumps(data)
+
+            # Update the item in the table
+            self.creating_report_table.update_item(
+                Key={'user_id': user_id},
+                UpdateExpression="SET #data = :data",
+                ExpressionAttributeNames={
+                    '#data': 'data'  # Use ExpressionAttributeNames to handle reserved keywords
+                },
+                ExpressionAttributeValues={
+                    ':data': updated_data_json
+                }
+            )
+            print(f"Data updated successfully for user_id: {user_id}")
+        except Exception as e:
+            print(f"Error updating data for user_id {user_id}: {e}")
+
+    def delete_report_info(self, user_id):
+        self.creating_report_table.delete_item(Key={'user_id': user_id})
+
+    def save_key_phrase(self, user_id, value):
+        item = {'user_id': user_id, 'key_phrase': value}
+        self.key_phrase_table.put_item(Item=item)
+
+    def get_key_phrase(self, user_id):
+        response = self.key_phrase_table.get_item(Key={'user_id': user_id}, ProjectionExpression='key_phrase').get('Item')
+        return response.get('key_phrase')
+
+    def delete_key_phrase(self, user_id):
+        self.key_phrase_table.delete_item(Key={'user_id': user_id})
+
+    def clear_cache(self, user_id):
+        user_tables = [self.message_history_table, self.button_selection_table, self.key_phrase_table,
+        self.picking_habit_table, self.creating_report_table, self.updating_habit_table,]
+        
+        for table in user_tables:
+            table.delete_item(Key={'user_id': user_id})
 
 if __name__ == "__main__":
     cache = CacheManager()
-    res = cache.get_updating_habit_info(940985788)
+    res = cache.get_report_info(940985788, 'report_period')
     print(res)

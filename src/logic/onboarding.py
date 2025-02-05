@@ -1,17 +1,7 @@
 from ._common_imports import *
-from config import (
-	CACHE_UPDATEHABIT_FILEPATH,
-	CACHE_REPORT,
-	CACHE_FILEPATH
-	)
 from common import (
 	parse_time_from_string,
 	weekdays_to_numbers,
-	)
-from utils import (
-	get_cached_data, 
-	save_data_to_cache, 
-	delete_user_records
 	)
 
 def show_start_onboarding(user_id, chat_id, message_id, message, timestamp):
@@ -43,8 +33,6 @@ def show_onboarding_secret(user_id, chat_id, message_id):
 	aspiration = "Чувствовать себя счастливее каждый день😊"
 	report_name = None
 	new_data = {
-			"user_id": user_id,
-			"chat_id": chat_id,
 			"habit_id":habit_id,
 			"habit_name": habit_name.capitalize(),
 			"status":status,
@@ -53,18 +41,18 @@ def show_onboarding_secret(user_id, chat_id, message_id):
 			"trigger":trigger
 		}
 
-	save_data_to_cache(CACHE_UPDATEHABIT_FILEPATH, new_data)
+	cache.save_updating_habit_info(user_id, new_data)
 	switch_screen(replies['0_2'], chat_id, message_id, keyboard=get_button('scr_0_2'))
 
 def show_onboarding_report_added(user_id, chat_id, message_id, text, timestamp, message_info):
-	previous_screen = get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="callback_data")
+	previous_screen = cache.get_previous_message(user_id)['callback_data']
 	try:
 		parse_time_from_string(text)
-		report_period = get_cached_data(CACHE_REPORT, user_id, chat_id, property="report_reminder_period")
+		report_period = cache.get_report_info(user_id, "report_reminder_period")
 		report_period = weekdays_to_numbers(report_period)
 		report_time = text
 		db.add_report(user_id, timestamp, report_period, report_time)
-		delete_user_records(CACHE_REPORT, user_id)
+		cache.delete_report_info(user_id)
 		user_reports = db.view_reports(user_id)
 		report_id = max(item['id'] for item in user_reports)
 	except ValueError:
@@ -73,9 +61,10 @@ def show_onboarding_report_added(user_id, chat_id, message_id, text, timestamp, 
 		message_info["callback_data"]=previous_screen
 		return
 
-	habit_name = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="habit_name")
-	trigger_action_desc = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="trigger")
-	aspiration = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="aspiration")
+	habit_info = cache.get_updating_habit_info(user_id)
+	habit_name = habit_info.get("habit_name", None)
+	trigger_action_desc = habit_info.get("trigger", None)
+	aspiration = habit_info.get("aspiration", None)
 	habit_type="regular"
 	trigger_type="behavior"
 	status="tracked"

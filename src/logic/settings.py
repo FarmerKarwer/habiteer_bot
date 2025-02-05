@@ -4,21 +4,11 @@ import re
 
 from ._common_imports import *
 from ._common_imports import callback_weekdays
-from config import (
-	CACHE_KEY_PHRASE,
-	CACHE_REPORT,
-	CACHE_FILEPATH
-	)
 from common import (
 	add_report_buttons,
 	numbers_to_weekdays,
 	parse_time_from_string,
 	weekdays_to_numbers,
-	)
-from utils import (
-	get_cached_data, 
-	save_data_to_cache, 
-	delete_user_records
 	)
 
 def show_all_reports_in_settings(user_id, chat_id, message_id):
@@ -38,12 +28,12 @@ def show_all_reports_in_settings(user_id, chat_id, message_id):
 def show_add_report(text, chat_id, message_id, user_id, timestamp, message_info):
 	try:
 		parse_time_from_string(text)
-		report_period = get_cached_data(CACHE_REPORT, user_id, chat_id, property="report_reminder_period")
+		report_period = cache.get_report_info(user_id, "report_reminder_period")
 		report_period = weekdays_to_numbers(report_period)
 		report_time = text
 		db.add_report(user_id, timestamp, report_period, report_time)
 		switch_screen(replies['41_added'], chat_id, message_id, keyboard=get_button('scr_41_added'))
-		delete_user_records(CACHE_REPORT, user_id)
+		cache.delete_report_info(user_id)
 	except ValueError:
 		reply="Неверно указано время.\nВремя должно быть указано в формате HH:MM. Например: 21:45.\n\nПопробуйте еще раз."
 		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_41_add_3'))
@@ -61,20 +51,18 @@ def show_choose_report(callback_data, user_id, chat_id, message_id):
 		}
 	weekdays_order = list(weekdays_rus_dict.keys())
 	if callback_data == "scr_41_1":
-		report_num = get_cached_data(CACHE_REPORT, user_id, chat_id, property="report_name")
+		report_num = cache.get_report_info(user_id, "report_name")
 		report_num = report_num.split(" ")[-1]
 	else:
 		report_num = callback_data.split("_")[-1]
 	report = db.get_report(user_id, report_num)[0]
-	report_info = {"user_id": user_id,
-					"chat_id":chat_id,
-					"report_id":report.get("id"), 
+	report_info = {"report_id":report.get("id"), 
 					"report_name":report.get("name"), 
 					"report_period":report.get("on_weekdays"),
 					"report_time":report.get("on_time")}
 
 	if callback_data != "scr_41_1":
-		save_data_to_cache(CACHE_REPORT, report_info)
+		cache.save_report_info(user_id, report_info)
 
 	reply = replies['41_1'].replace("[report_name]", report_info["report_name"])
 	report_period = json.loads(report_info["report_period"])
@@ -93,7 +81,7 @@ def show_choose_report(callback_data, user_id, chat_id, message_id):
 	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_41_1'))
 
 def show_report_deleted(user_id, chat_id, message_id):
-	report_id = get_cached_data(CACHE_REPORT, user_id, chat_id, property="report_id")
+	report_id = cache.get_report_info(user_id, "report_id")
 	linked_habits = db.get_user_habits_linked_to_report(report_id)
 
 	for habit in linked_habits:
@@ -106,8 +94,8 @@ def show_report_deleted(user_id, chat_id, message_id):
 def show_report_changed(text, user_id, chat_id, message_id, timestamp, message_info):
 	try:
 		parse_time_from_string(text)
-		report_id = get_cached_data(CACHE_REPORT, user_id, chat_id, property="report_id")
-		report_reminder_period = get_cached_data(CACHE_REPORT, user_id, chat_id, property="report_reminder_period")
+		report_id = cache.get_report_info(user_id, "report_id")
+		report_reminder_period = cache.get_report_info(user_id, "report_reminder_period")
 		report_reminder_period = weekdays_to_numbers(report_reminder_period)
 		report_reminder_time = text
 		db.update_report(report_id, 'on_weekdays', f"'{report_reminder_period}'")
@@ -125,7 +113,7 @@ def show_review_confirmation(text, chat_id, message_id, user_id, message_info):
 	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_review_confirmation'))
 
 def show_review_sent(user_id, chat_id, message_id, timestamp):
-	review = get_cached_data(CACHE_FILEPATH, user_id, chat_id, property="text")
+	review = cache.get_previous_message(user_id)['text']
 	db.send_review(user_id, review, timestamp)
 	switch_screen(replies['review_sent'], chat_id, message_id, keyboard=get_button('scr_review_sent'))
 
@@ -133,14 +121,13 @@ def show_delete_all_data_confirmation(user_id, chat_id, message_id):
 	random_num = random.randint(1000000, 9999999)
 	reply = replies['42'].replace('[random_num]', str(random_num))
 	key_phrase = re.search(r"_([^_]+)_", reply).group(1)
-	data = {"user_id":user_id, "chat_id":chat_id, "key_phrase":key_phrase}
-	save_data_to_cache(CACHE_KEY_PHRASE, data)
+	cache.save_key_phrase(user_id, key_phrase)
 	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_42'))
 
 def show_user_deletion_screen(text, chat_id, message_id, user_id, message_info):
-	key_phrase = get_cached_data(CACHE_KEY_PHRASE, user_id, chat_id, "key_phrase")
+	key_phrase = cache.get_key_phrase(user_id)
 	if text == key_phrase:
-		delete_user_records(CACHE_KEY_PHRASE, user_id)
+		cache.delete_key_phrase(user_id)
 		db.delete_user_data(user_id)
 		switch_screen(replies['account_deleted'], chat_id, message_id, keyboard=get_button('scr_account_deleted'))
 	else:

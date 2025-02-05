@@ -112,7 +112,6 @@ def handle_callback_query(message):
 
 	# Retrieve previous screen info
 	previous_screen = cache.get_previous_message(user_id)['callback_data']
-	#previous_screen_button_selection = get_cached_data(CACHE_BUTTON_SELECTION, user_id, chat_id, property="previous_screen") # Fix logging issue
 	previous_screen_button_selection = cache.get_button_selection(user_id, "previous_screen")
 	transition = (previous_screen, callback_data)
 	

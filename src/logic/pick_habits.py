@@ -4,7 +4,6 @@ import re
 
 from ._common_imports import *
 from ._common_imports import aspirations, premade_habits
-from config import CACHE_PICKHABIT_FILEPATH, CACHE_FILEPATH
 from common import (
 	format_numbered_list,
 	parse_numbers,

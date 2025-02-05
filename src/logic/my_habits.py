@@ -4,10 +4,6 @@ import random
 
 from ._common_imports import *
 from ._common_imports import premade_triggers, callback_weekdays
-from config import ( 
-	CACHE_BUTTON_SELECTION,
-	CACHE_REPORT,
-	)
 from common import (
 	add_report_buttons,
 	format_numbered_list,
@@ -19,12 +15,6 @@ from common import (
 	weekdays_to_numbers,
 	)
 from common.exceptions import ValueOutOfRangeError
-from utils import (
-	get_cached_data, 
-	save_data_to_cache, 
-	update_user_value,
-	delete_user_records
-	)
 
 def show_user_habits(user_id, chat_id, message_id):
 	user_habits = db.view_habits(user_id)
@@ -201,7 +191,6 @@ def show_choose_time_for_habit(user_id, chat_id, message_id, scr_name, type=None
 			"sun":"воскресенье"
 		}
 		weekdays_order = list(weekdays_rus_dict.keys())
-		#habit_reminder_time = tuple(get_cached_data(CACHE_BUTTON_SELECTION, user_id, chat_id, property="user_selections"))
 		habit_reminder_time = tuple(cache.get_button_selection(user_id, "user_selections"))
 		cache.update_updating_habit_info(user_id, "habit_reminder_time", habit_reminder_time)
 
@@ -213,7 +202,6 @@ def show_choose_time_for_habit(user_id, chat_id, message_id, scr_name, type=None
 			habit_reminder_time_str_rus = ", ".join(habit_reminder_time_rus)
 			reply = replies[screen_id].replace("[period]", habit_reminder_time_str_rus)
 
-	#delete_user_records(CACHE_BUTTON_SELECTION, user_id)
 	cache.delete_button_selection(user_id)
 	switch_screen(reply, chat_id, message_id, keyboard=get_button(scr_name))
 
@@ -233,7 +221,6 @@ def show_choose_time_for_report(user_id, chat_id, message_id, scr_name, type=Non
 			"sun":"воскресенье"
 		}
 		weekdays_order = list(weekdays_rus_dict.keys())
-		#report_reminder_time = tuple(get_cached_data(CACHE_BUTTON_SELECTION, user_id, chat_id, property="user_selections"))
 		report_reminder_time = tuple(cache.get_button_selection(user_id, "user_selections"))
 
 		if report_reminder_time==callback_weekdays:
@@ -245,16 +232,13 @@ def show_choose_time_for_report(user_id, chat_id, message_id, scr_name, type=Non
 			reply = replies[screen_id].replace("[period]", report_reminder_time_str_rus)
 
 	new_data = {
-			"user_id": user_id,
-			"chat_id": chat_id,
 			"report_reminder_period": report_reminder_time,
 		}
-	if get_cached_data(CACHE_REPORT, user_id, chat_id, property="report_id") is None:
-		save_data_to_cache(CACHE_REPORT, new_data)
+	if cache.get_report_info(user_id, "report_id") is None:
+		cache.save_report_info(user_id, new_data)
 	else:
-		update_user_value(CACHE_REPORT, user_id, "report_reminder_period", report_reminder_time)
+		cache.update_report_info(user_id, "report_reminder_period", report_reminder_time)
 
-	#delete_user_records(CACHE_BUTTON_SELECTION, user_id)
 	cache.delete_button_selection(user_id)
 	switch_screen(reply, chat_id, message_id, keyboard=get_button(scr_name))
 
@@ -461,15 +445,14 @@ def show_habit_is_tracked(user_id, chat_id, message_id, callback_data=None, text
 		previous_screen = cache.get_previous_message(user_id)['callback_data']
 		try:
 			parse_time_from_string(text)
-			report_period = get_cached_data(CACHE_REPORT, user_id, chat_id, property="report_reminder_period")
+			report_period = cache.get_report_info(user_id, "report_reminder_period")
 			report_period = weekdays_to_numbers(report_period)
 			report_time = text
 			db.add_report(user_id, timestamp, report_period, report_time)
-			delete_user_records(CACHE_REPORT, user_id)
+			cache.delete_report_info(user_id)
 			user_reports = db.view_reports(user_id)
 			report_id = max(item['id'] for item in user_reports)
 
-			#trigger_reminder_time = get_cached_data(CACHE_UPDATEHABIT_FILEPATH, user_id, chat_id, property="trigger_reminder_time")
 			trigger_reminder_time = cache.get_updating_habit_info(user_id, "trigger_reminder_time")
 		except ValueError:
 			reply="Неверно указано время.\nВремя должно быть указано в формате HH:MM. Например: 21:45.\n\nПопробуйте еще раз."
@@ -584,11 +567,11 @@ def show_report_updated_for_habit(user_id, chat_id, message_id, callback_data=No
 		previous_screen = cache.get_previous_message(user_id)['callback_data']
 		try:
 			parse_time_from_string(text)
-			report_period = get_cached_data(CACHE_REPORT, user_id, chat_id, property="report_reminder_period")
+			report_period = cache.get_report_info(user_id, "report_reminder_period")
 			report_period = weekdays_to_numbers(report_period)
 			report_time = text
 			db.add_report(user_id, timestamp, report_period, report_time)
-			delete_user_records(CACHE_REPORT, user_id)
+			cache.delete_report_info(user_id)
 			user_reports = db.view_reports(user_id)
 			report_id = max(item['id'] for item in user_reports)
 		except ValueError:
