@@ -17,6 +17,8 @@ from .datetime_utils import (
 	numbers_to_weekdays,
 	)
 
+from .json_utils import load_json
+
 from .ui_utils import (
 	switch_screen, 
 	get_button, 

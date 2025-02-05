@@ -4,12 +4,12 @@ import re
 from logic import *
 from cache_manager import CacheManager
 from common import (
+	load_json,
 	switch_screen, 
 	get_button, 
 	unix_to_timestamp
 	)
 from tg_methods import edit_message_reply_markup, delete_message
-from utils import load_json
 from config import REPLIES_FILEPATH
 
 # Load cache manager

@@ -5,7 +5,7 @@ import tg_methods
 from config import BUTTONS_FILEPATH
 from database import DatabaseClient
 from cache_manager import CacheManager
-from utils import load_json
+from .json_utils import load_json
 
 def switch_screen(
     reply: str,

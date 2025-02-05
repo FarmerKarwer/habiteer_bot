@@ -3,10 +3,9 @@ from config import (
 	PREMADE_HABITS_FILEPATH, 
 	PREMADE_TRIGGERS_FILEPATH
 	)
-from common import switch_screen, get_button
+from common import switch_screen, get_button, load_json
 from database import DatabaseClient
 from cache_manager import CacheManager
-from utils import load_json
 
 replies = load_json(REPLIES_FILEPATH)
 premade_habits = load_json(PREMADE_HABITS_FILEPATH)
