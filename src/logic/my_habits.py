@@ -559,6 +559,9 @@ def show_trigger_updated(text, user_id, chat_id, message_id, timestamp):
 	habit_id = cache.get_updating_habit_info(user_id, "habit_id")
 	db.update_habit(habit_id, "trigger_action_desc", f"'{updated_trigger}'")
 	db.update_habit(habit_id, "last_updated", f"CAST('{timestamp}'AS Timestamp)")
+	db.update_habit(habit_id, "trigger_type", "'behavior'")
+	db.update_habit(habit_id, "trigger_reminder_period", "NULL")
+	db.update_habit(habit_id, "trigger_reminder_time", "NULL")
 
 	switch_screen(replies['3_7'], chat_id, message_id, keyboard=get_button('scr_3_7'))
 
