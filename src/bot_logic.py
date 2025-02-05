@@ -27,15 +27,21 @@ replies = load_json(REPLIES_FILEPATH)
 # Sets of buttons
 callback_weekdays = ("mon", "tue", "wed", "thu", "fri", "sat", "sun")
 
-callback_screens_weekdays_and_time = [
-	("scr_0_5_add_1", "scr_0_5_add_2", "scr_0_5_add_3"),
-	("scr_3_4_change_1", "scr_3_4_change_2", "scr_3_4_change_3"),
-	("scr_22_1", "scr_22_1_1", "scr_22_2"),
-	("scr_28", "scr_28_1", "scr_28_2"),
-	("scr_29_add_1", "scr_29_add_2", "scr_29_add_3"),
-	("scr_41_1_change_1", "scr_41_1_change_2", "scr_41_1_change_3"),
-	("scr_41_add_1", "scr_41_add_2", "scr_41_add_3")
-]
+callback_screens_weekdays_and_time = {
+	"report":
+		[
+			("scr_0_5_add_1", "scr_0_5_add_2", "scr_0_5_add_3"),
+			("scr_3_4_change_1", "scr_3_4_change_2", "scr_3_4_change_3"),
+			("scr_29_add_1", "scr_29_add_2", "scr_29_add_3"),
+			("scr_41_1_change_1", "scr_41_1_change_2", "scr_41_1_change_3"),
+			("scr_41_add_1", "scr_41_add_2", "scr_41_add_3")
+		],
+	"habit":
+		[
+			("scr_22_1", "scr_22_1_1", "scr_22_2"),
+			("scr_28", "scr_28_1", "scr_28_2"),
+		]
+	}
 
 def use_logic(message):
 	if button_is_pressed(message):
@@ -68,10 +74,11 @@ def handle_callback_query(message):
 		action()
 
 	def handle_weekdays_and_time_choice(callback_data, callback_screens_weekdays_and_time):
-		for combination in callback_screens_weekdays_and_time:
-			if (callback_data in combination) or (previous_screen in combination) or (previous_screen_button_selection in combination):
-				choose_weekdays_and_time(combination[0], combination[1], combination[2])
-				break
+		for type in callback_screens_weekdays_and_time:
+			for combination in callback_screens_weekdays_and_time[type]:
+				if (callback_data in combination) or (previous_screen in combination) or (previous_screen_button_selection in combination):
+					choose_weekdays_and_time(combination[0], combination[1], combination[2], type=type)
+					break
 
 	def handle_unknown_callback(callback_data):
 		print(callback_data)
@@ -82,15 +89,25 @@ def handle_callback_query(message):
 		switch_screen(replies[screen_id], chat_id, message_id, delete_previous=delete_previous,
 						keyboard=get_button(f'scr_{screen_id}'))
 
-	def choose_weekdays_and_time(scr_freq, scr_weekdays, scr_time):
-		if (previous_screen==scr_weekdays or previous_screen_button_selection==scr_weekdays) and callback_data in callback_weekdays:
-			show_multiple_selection(user_id, chat_id, message_id, callback_data=callback_data, scr_name=scr_weekdays)
-		elif previous_screen==scr_freq and callback_data==scr_time:
-			show_choose_time_for_report(user_id, chat_id, message_id, scr_time, type="everyday")
-		elif previous_screen==scr_weekdays and callback_data==scr_time:
-			show_choose_time_for_report(user_id, chat_id, message_id, scr_time, type="everyday")
-		elif previous_screen in callback_weekdays and callback_data==scr_time:
-			show_choose_time_for_report(user_id, chat_id, message_id, scr_time, type="selected_days")
+	def choose_weekdays_and_time(scr_freq, scr_weekdays, scr_time, type):
+		if type=="report":
+			if (previous_screen==scr_weekdays or previous_screen_button_selection==scr_weekdays) and callback_data in callback_weekdays:
+				show_multiple_selection(user_id, chat_id, message_id, callback_data=callback_data, scr_name=scr_weekdays)
+			elif previous_screen==scr_freq and callback_data==scr_time:
+				show_choose_time_for_report(user_id, chat_id, message_id, scr_time, type="everyday")
+			elif previous_screen==scr_weekdays and callback_data==scr_time:
+				show_choose_time_for_report(user_id, chat_id, message_id, scr_time, type="everyday")
+			elif previous_screen in callback_weekdays and callback_data==scr_time:
+				show_choose_time_for_report(user_id, chat_id, message_id, scr_time, type="selected_days")
+		elif type=="habit":
+			if (previous_screen==scr_weekdays or previous_screen_button_selection==scr_weekdays) and callback_data in callback_weekdays:
+				show_multiple_selection(user_id, chat_id, message_id, callback_data=callback_data, scr_name=scr_weekdays)
+			elif previous_screen==scr_freq and callback_data==scr_time:
+				show_choose_time_for_habit(user_id, chat_id, message_id, scr_time, type="everyday")
+			elif previous_screen==scr_weekdays and callback_data==scr_time:
+				show_choose_time_for_habit(user_id, chat_id, message_id, scr_time, type="everyday")
+			elif previous_screen in callback_weekdays and callback_data==scr_time:
+				show_choose_time_for_habit(user_id, chat_id, message_id, scr_time, type="selected_days")
 
 	# Getting data
 	callback_query_id = message['callback_query']['id']
@@ -108,7 +125,8 @@ def handle_callback_query(message):
 	
 	# Determine current callback type
 	is_previous_screen_in_magic_wanding = bool(re.match(r"^scr_12_proxy_\d+$", previous_screen))
-	is_callback_in_screens_weekdays_and_time = any(callback_data in sublist or previous_screen_button_selection in sublist for sublist in callback_screens_weekdays_and_time) or callback_data in callback_weekdays
+	is_callback_in_screens_weekdays_and_time_report = any(callback_data in sublist or previous_screen_button_selection in sublist for sublist in callback_screens_weekdays_and_time['report']) or callback_data in callback_weekdays
+	is_callback_in_screens_weekdays_and_time_habit = any(callback_data in sublist or previous_screen_button_selection in sublist for sublist in callback_screens_weekdays_and_time['habit']) or callback_data in callback_weekdays
 	is_callback_in_repetition_reminders = bool(re.match(r"^rep_\w+$", callback_data))
 	is_callback_in_reports = bool(re.match(r"^report_\d+$", callback_data))
 
@@ -219,7 +237,9 @@ def handle_callback_query(message):
 	elif callback_data in DEFAULT_CALLBACK_SCREENS:
 		handle_default_callback(callback_data)
 
-	elif is_callback_in_screens_weekdays_and_time:
+	elif is_callback_in_screens_weekdays_and_time_report:
+		handle_weekdays_and_time_choice(callback_data, callback_screens_weekdays_and_time)
+	elif is_callback_in_screens_weekdays_and_time_habit:
 		handle_weekdays_and_time_choice(callback_data, callback_screens_weekdays_and_time)
 	else:
 		handle_unknown_callback(callback_data)

@@ -4,6 +4,7 @@ from typing import Any, Callable, Dict, List, Optional
 import tg_methods
 from config import BUTTONS_FILEPATH, CACHE_BUTTON_SELECTION, CACHE_FILEPATH
 from database import DatabaseClient
+from cache_manager import CacheManager
 from utils import load_json, get_cached_data, save_data_to_cache, update_user_value
 
 def switch_screen(
@@ -36,9 +37,10 @@ def get_button(screen_name, buttons_filepath=BUTTONS_FILEPATH):
 	return json.dumps(buttons[screen_name])
 
 def select_multiple_days(callback_data, additional_actions, user_id, chat_id, message_id):
-
+	cache = CacheManager()
 	user_selections = get_cached_data(CACHE_BUTTON_SELECTION, user_id, chat_id, "user_selections")
-	previous_screen = get_cached_data(CACHE_FILEPATH, user_id, chat_id, "callback_data")
+	#previous_screen = get_cached_data(CACHE_FILEPATH, user_id, chat_id, "callback_data")
+	previous_screen = cache.get_previous_message(user_id)['callback_data']
 	if user_selections is None:
 		user_selections = []
 		new_data = {"user_id":user_id, "chat_id": chat_id, "user_selections":user_selections, "previous_screen":previous_screen}

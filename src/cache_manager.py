@@ -1,4 +1,5 @@
 from dotenv import load_dotenv
+import json
 import boto3
 import os
 
@@ -66,11 +67,54 @@ class CacheManager:
     def delete_picking_habit_info(self, user_id):
         self.picking_habit_table.delete_item(Key={'user_id': user_id})
 
+    def save_updating_habit_info(self, user_id, data):
+        item = {'user_id': user_id, 'data': json.dumps(data)}
+        self.updating_habit_table.put_item(Item=item)
+
+    def get_updating_habit_info(self, user_id, habit_property=None):
+        response = self.updating_habit_table.get_item(Key={'user_id': user_id}).get('Item')
+        if habit_property:
+            return json.loads(response.get('data')).get(habit_property, None)
+        return json.loads(response.get('data'))
+
+    def update_updating_habit_info(self, user_id, key, value):
+        try:
+            response = self.updating_habit_table.get_item(Key={'user_id': user_id})
+            item = response.get('Item')
+            if not item:
+                print(f"No item found for user_id: {user_id}")
+                return
+
+            # Deserialize the JSON string into a Python dictionary
+            data = json.loads(item.get('data', '{}'))
+
+            # Update the specific key-value pair
+            data[key] = value
+
+            # Serialize the dictionary back into a JSON string
+            updated_data_json = json.dumps(data)
+
+            # Update the item in the table
+            self.updating_habit_table.update_item(
+                Key={'user_id': user_id},
+                UpdateExpression="SET #data = :data",
+                ExpressionAttributeNames={
+                    '#data': 'data'  # Use ExpressionAttributeNames to handle reserved keywords
+                },
+                ExpressionAttributeValues={
+                    ':data': updated_data_json
+                }
+            )
+            print(f"Data updated successfully for user_id: {user_id}")
+        except Exception as e:
+            print(f"Error updating data for user_id {user_id}: {e}")
+
+    def delete_updating_habit_info(self, user_id):
+        self.updating_habit_table.delete_item(Key={'user_id': user_id})
+
     # Save data to the table
-    def save(self, user_id, value, ttl=None):
+    def save(self, user_id, value):
         item = {'user_id': user_id, 'data': value}
-        if ttl:
-            item['ttl'] = ttl  # Optional TTL field
         self.table.put_item(Item=item)
 
     # Get data from the table
@@ -84,5 +128,5 @@ class CacheManager:
 
 if __name__ == "__main__":
     cache = CacheManager()
-    res = cache.get_picking_habit_info(940985788)
+    res = cache.get_updating_habit_info(940985788)
     print(res)
