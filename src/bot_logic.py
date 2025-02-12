@@ -163,6 +163,7 @@ def handle_callback_query(message):
 		"scr_11": lambda: show_aspiration_confirmation(chat_id, message_id, user_id, callback_data=callback_data),
 		"scr_12_1": lambda: show_ai_recommended_habits(user_id, chat_id, message_id),
 		"scr_13": lambda: show_evaluation(callback_data, user_id, chat_id, message_id, type="suitability"),
+		"scr_13_change_priorities": lambda: show_evaluation(callback_data, user_id, chat_id, message_id, type="suitability"),
 		"scr_14": lambda: show_evaluation(callback_data, user_id, chat_id, message_id, type="effectiveness"),
 		"scr_15": lambda: show_proposed_habits(user_id, chat_id, message_id),
 		"scr_18": lambda: show_picked_habits(user_id, chat_id, message_id, timestamp),
@@ -187,7 +188,6 @@ def handle_callback_query(message):
 		("scr_12_1", "scr_12"): lambda: show_magic_wanding_return_back_to_start(chat_id, message_id, user_id, 'scr_12'),
 		("scr_9", "scr_12"): lambda: switch_screen(replies['12'], chat_id, message_id, keyboard=get_button('9_scr_12')),
 		("scr_11", "scr_12"): lambda: switch_screen(replies['12'], chat_id, message_id, keyboard=get_button('scr_12')),
-		("scr_16", "scr_13"): lambda: switch_screen(replies['13'], chat_id, message_id, keyboard=get_button('16_scr_13'))
 	}
 	SPECIAL_CALLBACK_SCREENS = SPECIAL_CALLBACK_HANDLERS.keys()
 

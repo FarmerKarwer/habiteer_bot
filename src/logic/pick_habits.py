@@ -207,7 +207,6 @@ def show_evaluation(callback_data, user_id, chat_id, message_id, type):
 		keyboard_name = 'scr_14'
 		next_keyboard_name = 'scr_15'
 
-
 	behavior_options = cache.get_picking_habit_info(user_id).get('behavior_options', None)
 	behavior_options = json.loads(behavior_options)
 	ratings = cache.get_picking_habit_info(user_id).get(type, None)
@@ -219,9 +218,12 @@ def show_evaluation(callback_data, user_id, chat_id, message_id, type):
 		ratings.pop()
 		cache.update_picking_habit_info(user_id, {type:json.dumps(ratings)})
 
-	elif callback_data in back_to_first_scr:
+	elif callback_data in (back_to_first_scr, "scr_13_change_priorities"):
 		ratings = None
-		cache.update_picking_habit_info(user_id, {type:ratings})
+		to_update = {type:ratings}
+		if type=="suitability":
+			to_update["effectiveness"]=ratings
+		cache.update_picking_habit_info(user_id, to_update)
 
 	if ratings is None:
 		behavior_idx = 0
@@ -237,7 +239,12 @@ def show_evaluation(callback_data, user_id, chat_id, message_id, type):
 		main_message = replies[scr_number]['main_message'].replace('[progress]', progress)
 		main_message = main_message.replace('[behavior]', behavior_str)
 		reply = first_message+main_message
-		keyboard = change_button(get_button(keyboard_name), 2, 0, {"callback_data":lambda old: old.replace("[n]", str(len(behavior_options)))})
+		
+		if callback_data=="scr_13_change_priorities":
+			keyboard = get_button("16_scr_13")
+		else:
+			keyboard = get_button(keyboard_name)
+		keyboard = change_button(keyboard, 2, 0, {"callback_data":lambda old: old.replace("[n]", str(len(behavior_options)))})
 
 		if type in callback_data:
 			reply = main_message
@@ -249,13 +256,15 @@ def show_evaluation(callback_data, user_id, chat_id, message_id, type):
 
 	elif len(ratings)<=len(behavior_options):
 		# Updating grade list
-		if not is_callback_in_type_eval:
+		if not is_callback_in_type_eval and callback_data !="scr_13" and not (callback_data.startswith("suitability_") and type=="effectiveness"):
 			grade = int(callback_data.split('_')[-1])
 			ratings.append(grade)
 			cache.update_picking_habit_info(user_id, {type:json.dumps(ratings)})
 		if len(ratings)==len(behavior_options):
 			if type=="suitability":
-				cache.update_picking_habit_info(user_id, {"effectiveness":None})
+				chosen_habits = cache.get_picking_habit_info(user_id).get('habits', None)
+				if chosen_habits is None:
+					cache.update_picking_habit_info(user_id, {"effectiveness":None})
 				show_evaluation(callback_data, user_id, chat_id, message_id, type="effectiveness")
 			elif type=="effectiveness":
 				suitability_ratings = cache.get_picking_habit_info(user_id)['suitability']

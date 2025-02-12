@@ -222,5 +222,5 @@ class CacheManager:
 
 if __name__ == "__main__":
     cache = CacheManager()
-    res = cache.get_updating_habit_info(940985788)
+    res = cache.get_picking_habit_info(940985788)
     print(res)
