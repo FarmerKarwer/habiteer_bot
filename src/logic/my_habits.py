@@ -73,7 +73,13 @@ def show_habit_info(text, user_id, chat_id, message_id, message_info):
 				reply = replies['3_1']['pending'].replace('[habit]', habit_name)
 				keyboard = get_button('scr_3_1_pending')
 			elif status=="marked":
+				current_streak = habits[habit_idx].get("current_streak_days")
+				max_streak = habits[habit_idx].get("max_streak_days")
+				current_streak_str = get_days_string(current_streak)
+				max_streak_str = get_days_string(max_streak)
 				reply = replies['3_1']['marked'].replace('[habit]', habit_name)
+				reply = reply.replace('[streak]', current_streak_str)
+				reply = reply.replace('[max_streak]', max_streak_str)
 				keyboard = get_button('scr_3_1_tracked')
 			elif status=="stopped":
 				reply = replies['3_1']['stopped'].replace('[habit]', habit_name)
