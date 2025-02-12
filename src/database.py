@@ -108,7 +108,7 @@ class DatabaseClient:
 
 	def get_habit_logs_for_habit(self, user_id, habit_id, status=None):
 		query = f"""
-		SELECT * 
+		SELECT date 
 		FROM habit_logs WHERE user_id={user_id} AND habit_id={habit_id} 
 		"""
 		if status:
@@ -215,5 +215,5 @@ class DatabaseClient:
 
 if __name__=="__main__":
 	db = DatabaseClient()
-	res = db.select_all("habits")
+	res = db.get_habit_logs_for_habit(940985788, 14, status="completed")
 	print(res)

@@ -536,7 +536,7 @@
       [
         {
           "text": "Отметить привычку ✅",
-          "callback_data": "scr_plug"
+          "callback_data": "scr_3_2_proxy"
         }
       ],
       [

@@ -13,6 +13,9 @@ from common import (
 	validate_marginal_datetime_entry,
 	calculate_datetime_margin_from_user_input,
 	weekdays_to_numbers,
+	calculate_streak,
+	calculate_usual_streak,
+	get_days_string
 	)
 from common.exceptions import ValueOutOfRangeError
 
@@ -502,47 +505,31 @@ def show_habit_is_tracked(user_id, chat_id, message_id, callback_data=None, text
 
 
 def show_mark_habit_as_completed(user_id, chat_id, message_id, timestamp):
-	habit_id = cache.get(user_id, "habit_id")
+	habit_id = cache.get_updating_habit_info(user_id, "habit_id")
+	report_id = db.get_habit_by_id(habit_id)[0].get("report_id", None)
 	status = "completed"
 	habit_status = "marked"
 
-	epoch_date = datetime(1970, 1, 1)
-	today = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S.%fZ").date()  # Simulated current date
-	yesterday = today - timedelta(days=1)
-
-	print(today, yesterday)
-
 	db.add_habit_log(user_id, habit_id, status, timestamp)
-
-	#Calculating streak
+	
 	logs = db.get_habit_logs_for_habit(user_id, habit_id, status="completed")
+	if report_id:
+		period = db.get_report_by_id(report_id)[0]['on_weekdays']
+		period = json.loads(period)
 
-	if not logs:
-		current_streak = 0
-		max_streak = 0
+		current_streak, max_streak = calculate_streak(logs, timestamp, period).values()
 	else:
-		current_streak = 0
-		max_streak = 0
-		prev_date = None
-
-		for log in logs:
-			current_date = log["date"]
-
-			if prev_date is None or (current_date == (prev_date + 1)):
-				current_streak += 1
-			prev_date = current_date
-
-		max_streak = max(max_streak, current_streak)
-
-		actual_date = epoch_date + timedelta(days=current_date)
-		if logs and actual_date not in [today, yesterday]:
-			current_streak = 0
+		current_streak, max_streak = calculate_usual_streak(logs, timestamp).values()
 
 	db.update_habit(habit_id, "status", f"'{habit_status}'")
-	print(f"Current Streak: {current_streak}")
-	print(f"Max Streak: {max_streak}")
+	db.update_habit(habit_id, "current_streak_days", f"{current_streak}")
+	db.update_habit(habit_id, "max_streak_days", f"{max_streak}")
 
-	#switch_screen(replies['3_2'], chat_id, message_id, keyboard=keyboard)
+	days_string = get_days_string(current_streak)
+
+	reply = replies['3_2'].replace("[days]", days_string)
+
+	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_3_2'))
 
 # TO-DO: change these two functions to one function
 def show_updated_habitname(text, chat_id, message_id, user_id, timestamp):

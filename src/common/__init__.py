@@ -15,6 +15,9 @@ from .datetime_utils import (
 	calculate_datetime_margin_from_user_input,
 	weekdays_to_numbers,
 	numbers_to_weekdays,
+	calculate_streak,
+	calculate_usual_streak,
+	get_days_string
 	)
 
 from .json_utils import load_json
