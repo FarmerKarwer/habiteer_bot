@@ -9,6 +9,7 @@ from common import (
 	parse_numbers,
 	sum_arrays,
 	check_minimum_length,
+	change_button,
 	)
 from common.exceptions import ListTooShortError
 from recommender import get_ai_response
@@ -136,9 +137,7 @@ def show_magic_wanding(text, chat_id, message_id, user_id, message_info):
 			main_message = replies['12_proxy']['main_message'].replace('[behaviors]', behaviors_str)
 			praise = random.choice(replies['12_proxy']['praises'])
 			reply = main_message + praise
-			keyboard = json.loads(get_button('scr_12_proxy_5_less'))
-			keyboard["inline_keyboard"][0][0]["callback_data"] = keyboard["inline_keyboard"][0][0]["callback_data"].replace("[n]", str(entered_options_cnt-1))
-			keyboard = json.dumps(keyboard)
+			keyboard = change_button(get_button('scr_12_proxy_5_less'), 0, 0, {"callback_data":lambda old: old.replace("[n]", str(entered_options_cnt-1))})
 			switch_screen(reply, chat_id, message_id, keyboard=keyboard)
 			message_info["callback_data"]=f"scr_12_proxy_{entered_options_cnt}"
 
@@ -149,9 +148,7 @@ def show_magic_wanding(text, chat_id, message_id, user_id, message_info):
 			main_message = replies['12_proxy']['main_message'].replace('[behaviors]', behaviors_str)
 			praise = replies['12_proxy']['5_options']
 			reply = main_message + praise
-			keyboard = json.loads(get_button('scr_12_proxy_5_more'))
-			keyboard["inline_keyboard"][1][0]["callback_data"] = keyboard["inline_keyboard"][1][0]["callback_data"].replace("[n]", str(entered_options_cnt-1))
-			keyboard = json.dumps(keyboard)
+			keyboard = change_button(get_button('scr_12_proxy_5_more'), 1, 0, {"callback_data":lambda old: old.replace("[n]", str(entered_options_cnt-1))})
 			switch_screen(reply, chat_id, message_id, keyboard=keyboard)
 			message_info["callback_data"]=f"scr_12_proxy_{entered_options_cnt}"
 
@@ -162,9 +159,7 @@ def show_magic_wanding(text, chat_id, message_id, user_id, message_info):
 			main_message = replies['12_proxy']['main_message'].replace('[behaviors]', behaviors_str)
 			praise = random.choice(replies['12_proxy']['praises'])
 			reply = main_message + praise
-			keyboard = json.loads(get_button('scr_12_proxy_5_more'))
-			keyboard["inline_keyboard"][1][0]["callback_data"] = keyboard["inline_keyboard"][1][0]["callback_data"].replace("[n]", str(entered_options_cnt-1))
-			keyboard = json.dumps(keyboard)
+			keyboard = change_button(get_button('scr_12_proxy_5_more'), 1, 0, {"callback_data":lambda old: old.replace("[n]", str(entered_options_cnt-1))})
 			switch_screen(reply, chat_id, message_id, keyboard=keyboard)
 			message_info["callback_data"]=f"scr_12_proxy_{entered_options_cnt}"
 
@@ -186,15 +181,12 @@ def show_magic_wanding_return_back(callback_data, user_id, chat_id, message_id):
 	praise = random.choice(replies['12_proxy']['praises'])
 	reply = main_message + praise
 	if len(behavior_options)>=5:
-		keyboard = json.loads(get_button('scr_12_proxy_5_more'))	
-		keyboard["inline_keyboard"][1][0]["callback_data"] = keyboard["inline_keyboard"][1][0]["callback_data"].replace("[n]", str(len(behavior_options)))
-		keyboard = json.dumps(keyboard)
+		keyboard = change_button(get_button('scr_12_proxy_5_more'), 1, 0, {"callback_data":lambda old: old.replace("[n]", str(len(behavior_options)))})
 	elif len(behavior_options)==1:
 		keyboard = get_button('scr_12_proxy_1')
 	elif 1<len(behavior_options)<5:
-		keyboard = json.loads(get_button('scr_12_proxy_5_less'))
-		keyboard["inline_keyboard"][0][0]["callback_data"] = keyboard["inline_keyboard"][0][0]["callback_data"].replace("[n]", str(len(behavior_options)))
-		keyboard = json.dumps(keyboard)
+		keyboard = change_button(get_button('scr_12_proxy_5_less'), 0, 0, {"callback_data":lambda old: old.replace("[n]", str(len(behavior_options)))})
+
 	switch_screen(reply, chat_id, message_id, keyboard=keyboard)
 
 def show_evaluation(callback_data, user_id, chat_id, message_id, type):
@@ -245,10 +237,7 @@ def show_evaluation(callback_data, user_id, chat_id, message_id, type):
 		main_message = replies[scr_number]['main_message'].replace('[progress]', progress)
 		main_message = main_message.replace('[behavior]', behavior_str)
 		reply = first_message+main_message
-		keyboard = json.loads(get_button(keyboard_name))
-		# TO-DO: probably replace when getting AI feedback
-		keyboard["inline_keyboard"][2][0]["callback_data"] = keyboard["inline_keyboard"][2][0]["callback_data"].replace("[n]", str(len(behavior_options)))
-		keyboard = json.dumps(keyboard)
+		keyboard = change_button(get_button(keyboard_name), 2, 0, {"callback_data":lambda old: old.replace("[n]", str(len(behavior_options)))})
 
 		if type in callback_data:
 			reply = main_message

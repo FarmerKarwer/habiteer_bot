@@ -25,6 +25,7 @@ from .json_utils import load_json
 from .ui_utils import (
 	switch_screen, 
 	get_button, 
+	change_button,
 	select_multiple_days, 
 	add_report_buttons,
 	)
