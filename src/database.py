@@ -93,7 +93,7 @@ class DatabaseClient:
 	def view_habits(self, user_id):
 		query = f"""
 		SELECT * 
-		FROM habits WHERE user_id={user_id}
+		FROM habits WHERE user_id={user_id} AND (status IS NULL OR status <> 'finished');
 		"""
 		result = self.execute_query(query)[0].rows
 		return result

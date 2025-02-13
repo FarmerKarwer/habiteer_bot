@@ -573,6 +573,11 @@ def show_reset_habit_completion(user_id, chat_id, message_id, timestamp):
 	reply = replies['3_2_reset'].replace("[days]", days_string)
 	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_3_2_reset'))
 
+def show_finish_tracking_habit(user_id, chat_id, message_id, timestamp):
+	habit_id = cache.get_updating_habit_info(user_id, "habit_id")
+	db.update_habit(habit_id, "status", f"'finished'")
+	switch_screen(replies['3_2_finish_habit'], chat_id, message_id, keyboard=get_button('scr_3_2_finish_habit'))
+
 # TO-DO: change these two functions to one function
 def show_updated_habitname(text, chat_id, message_id, user_id, timestamp):
 	new_name = text

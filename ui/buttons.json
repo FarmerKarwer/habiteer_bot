@@ -1102,6 +1102,25 @@
     ]
   },
 
+  "scr_3_2_finish_habit":{
+    "inline_keyboard":[
+        [
+          {
+            "text":"В зал славы!",
+            "callback_data":"scr_5"
+          }
+      ],
+
+        [
+          {
+            "text":"В главное меню",
+            "callback_data":"scr_1"
+          }
+      ]
+        
+    ]
+  },
+
   "scr_3_3":{
     "inline_keyboard":[
         [
