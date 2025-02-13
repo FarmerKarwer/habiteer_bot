@@ -585,8 +585,8 @@
     "inline_keyboard": [
       [
         {
-          "text": "Сбросить выполнение за сегодня ↩️",
-          "callback_data": "scr_plug"
+          "text": "Сбросить последнее выполнение ↩️",
+          "callback_data": "scr_3_2_proxy_reset"
         }
       ],
       [

@@ -106,22 +106,36 @@ class DatabaseClient:
 		result = self.execute_query(query)[0].rows
 		return result
 
-	def get_habit_logs_for_habit(self, user_id, habit_id, status=None):
+	def get_habit_logs_for_habit(self, habit_id, status=None):
 		query = f"""
 		SELECT date 
-		FROM habit_logs WHERE user_id={user_id} AND habit_id={habit_id} 
+		FROM habit_logs WHERE habit_id={habit_id} 
 		"""
 		if status:
 			query = f"""
-			SELECT * 
-			FROM habit_logs WHERE user_id={user_id} AND habit_id={habit_id} AND status='{status}'
+			SELECT date 
+			FROM habit_logs WHERE habit_id={habit_id} AND status='{status}'
 			"""
 		result = self.execute_query(query)[0].rows
 		return result
 
+	def remove_last_habit_log(self, habit_id):
+		query = f"""
+		DELETE
+		FROM habit_logs
+		WHERE habit_id = {habit_id}
+		  AND status = 'completed'
+		  AND date IN (SELECT MAX(date)
+		              FROM habit_logs
+		              WHERE habit_id = {habit_id}
+		                AND status = 'completed');
+		"""
+		self.execute_query(query)
+
 	def delete_habit(self, unique_id):
 		query = f"""
-		DELETE FROM habits WHERE id={unique_id}
+		DELETE FROM habits WHERE id={unique_id};
+		DELETE FROM habit_logs WHERE habit_id={unique_id};
 		"""
 		self.execute_query(query)
 

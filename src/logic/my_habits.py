@@ -43,7 +43,7 @@ def show_user_habits(user_id, chat_id, message_id):
 		keyboard = get_button('scr_3')
 		switch_screen(reply, chat_id, message_id, keyboard=keyboard, protect_content=False)
 
-def show_habit_info(text, user_id, chat_id, message_id, message_info):
+def show_habit_info(text, user_id, chat_id, message_id, message_info, timestamp):
 	habits = db.view_habits(user_id)
 	weekdays_rus_dict = {
 			"mon":"понедельник",
@@ -62,6 +62,7 @@ def show_habit_info(text, user_id, chat_id, message_id, message_info):
 		aspiration = habits[habit_idx].get("aspiration")
 		status = habits[habit_idx].get("status")
 		report_name = None
+		
 		if status is None:
 			reply = replies['3_1']['not_tracked'].replace('[habit]', habit_name)
 			keyboard = get_button('scr_3_1_not_tracked')
@@ -80,7 +81,10 @@ def show_habit_info(text, user_id, chat_id, message_id, message_info):
 				reply = replies['3_1']['marked'].replace('[habit]', habit_name)
 				reply = reply.replace('[streak]', current_streak_str)
 				reply = reply.replace('[max_streak]', max_streak_str)
-				keyboard = get_button('scr_3_1_tracked')
+				if is_habit_already_marked(habit_id, timestamp):
+					keyboard = get_button('scr_3_1_marked_today')
+				else:
+					keyboard = get_button('scr_3_1_tracked')
 			elif status=="stopped":
 				reply = replies['3_1']['stopped'].replace('[habit]', habit_name)
 				keyboard = get_button('scr_3_1_stopped')
@@ -152,10 +156,10 @@ def show_habit_info(text, user_id, chat_id, message_id, message_info):
 		switch_screen(reply, chat_id, message_id)
 		message_info["callback_data"]="scr_3"
 
-def get_back_to_habit(callback_data, user_id, chat_id, message_id):
+def get_back_to_habit(callback_data, user_id, chat_id, message_id, timestamp):
 	message_info = None
 	text = str(cache.get_updating_habit_info(user_id, "habit_number")+1)
-	show_habit_info(text, user_id, chat_id, message_id, message_info)
+	show_habit_info(text, user_id, chat_id, message_id, message_info, timestamp)
 
 def show_choosing_habit_type(user_id, chat_id, message_id):
 	habit_name = cache.get_updating_habit_info(user_id, "habit_name")
@@ -518,7 +522,7 @@ def show_mark_habit_as_completed(user_id, chat_id, message_id, timestamp):
 
 	db.add_habit_log(user_id, habit_id, status, timestamp)
 	
-	logs = db.get_habit_logs_for_habit(user_id, habit_id, status="completed")
+	logs = db.get_habit_logs_for_habit(habit_id, status="completed")
 	if report_id:
 		period = db.get_report_by_id(report_id)[0]['on_weekdays']
 		period = json.loads(period)
@@ -532,9 +536,7 @@ def show_mark_habit_as_completed(user_id, chat_id, message_id, timestamp):
 	db.update_habit(habit_id, "max_streak_days", f"{max_streak}")
 
 	days_string = get_days_string(current_streak)
-
 	reply = replies['3_2'].replace("[days]", days_string)
-
 	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_3_2'))
 
 def show_stop_tracking_habit(user_id, chat_id, message_id, timestamp):
@@ -546,6 +548,28 @@ def show_resume_tracking_habit(user_id, chat_id, message_id, timestamp):
 	habit_id = cache.get_updating_habit_info(user_id, "habit_id")
 	db.update_habit(habit_id, "status", f"'tracked'")
 	switch_screen(replies['3_2_resume'], chat_id, message_id, keyboard=get_button('scr_3_2_resume'))
+
+def show_reset_habit_completion(user_id, chat_id, message_id, timestamp):
+	habit_id = cache.get_updating_habit_info(user_id, "habit_id")
+	report_id = db.get_habit_by_id(habit_id)[0].get("report_id", None)
+
+	db.remove_last_habit_log(habit_id)
+	
+	logs = db.get_habit_logs_for_habit(habit_id, status="completed")
+	if report_id:
+		period = db.get_report_by_id(report_id)[0]['on_weekdays']
+		period = json.loads(period)
+
+		current_streak, max_streak = calculate_streak(logs, timestamp, period).values()
+	else:
+		current_streak, max_streak = calculate_usual_streak(logs, timestamp).values()
+
+	db.update_habit(habit_id, "current_streak_days", f"{current_streak}")
+	db.update_habit(habit_id, "max_streak_days", f"{max_streak}")
+
+	days_string = get_days_string(current_streak)
+	reply = replies['3_2_reset'].replace("[days]", days_string)
+	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_3_2_reset'))
 
 # TO-DO: change these two functions to one function
 def show_updated_habitname(text, chat_id, message_id, user_id, timestamp):
@@ -670,3 +694,54 @@ def show_updated_habits_after_deletion(text, chat_id, message_id, user_id, messa
 		reply = "Номер привычки не может быть нулевым. Попробуйте ввести еще раз."
 		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_44'))
 		message_info["callback_data"]="scr_44"
+
+
+def is_habit_already_marked(habit_id, timestamp):
+    # 1. Get habit logs for the habit_id with status "completed"
+    habit_logs = db.get_habit_logs_for_habit(habit_id, status="completed")
+    
+    # 2. Get the report period (scheduled weekdays)
+    habit = db.get_habit_by_id(habit_id)[0]
+    report_id = habit.get("report_id", None)
+    
+    if report_id is None:
+        # If no report_id, the period is every day: [1, 2, 3, 4, 5, 6, 7]
+        period = [1, 2, 3, 4, 5, 6, 7]
+    else:
+        report = db.get_report_by_id(report_id)[0]
+        period = json.loads(report['on_weekdays'])
+    
+    # 3. Determine today's date and its weekday
+    # Convert the provided timestamp to a date object.
+    current_date = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S.%fZ").date()
+    # Python's datetime.weekday() returns 0 for Monday, so adjust to [1-7].
+    current_weekday = current_date.weekday() + 1
+    
+    # 4. Determine the target date that should have been marked.
+    # If today is a scheduled day, target is today.
+    if current_weekday in period:
+        target_date = current_date
+    else:
+        # Otherwise, look backwards up to 7 days to find the most recent scheduled day.
+        target_date = None
+        for days_back in range(1, 8):
+            candidate_date = current_date - timedelta(days=days_back)
+            candidate_weekday = candidate_date.weekday() + 1
+            if candidate_weekday in period:
+                target_date = candidate_date
+                break
+        if target_date is None:
+            # This should not occur if period is non-empty.
+            return False
+
+    # 5. Convert target_date to an integer representing days since epoch.
+    epoch_date = datetime(1970, 1, 1).date()
+    target_date_int = (target_date - epoch_date).days
+
+    # 6. Check if any log in habit_logs matches the target_date.
+    for log in habit_logs:
+        # Using an exact match on the 'date' field.
+        if log.get("date") == target_date_int:
+            return True
+
+    return False

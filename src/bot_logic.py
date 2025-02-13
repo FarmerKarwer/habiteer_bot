@@ -147,7 +147,7 @@ def handle_callback_query(message):
 		"scr_0_5_add_2": lambda: show_choose_weekdays(user_id, chat_id, message_id, scr_name='scr_0_5_add_2'),
 		"scr_1": lambda: show_main_menu(user_id, chat_id, message_id),
 		"scr_3": lambda: show_user_habits(user_id, chat_id, message_id),
-		"scr_3_1": lambda: get_back_to_habit(callback_data, user_id, chat_id, message_id),
+		"scr_3_1": lambda: get_back_to_habit(callback_data, user_id, chat_id, message_id, timestamp),
 		"scr_3_1_reminder_2": lambda: show_choose_weekdays(user_id, chat_id, message_id, scr_name='scr_3_1_reminder_2'),
 		"scr_3_1_trigger": lambda: show_enter_your_trigger(user_id, chat_id, message_id),
 		"scr_3_2": lambda: show_mark_habit_as_completed(user_id, chat_id, message_id, timestamp),
@@ -259,7 +259,7 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 	SPECIAL_INPUT_HANDLERS = {
 		"scr_0_5_add_3": lambda: show_onboarding_report_added(user_id, chat_id, message_id, text, timestamp, message_info),
 		"scr_2": lambda: show_adding_habit(text, user_id, chat_id, message_id, timestamp),
-		"scr_3": lambda: show_habit_info(text, user_id, chat_id, message_id, message_info),
+		"scr_3": lambda: show_habit_info(text, user_id, chat_id, message_id, message_info, timestamp),
 		"scr_3_1_trigger": lambda: show_trigger_updated(text, user_id, chat_id, message_id, timestamp),
 		"scr_3_1_reminder_3": lambda: show_habit_reminder_updated(text, user_id, chat_id, message_id, timestamp, message_info=message_info),
 		"scr_3_3": lambda: show_change_habit_aspiration(text, chat_id, message_id, user_id, timestamp),
