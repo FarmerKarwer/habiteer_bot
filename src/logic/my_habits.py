@@ -65,7 +65,7 @@ def show_habit_info(text, user_id, chat_id, message_id, message_info):
 		if status is None:
 			reply = replies['3_1']['not_tracked'].replace('[habit]', habit_name)
 			keyboard = get_button('scr_3_1_not_tracked')
-		elif status in ("tracked", "pending", "marked"):
+		elif status in ("tracked", "pending", "marked", "stopped"):
 			if status=="tracked":
 				reply = replies['3_1']['tracked'].replace('[habit]', habit_name)
 				keyboard = get_button('scr_3_1_tracked')
@@ -88,7 +88,7 @@ def show_habit_info(text, user_id, chat_id, message_id, message_info):
 			habit_type = habits[habit_idx].get("type")
 			trigger_type = habits[habit_idx].get("trigger_type")
 
-			if status in ("tracked", "marked"):
+			if status in ("tracked", "marked", "stopped"):
 				report_id = habits[habit_idx].get("report_id")
 				if report_id is not None:
 					report_name = db.get_report_by_id(report_id)[0].get("name")
@@ -537,13 +537,22 @@ def show_mark_habit_as_completed(user_id, chat_id, message_id, timestamp):
 
 	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_3_2'))
 
+def show_stop_tracking_habit(user_id, chat_id, message_id, timestamp):
+	habit_id = cache.get_updating_habit_info(user_id, "habit_id")
+	db.update_habit(habit_id, "status", f"'stopped'")
+	switch_screen(replies['3_2_stop_habit'], chat_id, message_id, keyboard=get_button('scr_3_2_stop_habit'))
+
+def show_resume_tracking_habit(user_id, chat_id, message_id, timestamp):
+	habit_id = cache.get_updating_habit_info(user_id, "habit_id")
+	db.update_habit(habit_id, "status", f"'tracked'")
+	switch_screen(replies['3_2_resume'], chat_id, message_id, keyboard=get_button('scr_3_2_resume'))
+
 # TO-DO: change these two functions to one function
 def show_updated_habitname(text, chat_id, message_id, user_id, timestamp):
 	new_name = text
-	habit_idx = cache.get_updating_habit_info(user_id, "habit_number")
-	unique_id = db.view_habits(user_id)[habit_idx].get("id")
-	db.update_habit(unique_id, "name", f"'{new_name}'")
-	db.update_habit(unique_id, "last_updated", f"CAST('{timestamp}'AS Timestamp)")
+	habit_id = cache.get_updating_habit_info(user_id, "habit_id")
+	db.update_habit(habit_id, "name", f"'{new_name}'")
+	db.update_habit(habit_id, "last_updated", f"CAST('{timestamp}'AS Timestamp)")
 
 	switch_screen(replies['3_7'], chat_id, message_id, keyboard=get_button('scr_3_7'))
 
