@@ -83,6 +83,8 @@ def show_habit_info(text, user_id, chat_id, message_id, message_info, timestamp)
 				reply = reply.replace('[max_streak]', max_streak_str)
 				if is_habit_already_marked(habit_id, timestamp):
 					keyboard = get_button('scr_3_1_marked_today')
+				elif should_habit_be_marked_in_future(habit_id, timestamp):
+					keyboard = get_button('scr_3_1_mark_prevented')
 				else:
 					keyboard = get_button('scr_3_1_tracked')
 			elif status=="stopped":
@@ -745,3 +747,38 @@ def is_habit_already_marked(habit_id, timestamp):
             return True
 
     return False
+
+def should_habit_be_marked_in_future(habit_id, timestamp):
+    """
+    Checks if the habit is scheduled to be marked in the future rather than today.
+    
+    Parameters:
+        habit_id (int): The ID of the habit.
+        timestamp (int/float): Current timestamp (in seconds since epoch).
+        
+    Returns:
+        bool: 
+            - True if today is NOT a scheduled day for marking the habit (i.e., it should be marked in the future).
+            - False if today IS a scheduled day (i.e., the habit should be marked now).
+            
+    Example:
+        If today is Monday and the habit's period is [3, 5] (Wednesday and Friday), 
+        then this function returns True.
+    """
+    # Retrieve habit information to get the report_id.
+    habit = db.get_habit_by_id(habit_id)[0]
+    report_id = habit.get("report_id", None)
+    
+    # If there's no report_id, default to every day: [1,2,3,4,5,6,7].
+    if report_id is None:
+        period = [1, 2, 3, 4, 5, 6, 7]
+    else:
+        report = db.get_report_by_id(report_id)[0]
+        period = json.loads(report['on_weekdays'])
+    
+    # Get current date and determine its weekday (1 = Monday, 7 = Sunday).
+    current_date = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S.%fZ").date()
+    current_weekday = current_date.weekday() + 1
+    
+    # If today is not in the scheduled period, the habit is to be marked in the future.
+    return current_weekday not in period

@@ -631,6 +631,56 @@
     ]
   },
 
+  "scr_3_1_mark_prevented":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "🔒~Отметить привычку~",
+          "callback_data": "scr_3_2_forbidden"
+        }
+      ],
+      [
+        {
+          "text": "Изменить название",
+          "callback_data": "scr_19"
+        }
+      ],
+      
+      [
+        {
+          "text": "Добавить стремление",
+          "callback_data": "scr_3_3"
+        }
+      ],
+
+      [
+        {
+          "text": "Изменить триггер",
+          "callback_data": "scr_3_1_trigger_type"
+        }
+      ],
+      
+      [
+        {
+          "text": "Настроить отчетность",
+          "callback_data": "scr_3_4"
+        }
+      ],
+      [
+        {
+          "text": "К списку привычек",
+          "callback_data": "scr_3"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+
   "scr_3_1_stopped":{
     "inline_keyboard": [
       [
@@ -859,6 +909,32 @@
             "text":"Назад",
             "callback_data":"scr_3_1_trigger_type"
           }
+      ],
+
+        [
+          {
+            "text":"В главное меню",
+            "callback_data":"scr_1"
+          }
+      ]
+        
+    ]
+  },
+
+  "scr_3_2_forbidden":{
+    "inline_keyboard":[
+        [
+          {
+            "text":"Вернуться к привычке",
+            "callback_data":"scr_3_1"
+          }
+      ],
+
+        [
+        {
+          "text": "Настроить отчетность",
+          "callback_data": "scr_3_4"
+        }
       ],
 
         [
