@@ -98,6 +98,14 @@ class DatabaseClient:
 		result = self.execute_query(query)[0].rows
 		return result
 
+	def view_finished_habits(self, user_id):
+		query = f"""
+		SELECT * 
+		FROM habits WHERE user_id={user_id} AND status = 'finished';
+		"""
+		result = self.execute_query(query)[0].rows
+		return result
+
 	def get_habit_by_id(self, habit_id):
 		query = f"""
 		SELECT * 

@@ -57,6 +57,8 @@ def show_habit_info(text, user_id, chat_id, message_id, message_info, timestamp)
 	weekdays_order = list(weekdays_rus_dict.keys())
 	try:
 		habit_idx = int(text)-1
+		if habit_idx<0:
+			raise IndexError
 		habit_id = habits[habit_idx].get("id")
 		habit_name = habits[habit_idx].get("name")
 		aspiration = habits[habit_idx].get("aspiration")
@@ -575,7 +577,9 @@ def show_reset_habit_completion(user_id, chat_id, message_id, timestamp):
 
 def show_finish_tracking_habit(user_id, chat_id, message_id, timestamp):
 	habit_id = cache.get_updating_habit_info(user_id, "habit_id")
-	db.update_habit(habit_id, "status", f"'finished'")
+	status = "finished"
+	db.update_habit(habit_id, "status", f"'{status}'")
+	db.add_habit_log(user_id, habit_id, status, timestamp)
 	switch_screen(replies['3_2_finish_habit'], chat_id, message_id, keyboard=get_button('scr_3_2_finish_habit'))
 
 # TO-DO: change these two functions to one function

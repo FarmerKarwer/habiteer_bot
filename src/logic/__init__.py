@@ -52,6 +52,9 @@ from .pick_habits import (
 	show_evaluation,
 	show_proposed_habits
 	)
+
+from .stats import show_user_stats, show_return_habit_back
+
 from .settings import (
 	show_all_reports_in_settings,
 	show_add_report,
@@ -114,6 +117,9 @@ __all__ = [
 "show_magic_wanding_return_back_to_start",
 "show_evaluation",
 "show_proposed_habits",
+
+"show_user_stats",
+"show_return_habit_back",
 
 "show_all_reports_in_settings",
 "show_add_report",

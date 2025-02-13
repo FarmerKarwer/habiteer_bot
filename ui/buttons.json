@@ -430,8 +430,8 @@
       ],
       [
         {
-          "text": "Статистика",
-          "callback_data": "scr_plug"
+          "text": "Зал славы",
+          "callback_data": "scr_5"
         }
       ],
       [
@@ -1362,6 +1362,33 @@
         [
           {
             "text":"Назад",
+            "callback_data":"scr_1"
+          }
+      ]
+    ]
+  },
+
+  "scr_5_no_habits":{
+    "inline_keyboard":[
+        [
+          {
+            "text":"Назад",
+            "callback_data":"scr_1"
+          }
+      ]
+    ]
+  },
+  "scr_5_habit_returned":{
+    "inline_keyboard":[
+      [
+          {
+            "text":"Перейти в раздел «Мои привычки»",
+            "callback_data":"scr_3"
+          }
+      ],
+        [
+          {
+            "text":"В главное меню",
             "callback_data":"scr_1"
           }
       ]
