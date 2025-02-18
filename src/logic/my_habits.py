@@ -64,12 +64,14 @@ def show_habit_info(text, user_id, chat_id, message_id, message_info, timestamp)
 		habit_name = habits[habit_idx].get("name")
 		aspiration = habits[habit_idx].get("aspiration")
 		status = habits[habit_idx].get("status")
+		habit_type = habits[habit_idx].get("type", None)
+		trigger_type = habits[habit_idx].get("trigger_type", None)
 		report_name = None
 		
-		if status is None:
+		if habit_type is None:
 			reply = replies['3_1']['not_tracked'].replace('[habit]', habit_name)
 			keyboard = get_button('scr_3_1_not_tracked')
-		elif status in ("tracked", "pending", "marked", "stopped"):
+		elif habit_type =='regular':
 			if status=="tracked":
 				reply = replies['3_1']['tracked'].replace('[habit]', habit_name)
 				keyboard = get_button('scr_3_1_tracked')
@@ -93,9 +95,6 @@ def show_habit_info(text, user_id, chat_id, message_id, message_info, timestamp)
 			elif status=="stopped":
 				reply = replies['3_1']['stopped'].replace('[habit]', habit_name)
 				keyboard = get_button('scr_3_1_stopped')
-
-			habit_type = habits[habit_idx].get("type")
-			trigger_type = habits[habit_idx].get("trigger_type")
 
 			if status in ("tracked", "marked", "stopped"):
 				report_id = habits[habit_idx].get("report_id")
@@ -122,12 +121,16 @@ def show_habit_info(text, user_id, chat_id, message_id, message_info, timestamp)
 				trigger_desc = habits[habit_idx].get("trigger_action_desc")
 
 			reply = reply.replace('[trigger]', trigger_desc)
-			if habit_type == "regular":
-				reply = reply.replace('[type]', "Обычная")
-			elif habit_type == "harmful":
-				reply = reply.replace('[type]', "Вредная")
-			elif habit_type == "one-time":
-				reply = reply.replace('[type]', "Одноразовая")
+			reply = reply.replace('[type]', "Обычная")
+		elif habit_type == "harmful":
+			reply = replies['3_1']['harmful'].replace('[habit]', habit_name)
+			reply = reply.replace('[type]', "Вредная")
+		elif habit_type == "one-time":
+			single_notif_time = habits[habit_idx].get("single_notif_time", None)
+			reply = replies['3_1']['one-time'].replace('[habit]', habit_name)
+			reply = reply.replace('[type]', "Одноразовая")
+			reply = reply.replace('[datetime]', single_notif_time)
+			keyboard = get_button('scr_3_1_one_time')
 
 		if aspiration is None or aspiration=="None":
 			reply = reply.replace('[aspiration]', '_не указано_')
@@ -677,6 +680,11 @@ def show_one_time_habit_created(text, chat_id, message_id, user_id, timestamp, m
 		reply = "Неверно указана дата. Пожалуйста, укажите дату в формате DD.MM.YY HH:MM"
 		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_38'))
 		message_info["callback_data"]="scr_38"
+
+def show_one_time_habit_completed(user_id, chat_id, message_id):
+	habit_id = cache.get_updating_habit_info(user_id, "habit_id")
+	db.delete_habit(habit_id)
+	switch_screen(replies['3_2_one_time_completed'], chat_id, message_id, keyboard=get_button('scr_3_2_one_time_completed'))
 
 def show_updated_habits_after_deletion(text, chat_id, message_id, user_id, message_info):
 	try:
