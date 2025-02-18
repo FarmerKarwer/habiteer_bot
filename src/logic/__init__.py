@@ -37,6 +37,7 @@ from .my_habits import (
 	show_habit_reminder_updated,
 	show_report_updated_for_habit,
 	show_change_habit_aspiration,
+	show_one_time_habit_created,
 	show_updated_habits_after_deletion
 	)
 from .pick_habits import (
@@ -105,6 +106,7 @@ __all__ = [
 "show_habit_reminder_updated",
 "show_report_updated_for_habit",
 "show_change_habit_aspiration",
+"show_one_time_habit_created",
 "show_updated_habits_after_deletion",
 
 "show_aspirations",

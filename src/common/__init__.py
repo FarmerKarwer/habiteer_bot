@@ -9,6 +9,7 @@ from .array_utils import (
 	)
 
 from .datetime_utils import (
+	validate_datetime,
 	unix_to_timestamp,
 	parse_time_from_string,
 	validate_marginal_datetime_entry,

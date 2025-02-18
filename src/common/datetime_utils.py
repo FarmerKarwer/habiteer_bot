@@ -27,6 +27,52 @@ def parse_time_from_string(input_string):
     else:
         raise ValueError("Input string must contain only time in HH:MM format.")
 
+def validate_datetime(s):
+    # First check the format length and expected separators.
+    if len(s) != 14:
+        raise ValueError("Invalid format")
+    if s[2] != '.' or s[5] != '.' or s[8] != ' ' or s[11] != ':':
+        raise ValueError("Invalid separators")
+    
+    # Extract components from the string.
+    day_str = s[0:2]
+    month_str = s[3:5]
+    year_str = s[6:8]
+    hour_str = s[9:11]
+    minute_str = s[12:14]
+    
+    # Validate that all the components are numeric.
+    if not (day_str.isdigit() and month_str.isdigit() and year_str.isdigit() and hour_str.isdigit() and minute_str.isdigit()):
+        raise ValueError("Non-digit components")
+    
+    day = int(day_str)
+    month = int(month_str)
+    year = int(year_str)
+    hour = int(hour_str)
+    minute = int(minute_str)
+    
+    # Basic range checks.
+    if not 1 <= day <= 31:
+        raise ValueError("Day out of range")
+    if not 1 <= month <= 12:
+        raise ValueError("Month out of range")
+    if not 0 <= year <= 99:
+        raise ValueError("Year out of range")
+    if not 0 <= hour <= 23:
+        raise ValueError("Hour out of range")
+    if not 0 <= minute <= 59:
+        raise ValueError("Minute out of range")
+    
+    # Construct a datetime object.
+    # Assuming the two-digit year represents a year from 2000 to 2099.
+    input_datetime = datetime(2000 + year, month, day, hour, minute)
+    
+    # Check if the input datetime is before the current datetime.
+    if input_datetime <= datetime.now():
+        raise ValueError("Datetime must be in the future")
+    
+    return input_datetime
+
 def validate_marginal_datetime_entry(user_input):
     """
     Validates if the user input matches the format:

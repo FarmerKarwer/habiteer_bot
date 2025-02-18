@@ -1951,13 +1951,13 @@
       [
         {
           "text": "Хочу от нее отказаться",
-          "callback_data": "scr_plug"
+          "callback_data": "scr_30"
         }
       ],
       [
         {
           "text": "Хочу выполнить один раз",
-          "callback_data": "scr_plug"
+          "callback_data": "scr_38"
         }
       ],
       [
@@ -2795,6 +2795,16 @@
           "callback_data": "scr_21"
         }
       ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_38_done":{
+    "inline_keyboard": [
       [
         {
           "text": "В главное меню",

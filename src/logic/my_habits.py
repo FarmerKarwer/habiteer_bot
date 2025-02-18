@@ -15,7 +15,8 @@ from common import (
 	weekdays_to_numbers,
 	calculate_streak,
 	calculate_usual_streak,
-	get_days_string
+	get_days_string,
+	validate_datetime
 	)
 from common.exceptions import ValueOutOfRangeError
 
@@ -655,12 +656,27 @@ def show_report_updated_for_habit(user_id, chat_id, message_id, callback_data=No
 
 def show_change_habit_aspiration(text, chat_id, message_id, user_id, timestamp):
 	new_aspiration = text
-	habit_idx = cache.get_updating_habit_info(user_id, "habit_number")
-	unique_id = db.view_habits(user_id)[habit_idx].get("id")
+	unique_id = cache.get_updating_habit_info(user_id, "habit_id")
 	db.update_habit(unique_id, "aspiration", f"'{new_aspiration}'")
 	db.update_habit(unique_id, "last_updated", f"CAST('{timestamp}'AS Timestamp)")
 
 	switch_screen(replies['3_7'], chat_id, message_id, keyboard=get_button('scr_3_7'))
+
+def show_one_time_habit_created(text, chat_id, message_id, user_id, timestamp, message_info):
+	reminder_date = text
+	try:
+		validate_datetime(reminder_date)
+		habit_id = cache.get_updating_habit_info(user_id, "habit_id")
+		db.update_habit(habit_id, "single_notif_time", f"'{reminder_date}'")
+		db.update_habit(habit_id, "type", f"'one-time'")
+		db.update_habit(habit_id, "last_updated", f"CAST('{timestamp}'AS Timestamp)")
+
+		reply = replies['38_done'].replace('[datetime]', reminder_date)
+		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_38_done'))
+	except ValueError:
+		reply = "Неверно указана дата. Пожалуйста, укажите дату в формате DD.MM.YY HH:MM"
+		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_38'))
+		message_info["callback_data"]="scr_38"
 
 def show_updated_habits_after_deletion(text, chat_id, message_id, user_id, message_info):
 	try:

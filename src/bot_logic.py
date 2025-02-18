@@ -282,7 +282,7 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 		"scr_31": lambda: switch_screen(replies['7'], chat_id, message_id, keyboard=get_button('scr_7')),
 		"scr_36": lambda: switch_screen(replies['20'], chat_id, message_id, keyboard=get_button('scr_20')),
 		"scr_37": lambda: switch_screen(replies['20'], chat_id, message_id, keyboard=get_button('scr_20')),
-		"scr_38": lambda: switch_screen(replies['20'], chat_id, message_id, keyboard=get_button('scr_20')),
+		"scr_38": lambda: show_one_time_habit_created(text, chat_id, message_id, user_id, timestamp, message_info),
 		"scr_40": lambda: switch_screen(replies['43'], chat_id, message_id, keyboard=get_button('scr_43')),
 		"scr_41_add_3": lambda: show_add_report(text, chat_id, message_id, user_id, timestamp, message_info),
 		"scr_41_1_change_3": lambda: show_report_changed(text, user_id, chat_id, message_id, timestamp, message_info),
