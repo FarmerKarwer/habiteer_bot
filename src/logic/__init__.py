@@ -42,6 +42,7 @@ from .my_habits import (
 from .pick_habits import (
 	show_aspirations,
 	show_predefined_habits,
+	show_getting_back_to_predefined_habits,
 	show_ai_recommended_habits,
 	show_picked_habits,
 	show_picked_predefined_habits,
@@ -108,6 +109,7 @@ __all__ = [
 
 "show_aspirations",
 "show_predefined_habits",
+"show_getting_back_to_predefined_habits",
 "show_ai_recommended_habits",
 "show_picked_habits",
 "show_picked_predefined_habits",

@@ -189,6 +189,7 @@ def handle_callback_query(message):
 		("scr_12_1", "scr_12"): lambda: show_magic_wanding_return_back_to_start(chat_id, message_id, user_id, 'scr_12'),
 		("scr_9", "scr_12"): lambda: switch_screen(replies['12'], chat_id, message_id, keyboard=get_button('9_scr_12')),
 		("scr_11", "scr_12"): lambda: switch_screen(replies['12'], chat_id, message_id, keyboard=get_button('scr_12')),
+		("scr_12", "scr_9"): lambda: show_getting_back_to_predefined_habits(user_id, chat_id, message_id),
 	}
 	SPECIAL_CALLBACK_SCREENS = SPECIAL_CALLBACK_HANDLERS.keys()
 

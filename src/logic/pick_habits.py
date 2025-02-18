@@ -34,6 +34,15 @@ def show_predefined_habits(callback_data, user_id, chat_id, message_id):
 
 	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_9'))
 
+def show_getting_back_to_predefined_habits(user_id, chat_id, message_id):
+	aspiration = cache.get_picking_habit_info(user_id)['aspiration']
+	random_habits = get_predefined_habits_for_aspiration(aspiration, size=10)
+	random_habits_str = format_numbered_list(random_habits)
+	reply = replies['9'].replace("[habits]", random_habits_str)
+	cache.update_picking_habit_info(user_id, {"behavior_options":json.dumps(random_habits)})
+
+	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_9'))
+
 def show_ai_recommended_habits(user_id, chat_id, message_id):
 	aspiration = cache.get_picking_habit_info(user_id)['aspiration']
 	habits = get_ai_response(aspiration=aspiration)
