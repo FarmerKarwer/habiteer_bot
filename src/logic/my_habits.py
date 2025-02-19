@@ -123,8 +123,17 @@ def show_habit_info(text, user_id, chat_id, message_id, message_info, timestamp)
 			reply = reply.replace('[trigger]', trigger_desc)
 			reply = reply.replace('[type]', "Обычная")
 		elif habit_type == "harmful":
+			habit_hardening_desc = habits[habit_idx].get("habit_hardening_desc", None)
+			fighting_method = habits[habit_idx].get("fighting_method", None)
+			fighting_method_ru_dict = {
+			"remove trigger":"убрать триггер",
+			"avoid trigger":"избегать триггер",
+			"harden habit":habit_hardening_desc
+			}
 			reply = replies['3_1']['harmful'].replace('[habit]', habit_name)
 			reply = reply.replace('[type]', "Вредная")
+			reply = reply.replace('[method]', fighting_method_ru_dict[fighting_method])
+			keyboard = get_button('scr_3_1_bad_habit')
 		elif habit_type == "one-time":
 			single_notif_time = habits[habit_idx].get("single_notif_time", None)
 			reply = replies['3_1']['one-time'].replace('[habit]', habit_name)
@@ -665,6 +674,31 @@ def show_change_habit_aspiration(text, chat_id, message_id, user_id, timestamp):
 
 	switch_screen(replies['3_7'], chat_id, message_id, keyboard=get_button('scr_3_7'))
 
+def show_bad_habit_remove_trigger(user_id, chat_id, message_id):
+	habit_name = cache.get_updating_habit_info(user_id, "habit_name")
+	reply = replies['30'].replace('[habit]', habit_name)
+	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_30'))
+
+def show_bad_habit_enter_new_habit(user_id, chat_id, message_id):
+	habit_name = cache.get_updating_habit_info(user_id, "habit_name")
+	reply = replies['31'].replace('[habit]', habit_name)
+	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_31'))
+
+def show_bad_habit_new_habit_created(text, user_id, chat_id, message_id, timestamp):
+	habit_name = cache.get_updating_habit_info(user_id, "habit_name")
+	db.add_habit(habit=text, creation_datetime=timestamp, user_id=user_id, aspiration=habit_name)
+	reply = replies['31_done'].replace('[habit]', text)
+	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_31_done'))
+
+def show_bad_habit_tracked(user_id, chat_id, message_id, timestamp):
+	habit_id = cache.get_updating_habit_info(user_id, "habit_id")
+	db.update_habit(habit_id, "type", f"'harmful'")
+	db.update_habit(habit_id, "fighting_method", f"'remove trigger'")
+	db.update_habit(habit_id, "last_updated", f"CAST('{timestamp}'AS Timestamp)")
+	db.update_habit(habit_id, "status", f"'tracked'")
+
+	switch_screen(replies['31_finished'], chat_id, message_id, keyboard=get_button('scr_20'))
+
 def show_one_time_habit_created(text, chat_id, message_id, user_id, timestamp, message_info):
 	reminder_date = text
 	try:
@@ -673,6 +707,7 @@ def show_one_time_habit_created(text, chat_id, message_id, user_id, timestamp, m
 		db.update_habit(habit_id, "single_notif_time", f"'{reminder_date}'")
 		db.update_habit(habit_id, "type", f"'one-time'")
 		db.update_habit(habit_id, "last_updated", f"CAST('{timestamp}'AS Timestamp)")
+		db.update_habit(habit_id, "status", f"'tracked'")
 
 		reply = replies['38_done'].replace('[datetime]', reminder_date)
 		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_38_done'))
