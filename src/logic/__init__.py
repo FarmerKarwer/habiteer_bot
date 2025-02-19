@@ -42,6 +42,7 @@ from .my_habits import (
 	show_bad_habit_new_habit_created,
 	show_bad_habit_tracked,
 	show_bad_habit_done,
+	show_reset_bad_habit_completion,
 	show_one_time_habit_created,
 	show_one_time_habit_completed,
 	show_updated_habits_after_deletion
@@ -117,6 +118,7 @@ __all__ = [
 "show_bad_habit_new_habit_created",
 "show_bad_habit_tracked",
 "show_bad_habit_done",
+"show_reset_bad_habit_completion",
 "show_one_time_habit_created",
 "show_one_time_habit_completed",
 "show_updated_habits_after_deletion",

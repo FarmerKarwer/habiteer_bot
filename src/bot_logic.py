@@ -153,6 +153,7 @@ def handle_callback_query(message):
 		"scr_3_1_trigger": lambda: show_enter_your_trigger(user_id, chat_id, message_id),
 		"scr_3_2": lambda: show_mark_habit_as_completed(user_id, chat_id, message_id, timestamp),
 		"scr_3_2_reset": lambda: show_reset_habit_completion(user_id, chat_id, message_id, timestamp),
+		"scr_3_2_bad_habit_reset": lambda: show_reset_bad_habit_completion(user_id, chat_id, message_id, timestamp),
 		"scr_3_2_resume": lambda: show_resume_tracking_habit(user_id, chat_id, message_id, timestamp),
 		"scr_3_2_stop_habit": lambda: show_stop_tracking_habit(user_id, chat_id, message_id, timestamp),
 		"scr_3_2_finish_habit": lambda: show_finish_tracking_habit(user_id, chat_id, message_id, timestamp),
