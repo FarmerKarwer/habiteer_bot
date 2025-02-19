@@ -334,3 +334,81 @@ def get_days_string(days, lang='ru'):
         word = 'day' if days == 1 else 'days'
     
     return f"{days} {word}"
+
+def _ts_to_dt(ts: float) -> datetime:
+    """
+    Convert a timestamp to a datetime object.
+    If the timestamp appears to be in microseconds, convert by dividing by 1e6.
+    Otherwise, assume seconds.
+    """
+    # Use threshold: if greater than 1e11 assume microseconds.
+    if ts > 1e11:
+        return datetime.fromtimestamp(ts / 1e6)
+    else:
+        return datetime.fromtimestamp(ts)
+
+def calculate_streak_for_bad_habit(habit_logs, timestamp, creation_datetime):
+    """
+    Calculate the current and max streak for a bad habit.
+
+    Parameters:
+      - habit_logs: list of dicts each containing a 'date' field representing the number of days since Unix epoch.
+                    For example: [{'date': 20127}, {'date': 20126}]
+      - timestamp: current timestamp representing "now"
+      - creation_datetime: a timestamp (in seconds or microseconds) when the habit was created
+
+    Returns:
+      dict with keys "current_streak" and "max_streak"
+      
+    Streak logic:
+      - Days are computed in UTC.
+      - Days run from creation_date up to (but not including) the current day (derived from the timestamp).
+      - A day is counted as a streak day if no log for that day has a status "completed".
+      - If a "completed" log is present on a day, the streak resets on that day.
+      - Additionally, if the current day (based on the input timestamp) has a "completed" record (with a log time not later than the provided timestamp), the current streak is 0.
+    """
+    # Convert input timestamp to a datetime and get its date.
+    epoch_date = datetime(1970, 1, 1).date()
+    current_date = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S.%fZ").date()
+    
+    # Parse creation_datetime (strip trailing 'Z' if present)
+    dt_creation = _ts_to_dt(creation_datetime)
+    creation_date = dt_creation.date()
+    
+    # If the habit was created today or creation_date is after current_date, streak is 0.
+    if creation_date >= current_date:
+        return {"current_streak": 0, "max_streak": 0}
+    
+    # Build a set of dates on which habit was marked as completed.
+    # For dates before the current_date, any "completed" log resets the streak.
+    completed_days = set()
+    # Flag indicating if current_date is completed as of dt_current.
+    current_date_completed = False
+    
+    for log in habit_logs:
+        log_date = epoch_date + timedelta(days=log.get("date", 0))
+        # Only consider logs that occur between creation_date and current_date (or on current_date for special treatment).
+        if creation_date <= log_date < current_date:
+            completed_days.add(log_date)
+
+    # Also check if the current date is a completion day.
+    current_date_completed = (current_date in 
+                              {epoch_date + timedelta(days=log.get("date", 0)) for log in habit_logs})
+
+    # Iterate day by day from the creation_date (inclusive) to the day before current_date.
+    current_running = 0
+    max_running = 0
+    day = creation_date
+    while day < current_date:
+        if day in completed_days:
+            current_running = 0  # streak resets on a completed day
+        else:
+            current_running += 1
+            if current_running > max_running:
+                max_running = current_running
+        day += timedelta(days=1)
+    
+    # If the current day has a completion record (up to the given timestamp) then current streak resets, otherwise current streak is the streak built from full days.
+    current_streak = 0 if current_date_completed else current_running
+
+    return {"current_streak": current_streak, "max_streak": max_running}

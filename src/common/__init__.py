@@ -18,6 +18,7 @@ from .datetime_utils import (
 	numbers_to_weekdays,
 	calculate_streak,
 	calculate_usual_streak,
+	calculate_streak_for_bad_habit,
 	get_days_string
 	)
 

@@ -703,6 +703,42 @@
     ]
   },
 
+  "scr_3_1_bad_habit_marked_today":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Сбросить последнее выполнение ↩️",
+          "callback_data": "scr_3_2_bad_habit_proxy_reset"
+        }
+      ],
+      [
+        {
+          "text": "Изменить название",
+          "callback_data": "scr_19"
+        }
+      ],
+      
+      [
+        {
+          "text": "Добавить стремление",
+          "callback_data": "scr_3_3"
+        }
+      ],
+      [
+        {
+          "text": "К списку привычек",
+          "callback_data": "scr_3"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+
   "scr_3_1_mark_prevented":{
     "inline_keyboard": [
       [
@@ -1128,6 +1164,28 @@
     ]
   },
 
+  "scr_3_2_bad_habit_proxy_reset":{
+    "inline_keyboard":[
+      [
+          {
+            "text":"✅Да",
+            "callback_data":"scr_3_2_bad_habit_reset"
+          },
+          {
+            "text":"❌Нет",
+            "callback_data":"scr_3_1"
+          }
+      ],
+        [
+          {
+            "text":"В главное меню",
+            "callback_data":"scr_1"
+          }
+      ]
+        
+    ]
+  },
+
   "scr_3_2_proxy_resume":{
     "inline_keyboard":[
       [
@@ -1208,6 +1266,25 @@
   },
 
   "scr_3_2_reset":{
+    "inline_keyboard":[
+        [
+          {
+            "text":"Вернуться к привычке",
+            "callback_data":"scr_3_1"
+          }
+      ],
+
+        [
+          {
+            "text":"В главное меню",
+            "callback_data":"scr_1"
+          }
+      ]
+        
+    ]
+  },
+
+  "scr_3_2_bad_habit_reset":{
     "inline_keyboard":[
         [
           {

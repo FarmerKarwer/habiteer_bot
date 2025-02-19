@@ -15,6 +15,7 @@ from common import (
 	weekdays_to_numbers,
 	calculate_streak,
 	calculate_usual_streak,
+	calculate_streak_for_bad_habit,
 	get_days_string,
 	validate_datetime
 	)
@@ -133,7 +134,21 @@ def show_habit_info(text, user_id, chat_id, message_id, message_info, timestamp)
 			reply = replies['3_1']['harmful'].replace('[habit]', habit_name)
 			reply = reply.replace('[type]', "Вредная")
 			reply = reply.replace('[method]', fighting_method_ru_dict[fighting_method])
-			keyboard = get_button('scr_3_1_bad_habit')
+			if is_habit_already_marked(habit_id, timestamp):
+				keyboard = get_button('scr_3_1_bad_habit_marked_today')
+				current_streak = habits[habit_idx].get("current_streak_days", None)
+				max_streak = habits[habit_idx].get("max_streak_days", None)
+			else:
+				logs = db.get_habit_logs_for_habit(habit_id, status="completed")
+				creation_datetime = habits[habit_idx].get("creation_datetime", None)
+				current_streak, max_streak = calculate_streak_for_bad_habit(logs, timestamp, creation_datetime).values()
+				db.update_habit(habit_id, "current_streak_days", f"{current_streak}")
+				db.update_habit(habit_id, "max_streak_days", f"{max_streak}")
+				keyboard = get_button('scr_3_1_bad_habit')
+			current_streak_str = get_days_string(current_streak)
+			max_streak_str = get_days_string(max_streak)
+			reply = reply.replace('[streak]', current_streak_str)
+			reply = reply.replace('[max_streak]', max_streak_str)
 		elif habit_type == "one-time":
 			single_notif_time = habits[habit_idx].get("single_notif_time", None)
 			reply = replies['3_1']['one-time'].replace('[habit]', habit_name)
@@ -698,6 +713,18 @@ def show_bad_habit_tracked(user_id, chat_id, message_id, timestamp):
 	db.update_habit(habit_id, "status", f"'tracked'")
 
 	switch_screen(replies['31_finished'], chat_id, message_id, keyboard=get_button('scr_20'))
+
+def show_bad_habit_done(user_id, chat_id, message_id, timestamp):
+	habit_id = cache.get_updating_habit_info(user_id, "habit_id")
+	db.add_habit_log(user_id, habit_id, "completed", timestamp)
+	logs = db.get_habit_logs_for_habit(habit_id, status="completed")
+	creation_datetime = db.get_habit_by_id(habit_id)[0].get('creation_datetime')
+	current_streak, max_streak = calculate_streak_for_bad_habit(logs, timestamp, creation_datetime).values()
+	
+	db.update_habit(habit_id, "current_streak_days", f"{current_streak}")
+	db.update_habit(habit_id, "max_streak_days", f"{max_streak}")
+
+	switch_screen(replies['3_2_bad_habit_done'], chat_id, message_id, keyboard=get_button('scr_3_2_bad_habit_done'))
 
 def show_one_time_habit_created(text, chat_id, message_id, user_id, timestamp, message_info):
 	reminder_date = text
