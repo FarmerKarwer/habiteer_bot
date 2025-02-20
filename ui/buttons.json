@@ -2932,34 +2932,12 @@
     "inline_keyboard": [
       [
         {
-          "text": "Назад",
-          "callback_data": "scr_32"
-        }
-      ],
-      [
-        {
-          "text": "В главное меню",
-          "callback_data": "scr_1"
-        }
-      ],
-      [
-        {
-          "text": "Пропустить",
-          "callback_data": "scr_20"
-        }
-      ]
-    ]
-  },
-  "scr_34":{
-    "inline_keyboard": [
-      [
-        {
           "text": "Да",
-          "callback_data": "scr_35"
+          "callback_data": "scr_33_1"
         },
         {
           "text": "Нет",
-          "callback_data": "scr_37"
+          "callback_data": "scr_33_finished"
         }
       ],
       [
@@ -2976,12 +2954,24 @@
       ]
     ]
   },
-  "scr_35":{
+  "scr_33_1":{
     "inline_keyboard": [
       [
         {
+          "text": "Каждый день",
+          "callback_data": "scr_33_3"
+        }
+      ],
+      [
+        {
+          "text": "Выбрать дни недели >>",
+          "callback_data": "scr_33_2"
+        }
+      ],
+      [
+        {
           "text": "Назад",
-          "callback_data": "scr_34"
+          "callback_data": "scr_33"
         }
       ],
       [
@@ -2989,11 +2979,75 @@
           "text": "В главное меню",
           "callback_data": "scr_1"
         }
+      ]
+    ]
+  },
+  "scr_33_2":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Пн",
+          "callback_data": "mon"
+        },
+        {
+          "text": "Вт",
+          "callback_data": "tue"
+        },
+        {
+          "text": "Ср",
+          "callback_data": "wed"
+        },
+        {
+          "text": "Чт",
+          "callback_data": "thu"
+        }
       ],
       [
         {
-          "text": "Пропустить",
-          "callback_data": "scr_20"
+          "text": "Пт",
+          "callback_data": "fri"
+        },
+        {
+          "text": "Сб",
+          "callback_data": "sat"
+        },
+        {
+          "text": "Вс",
+          "callback_data": "sun"
+        }
+      ],
+      [
+        {
+          "text": "Подтвердить",
+          "callback_data": "scr_33_3"
+        }
+      ],
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_33_1"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_33_3":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_33_1"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
         }
       ]
     ]
@@ -3002,20 +3056,8 @@
     "inline_keyboard": [
       [
         {
-          "text": "Назад",
-          "callback_data": "scr_35"
-        }
-      ],
-      [
-        {
-          "text": "В главное меню",
-          "callback_data": "scr_1"
-        }
-      ],
-      [
-        {
           "text": "Пропустить",
-          "callback_data": "scr_20"
+          "callback_data": "scr_33_finished"
         }
       ]
     ]

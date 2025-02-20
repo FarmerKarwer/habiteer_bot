@@ -734,6 +734,34 @@ def show_bad_habit_done(user_id, chat_id, message_id, timestamp):
 
 	switch_screen(replies['3_2_bad_habit_done'], chat_id, message_id, keyboard=get_button('scr_3_2_bad_habit_done'))
 
+def show_bad_habit_reminder_text_for_trigger(user_id, chat_id, message_id, text, timestamp, message_info):
+	try:
+		parse_time_from_string(text)
+		notification_period = cache.get_updating_habit_info(user_id, "habit_reminder_time")
+		notification_period = weekdays_to_numbers(notification_period)
+		notification_time = text
+		habit_id = cache.get_updating_habit_info(user_id, "habit_id")
+
+		db.update_habit(habit_id, "avoid_trigger_notif_period", f"'{notification_period}'")
+		db.update_habit(habit_id, "avoid_trigger_notif_time", f"'{notification_time}'")
+
+		switch_screen(replies['36'], chat_id, message_id, keyboard=get_button('scr_36'))
+		message_info["callback_data"]="scr_36"
+	except ValueError:
+		reply = "Неверно указано время.\nВремя должно быть указано в формате HH:MM. Например: 21:45.\n\nПопробуйте еще раз."
+		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_33_3'))
+		message_info["callback_data"]="scr_33_3"
+
+def show_bad_habit_tracked_with_reminder(user_id, chat_id, message_id, timestamp, text=None):
+	habit_id = cache.get_updating_habit_info(user_id, "habit_id")
+	db.update_habit(habit_id, "type", f"'harmful'")
+	db.update_habit(habit_id, "fighting_method", f"'avoid trigger'")
+	db.update_habit(habit_id, "last_updated", f"CAST('{timestamp}'AS Timestamp)")
+	db.update_habit(habit_id, "status", f"'tracked'")
+	if text:
+		db.update_habit(habit_id, "avoid_trigger_notif_text", f"'{text}'")
+	switch_screen(replies['33_finished'], chat_id, message_id, keyboard=get_button('scr_20'))
+
 def show_one_time_habit_created(text, chat_id, message_id, user_id, timestamp, message_info):
 	reminder_date = text
 	try:
