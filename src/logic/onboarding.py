@@ -1,8 +1,10 @@
 from ._common_imports import *
 from common import (
+	convert_timezone,
 	parse_time_from_string,
 	weekdays_to_numbers,
 	)
+from common.exceptions import InvalidTimezoneFormat, TimezoneOutOfRangeError
 
 def show_start_onboarding(user_id, chat_id, message_id, message, timestamp):
 	if "last_name" in message['message']['from'].keys():
@@ -24,6 +26,24 @@ def show_start_onboarding(user_id, chat_id, message_id, message, timestamp):
 
 	db.add_user(user_data['id'], user_data['username'], user_data['first_name'], user_data['last_name'], user_data['language'], user_data['created_at'])
 	switch_screen(replies['0'], chat_id, message_id, keyboard=get_button('scr_0'))
+
+def show_onboarding_habit(user_id, chat_id, message_id, callback_data=None, text=None, message_info=None):
+	if text:
+		try:
+			timezone = convert_timezone(text)
+			db.update_user_timezone(user_id, timezone)
+		except InvalidTimezoneFormat:
+			switch_screen(replies['timezone_errors']['invalid_format'], chat_id, message_id, keyboard=get_button('scr_0_timezone_1'))
+			message_info['callback_data']="scr_0_timezone_1"
+			return
+		except TimezoneOutOfRangeError:
+			switch_screen(replies['timezone_errors']['out_of_range'], chat_id, message_id, keyboard=get_button('scr_0_timezone_1'))
+			message_info['callback_data']="scr_0_timezone_1"
+			return
+	elif callback_data:
+		db.update_user_timezone(user_id, callback_data)
+
+	switch_screen(replies['0_1'], chat_id, message_id, keyboard=get_button('scr_0_1'))
 
 def show_onboarding_secret(user_id, chat_id, message_id):
 	habit_id = 0

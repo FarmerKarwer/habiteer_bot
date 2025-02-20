@@ -126,7 +126,7 @@ def handle_callback_query(message):
 
 	# Actual logic
 	DEFAULT_CALLBACK_SCREENS = (
-		"scr_0_1", "scr_0_11", "scr_0_3", "scr_0_4", "scr_0_42", "scr_0_412",
+		"scr_0_timezone", "scr_0_timezone_1", "scr_0_11", "scr_0_3", "scr_0_4", "scr_0_42", "scr_0_412",
 		"scr_0_5", "scr_0_5_add_1", "scr_0_7", "scr_0_421", "scr_0_422", "scr_0_413", 
 		"scr_2", "scr_3_2_proxy", "scr_3_1_trigger_type", "scr_3_1_reminder_1",
 		"scr_3_2_proxy_reset", "scr_3_2_bad_habit_proxy_reset", "scr_3_2_proxy_resume", "scr_3_2_one_time_proxy",
@@ -223,6 +223,9 @@ def handle_callback_query(message):
 	elif callback_data.startswith(CONDITIONAL_CALLBACK_SCREENS):
 		handle_conditional_callback(CONDITIONAL_CALLBACK_HANDLERS, CONDITIONAL_CALLBACK_SCREENS, callback_data)
 
+	elif previous_screen=="scr_0_timezone" and callback_data.startswith("utc"):
+		show_onboarding_habit(user_id, chat_id, message_id, callback_data, text=None, message_info=None)
+
 	elif previous_screen=="scr_3_4" and is_callback_in_reports:
 		show_report_updated_for_habit(user_id, chat_id, message_id, callback_data=callback_data, text=None, timestamp=timestamp)
 
@@ -269,6 +272,7 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 	previous_screen = cache.get_previous_message(user_id)['callback_data']
 
 	SPECIAL_INPUT_HANDLERS = {
+		"scr_0_timezone_1": lambda: show_onboarding_habit(user_id, chat_id, message_id, callback_data=None, text=text, message_info=message_info),
 		"scr_0_5_add_3": lambda: show_onboarding_report_added(user_id, chat_id, message_id, text, timestamp, message_info),
 		"scr_2": lambda: show_adding_habit(text, user_id, chat_id, message_id, timestamp),
 		"scr_3": lambda: show_habit_info(text, user_id, chat_id, message_id, message_info, timestamp),

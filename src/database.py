@@ -47,6 +47,14 @@ class DatabaseClient:
 		"""
 		self.execute_query(query)
 
+	def update_user_timezone(self, user_id, timezone):
+		query = f"""
+		UPDATE users
+		SET timezone = '{timezone}'
+		WHERE id={user_id};
+		"""
+		self.execute_query(query)
+
 	def add_habit(self, habit, creation_datetime, user_id, aspiration=None):
 		unique_id = self.autoincrement_id("id", "habits")
 		query = f"""

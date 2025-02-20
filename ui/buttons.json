@@ -1,30 +1,72 @@
 {
-  "start": {
-    "inline_keyboard": [
-      [
-        {
-          "text": "Подобрать привычку",
-          "callback_data": "scr_4"
-        }
-      ],
-      [
-        {
-          "text": "Не сейчас",
-          "callback_data": "scr_1"
-        }
-      ]
-    ]
-  },
   "scr_0": {
     "inline_keyboard": [
       [
         {
           "text": "🚀Поехали!",
-          "callback_data": "scr_0_1"
+          "callback_data": "scr_0_timezone"
         }
       ]
     ]
   },
+  "scr_0_timezone":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Москва",
+          "callback_data": "utc+3"
+        },
+        {
+          "text": "Самара (МСК+1)",
+          "callback_data": "utc+4"
+        },
+        {
+          "text": "Екатеринбург (МСК+2)",
+          "callback_data": "utc+5"
+        }
+      ],
+      [
+        {
+          "text": "Омск (МСК+3)",
+          "callback_data": "utc+6"
+        },
+        {
+          "text": "Красноярск (МСК+4)",
+          "callback_data": "utc+7"
+        },
+        {
+          "text": "Иркутск (МСК+5)",
+          "callback_data": "utc+8"
+        }
+      ],
+      [
+        {
+          "text": "Якутск (МСК+6)",
+          "callback_data": "utc+9"
+        },
+        {
+          "text": "Владивосток (МСК+7)",
+          "callback_data": "utc+10"
+        },
+        {
+          "text": "✍Другое",
+          "callback_data": "scr_0_timezone_1"
+        }
+      ]
+    ]
+  },
+
+  "scr_0_timezone_1": {
+    "inline_keyboard": [
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_0_timezone"
+        }
+      ]
+    ]
+  },
+
   "scr_0_1": {
     "inline_keyboard": [
       [
@@ -1637,13 +1679,13 @@
     "inline_keyboard": [
       [
         {
-          "text": "Приостановить уведомления",
+          "text": "Мотивационные сообщения",
           "callback_data": "scr_plug"
         }
       ],
       [
         {
-          "text": "Мотивационные сообщения",
+          "text": "Изменить часовой пояс",
           "callback_data": "scr_plug"
         }
       ],

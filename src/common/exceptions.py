@@ -11,3 +11,9 @@ class ListTooShortError(Exception):
 class ListLengthMismatchError(Exception):
 	"""Custom exception for list length mismatch errors."""
 	pass
+
+class InvalidTimezoneFormat(Exception):
+	pass
+
+class TimezoneOutOfRangeError(Exception):
+	pass

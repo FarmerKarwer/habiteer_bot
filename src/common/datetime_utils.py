@@ -1,6 +1,8 @@
 from datetime import datetime, timezone, timedelta
 import re
 
+from .exceptions import InvalidTimezoneFormat, TimezoneOutOfRangeError
+
 def unix_to_timestamp(unix_time):
     # Convert the Unix timestamp to a datetime object
     dt = datetime.fromtimestamp(unix_time, tz=timezone.utc)
@@ -9,6 +11,77 @@ def unix_to_timestamp(unix_time):
     formatted_time = dt.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
     
     return formatted_time
+
+def convert_timezone(timezone_str: str) -> str:
+    """
+    Converts a timezone string in either "UTC±X" or "МСК±X" format to "utc±X" format.
+    
+    For UTC input, it normalizes the string.
+    For МСК input, it converts the timezone to UTC by applying the offset relative to UTC+3.
+    
+    Examples:
+      - "МСК+0" or "мск-0" converts to "utc+3"
+      - "МСК-1" converts to "utc+2"
+      - "МСК+2" converts to "utc+5"
+      - "UTC+4" returns "utc+4"
+      - "utc-7" returns "utc-7"
+      
+    Additionally, the function will enforce valid ranges:
+      - For UTC input, the numeric offset must be within the range -12 to +14.
+      - For МСК input, the provided offset (taking into account its sign) must be within the allowable values from -1 to 9.
+      
+    Raises:
+      ValueError: If the input string does not match the expected format or if the offset is out of range.
+    
+    Parameters:
+      timezone_str (str): The timezone string to validate and convert.
+      
+    Returns:
+      str: The normalized timezone string in the format "utc±X".
+    """
+    if not isinstance(timezone_str, str):
+        raise ValueError("Invalid input: expected a string.")
+
+    # Regular expression to match either "мск" or "utc" followed by a sign and one or more digits.
+    # The regex is case-insensitive.
+    pattern = re.compile(r'^(мск|utc)([+-])(\d+)$', re.IGNORECASE)
+    match = pattern.match(timezone_str)
+    
+    if not match:
+        raise InvalidTimezoneFormat("Invalid timezone format. Expected formats: 'МСК±X' or 'UTC±X'.")
+
+    prefix = match.group(1).lower()  # either "мск" or "utc" in lowercase
+    sign = match.group(2)
+    try:
+        number = int(match.group(3))
+    except ValueError:
+        raise InvalidTimezoneFormat("Invalid numeric value in the timezone string.")
+
+    if prefix == "utc":
+        # For UTC, determine the full numeric value with sign.
+        utc_value = number if sign == "+" else -number
+        # Define the acceptable range for UTC offsets.
+        if not (-12 <= utc_value <= 14):
+            raise TimezoneOutOfRangeError("UTC offset out of allowed range (-12 to +14).")
+        return f"utc{sign}{number}"
+
+    # For МСК, validate that the provided offset is within the allowable range of -1 to 9.
+    # Calculate the signed offset provided in the string.
+    msk_input_offset = number if sign == "+" else -number
+    if not (-1 <= msk_input_offset <= 9):
+        raise TimezoneOutOfRangeError("МСК offset out of allowed range (-1 to 9).")
+    
+    # Moscow standard time is UTC+3.
+    base_offset = 3
+    # Convert МСК to UTC offset.
+    utc_offset = base_offset + msk_input_offset
+
+    # Validate the resulting UTC offset as well, ensuring it is within the allowed range for UTC.
+    if not (-12 <= utc_offset <= 14):
+        raise TimezoneOutOfRangeError("Resulting UTC offset is out of allowed range (-12 to +14).")
+
+    result_sign = "+" if utc_offset >= 0 else "-"
+    return f"utc{result_sign}{abs(utc_offset)}"
 
 def parse_time_from_string(input_string):
     """

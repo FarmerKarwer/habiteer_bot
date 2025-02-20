@@ -6,6 +6,7 @@ from .main import (
 	)
 
 from .onboarding import (
+	show_onboarding_habit,
 	show_onboarding_secret, 
 	show_onboarding_report_added
 	)
@@ -86,6 +87,7 @@ __all__ = [
 "show_choose_weekdays",
 "show_multiple_selection",
 
+"show_onboarding_habit",
 "show_onboarding_secret",
 "show_onboarding_report_added",
 
