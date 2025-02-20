@@ -54,10 +54,7 @@ def handle_callback_query(message):
 
 	def handle_default_callback(callback_data):
 		screen_id = '_'.join(callback_data.split('_')[1:])
-		if screen_id in ("44"):
-			show_callback_reply(screen_id, delete_previous=False)
-		else:
-			show_callback_reply(screen_id)
+		show_callback_reply(screen_id)
 
 	def handle_special_callback(special_handlers_dict, transition):
 		action = special_handlers_dict.get(transition)
@@ -137,8 +134,7 @@ def handle_callback_query(message):
 		"scr_16", "scr_17", "scr_19", "scr_22", "scr_22_1",
 		"scr_review", "scr_25", "scr_26", "scr_26_1", "scr_28", 
 		"scr_29_add_1", "scr_32", "scr_33", "scr_33_1", "scr_38", "scr_39",
-		"scr_40_1", "scr_41_add_1", "scr_41_1_conf_deletion", "scr_41_1_change_1", 
-		"scr_44", "scr_plug"
+		"scr_40_1", "scr_41_add_1", "scr_41_1_conf_deletion", "scr_41_1_change_1", "scr_plug"
 		)
 
 	SPECIAL_CALLBACK_HANDLERS = {
@@ -203,6 +199,7 @@ def handle_callback_query(message):
 		"scr_42": lambda: show_delete_all_data_confirmation(user_id, chat_id, message_id),
 		"scr_41_add_2": lambda: show_choose_weekdays(user_id, chat_id, message_id, scr_name='scr_41_add_2'),
 		"scr_41_1_change_2": lambda: show_choose_weekdays(user_id, chat_id, message_id, scr_name='scr_41_1_change_2'),
+		"scr_44": lambda: show_habits_to_delete(user_id, chat_id, message_id),
 		"no_scr": lambda: delete_message(message_id, chat_id),
 		("scr_12_1", "scr_12"): lambda: show_magic_wanding_return_back_to_start(chat_id, message_id, user_id, 'scr_12'),
 		("scr_9", "scr_12"): lambda: switch_screen(replies['12'], chat_id, message_id, keyboard=get_button('9_scr_12')),

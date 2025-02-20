@@ -56,6 +56,7 @@ from .my_habits import (
 	show_reset_bad_habit_completion,
 	show_one_time_habit_created,
 	show_one_time_habit_completed,
+	show_habits_to_delete,
 	show_updated_habits_after_deletion
 	)
 from .pick_habits import (
@@ -145,6 +146,7 @@ __all__ = [
 "show_reset_bad_habit_completion",
 "show_one_time_habit_created",
 "show_one_time_habit_completed",
+"show_habits_to_delete",
 "show_updated_habits_after_deletion",
 
 "show_aspirations",

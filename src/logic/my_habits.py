@@ -862,6 +862,25 @@ def show_one_time_habit_completed(user_id, chat_id, message_id):
 	db.delete_habit(habit_id)
 	switch_screen(replies['3_2_one_time_completed'], chat_id, message_id, keyboard=get_button('scr_3_2_one_time_completed'))
 
+def show_habits_to_delete(user_id, chat_id, message_id):
+	user_habits = db.view_habits(user_id)
+
+	all_habits = []
+	for item in user_habits:
+		if item['status'] in ("tracked", "marked"):
+			all_habits.append("🔄"+item['name'].capitalize())
+		elif item['status']=="pending":
+			all_habits.append("⏳"+item['name'].capitalize())
+		elif item['status']=="stopped":
+			all_habits.append("⏸️"+item['name'].capitalize())
+		else:
+			all_habits.append(item['name'].capitalize())
+
+	habit_names_str = format_numbered_list(all_habits, capitalize=False)
+	reply = replies['44'].replace('[habits]', habit_names_str)
+	keyboard = get_button('scr_44')
+	switch_screen(reply, chat_id, message_id, keyboard=keyboard)
+
 def show_updated_habits_after_deletion(text, chat_id, message_id, user_id, message_info):
 	try:
 		entered_numbers = parse_numbers(text)
