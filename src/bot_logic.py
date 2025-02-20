@@ -135,7 +135,7 @@ def handle_callback_query(message):
 		"scr_16", "scr_17", "scr_19", "scr_22", "scr_22_1",
 		"scr_review", "scr_25", "scr_26", "scr_26_1", "scr_28", 
 		"scr_29_add_1", "scr_32", "scr_33", "scr_33_1", "scr_38", "scr_39",
-		"scr_40", "scr_41_add_1", "scr_41_1_conf_deletion", "scr_41_1_change_1", 
+		"scr_40_1", "scr_41_add_1", "scr_41_1_conf_deletion", "scr_41_1_change_1", 
 		"scr_44", "scr_plug"
 		)
 
@@ -189,6 +189,7 @@ def handle_callback_query(message):
 		"scr_33_finished": lambda: show_bad_habit_tracked_with_reminder(user_id, chat_id, message_id, timestamp, text=None),
 		"scr_37": lambda: show_hardening_bad_habit(user_id, chat_id, message_id),
 		"scr_review_sent": lambda: show_review_sent(user_id, chat_id, message_id, timestamp),
+		"scr_40": lambda: show_user_timezone(user_id, chat_id, message_id),
 		"scr_41": lambda: show_all_reports_in_settings(user_id, chat_id, message_id),
 		"scr_41_1": lambda: show_choose_report(callback_data, user_id, chat_id, message_id),
 		"scr_41_1_deleted": lambda: show_report_deleted(user_id, chat_id, message_id),
@@ -225,6 +226,9 @@ def handle_callback_query(message):
 
 	elif previous_screen=="scr_0_timezone" and callback_data.startswith("utc"):
 		show_onboarding_habit(user_id, chat_id, message_id, callback_data, text=None, message_info=None)
+
+	elif previous_screen=="scr_40" and callback_data.startswith("utc"):
+		change_user_timezone(user_id, chat_id, message_id, callback_data, text=None, message_info=None)
 
 	elif previous_screen=="scr_3_4" and is_callback_in_reports:
 		show_report_updated_for_habit(user_id, chat_id, message_id, callback_data=callback_data, text=None, timestamp=timestamp)
@@ -298,7 +302,7 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 		"scr_36": lambda: show_bad_habit_tracked_with_reminder(user_id, chat_id, message_id, timestamp, text=text),
 		"scr_37": lambda: show_bad_habit_tracked_with_hardening(text, user_id, chat_id, message_id, timestamp),
 		"scr_38": lambda: show_one_time_habit_created(text, chat_id, message_id, user_id, timestamp, message_info),
-		"scr_40": lambda: switch_screen(replies['43'], chat_id, message_id, keyboard=get_button('scr_43')),
+		"scr_40_1": lambda: change_user_timezone(user_id, chat_id, message_id, callback_data=None, text=text, message_info=message_info),
 		"scr_41_add_3": lambda: show_add_report(text, chat_id, message_id, user_id, timestamp, message_info),
 		"scr_41_1_change_3": lambda: show_report_changed(text, user_id, chat_id, message_id, timestamp, message_info),
 		"scr_42": lambda: show_user_deletion_screen(text, chat_id, message_id, user_id, message_info),

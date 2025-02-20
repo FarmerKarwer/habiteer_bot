@@ -5,11 +5,38 @@ import re
 from ._common_imports import *
 from ._common_imports import callback_weekdays
 from common import (
+	convert_timezone,
 	add_report_buttons,
 	numbers_to_weekdays,
 	parse_time_from_string,
 	weekdays_to_numbers,
 	)
+from common.exceptions import InvalidTimezoneFormat, TimezoneOutOfRangeError
+from config import TIMEZONE_DICT
+
+def show_user_timezone(user_id, chat_id, message_id):
+	current_timezone = db.select_user(user_id)[0]['timezone']
+	timezone_name = TIMEZONE_DICT[current_timezone]
+	reply = replies['40'].replace('[timezone]', f"{current_timezone.upper()} ({timezone_name})")
+	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_40'))
+
+def change_user_timezone(user_id, chat_id, message_id, callback_data=None, text=None, message_info=None):
+	if text:
+		try:
+			timezone = convert_timezone(text)
+			db.update_user_timezone(user_id, timezone)
+		except InvalidTimezoneFormat:
+			switch_screen(replies['timezone_errors']['invalid_format'], chat_id, message_id, keyboard=get_button('scr_40_1'))
+			message_info['callback_data']="scr_40_1"
+			return
+		except TimezoneOutOfRangeError:
+			switch_screen(replies['timezone_errors']['out_of_range'], chat_id, message_id, keyboard=get_button('scr_40_1'))
+			message_info['callback_data']="scr_40_1"
+			return
+	elif callback_data:
+		db.update_user_timezone(user_id, callback_data)
+
+	switch_screen(replies['40_changed'], chat_id, message_id, keyboard=get_button('scr_40_changed'))
 
 def show_all_reports_in_settings(user_id, chat_id, message_id):
 	user_reports = db.view_reports(user_id)

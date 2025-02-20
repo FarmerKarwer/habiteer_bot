@@ -1686,7 +1686,7 @@
       [
         {
           "text": "Изменить часовой пояс",
-          "callback_data": "scr_plug"
+          "callback_data": "scr_40"
         }
       ],
       [
@@ -3160,6 +3160,48 @@
     "inline_keyboard": [
       [
         {
+          "text": "Москва",
+          "callback_data": "utc+3"
+        },
+        {
+          "text": "Самара (МСК+1)",
+          "callback_data": "utc+4"
+        },
+        {
+          "text": "Екатеринбург (МСК+2)",
+          "callback_data": "utc+5"
+        }
+      ],
+      [
+        {
+          "text": "Омск (МСК+3)",
+          "callback_data": "utc+6"
+        },
+        {
+          "text": "Красноярск (МСК+4)",
+          "callback_data": "utc+7"
+        },
+        {
+          "text": "Иркутск (МСК+5)",
+          "callback_data": "utc+8"
+        }
+      ],
+      [
+        {
+          "text": "Якутск (МСК+6)",
+          "callback_data": "utc+9"
+        },
+        {
+          "text": "Владивосток (МСК+7)",
+          "callback_data": "utc+10"
+        },
+        {
+          "text": "✍Другое",
+          "callback_data": "scr_40_1"
+        }
+      ],
+      [
+        {
           "text": "Назад",
           "callback_data": "scr_6"
         }
@@ -3172,6 +3214,35 @@
       ]
     ]
   },
+
+  "scr_40_1": {
+    "inline_keyboard": [
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_40"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+
+  "scr_40_changed":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  
   "scr_41":{
     "inline_keyboard": [
       [
