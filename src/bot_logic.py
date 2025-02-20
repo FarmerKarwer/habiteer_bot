@@ -134,8 +134,7 @@ def handle_callback_query(message):
 		"scr_6", "scr_9", "scr_10", "scr_12", "scr_13", "scr_3_3",
 		"scr_16", "scr_17", "scr_19", "scr_22", "scr_22_1",
 		"scr_review", "scr_25", "scr_26", "scr_26_1", "scr_28", 
-		"scr_29_add_1", "scr_32", "scr_33", "scr_33_1",
-		"scr_37", "scr_38", "scr_39",
+		"scr_29_add_1", "scr_32", "scr_33", "scr_33_1", "scr_38", "scr_39",
 		"scr_40", "scr_41_add_1", "scr_41_1_conf_deletion", "scr_41_1_change_1", 
 		"scr_44", "scr_plug"
 		)
@@ -188,6 +187,7 @@ def handle_callback_query(message):
 		"scr_31_finished": lambda: show_bad_habit_tracked(user_id, chat_id, message_id, timestamp),
 		"scr_33_2": lambda: show_choose_weekdays(user_id, chat_id, message_id, scr_name='scr_33_2'),
 		"scr_33_finished": lambda: show_bad_habit_tracked_with_reminder(user_id, chat_id, message_id, timestamp, text=None),
+		"scr_37": lambda: show_hardening_bad_habit(user_id, chat_id, message_id),
 		"scr_review_sent": lambda: show_review_sent(user_id, chat_id, message_id, timestamp),
 		"scr_41": lambda: show_all_reports_in_settings(user_id, chat_id, message_id),
 		"scr_41_1": lambda: show_choose_report(callback_data, user_id, chat_id, message_id),
@@ -292,7 +292,7 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 		"scr_31": lambda: show_bad_habit_new_habit_created(text, user_id, chat_id, message_id, timestamp),
 		"scr_33_3": lambda: show_bad_habit_reminder_text_for_trigger(user_id, chat_id, message_id, text=text, timestamp=timestamp, message_info=message_info),
 		"scr_36": lambda: show_bad_habit_tracked_with_reminder(user_id, chat_id, message_id, timestamp, text=text),
-		"scr_37": lambda: switch_screen(replies['20'], chat_id, message_id, keyboard=get_button('scr_20')),
+		"scr_37": lambda: show_bad_habit_tracked_with_hardening(text, user_id, chat_id, message_id, timestamp),
 		"scr_38": lambda: show_one_time_habit_created(text, chat_id, message_id, user_id, timestamp, message_info),
 		"scr_40": lambda: switch_screen(replies['43'], chat_id, message_id, keyboard=get_button('scr_43')),
 		"scr_41_add_3": lambda: show_add_report(text, chat_id, message_id, user_id, timestamp, message_info),

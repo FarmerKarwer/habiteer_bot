@@ -762,6 +762,21 @@ def show_bad_habit_tracked_with_reminder(user_id, chat_id, message_id, timestamp
 		db.update_habit(habit_id, "avoid_trigger_notif_text", f"'{text}'")
 	switch_screen(replies['33_finished'], chat_id, message_id, keyboard=get_button('scr_20'))
 
+def show_hardening_bad_habit(user_id, chat_id, message_id):
+	habit_name = cache.get_updating_habit_info(user_id, "habit_name")
+	reply = replies['37'].replace('[habit]', habit_name)
+	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_37'))
+
+def show_bad_habit_tracked_with_hardening(text, user_id, chat_id, message_id, timestamp):
+	habit_id = cache.get_updating_habit_info(user_id, "habit_id")
+	db.update_habit(habit_id, "type", f"'harmful'")
+	db.update_habit(habit_id, "fighting_method", f"'harden habit'")
+	db.update_habit(habit_id, "habit_hardening_desc", f"'{text}'")
+	db.update_habit(habit_id, "last_updated", f"CAST('{timestamp}'AS Timestamp)")
+	db.update_habit(habit_id, "status", f"'tracked'")
+
+	switch_screen(replies['37_finished'], chat_id, message_id, keyboard=get_button('scr_20'))
+
 def show_one_time_habit_created(text, chat_id, message_id, user_id, timestamp, message_info):
 	reminder_date = text
 	try:
