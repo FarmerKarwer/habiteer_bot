@@ -791,6 +791,42 @@ def show_change_bad_habit_trigger_removed(text, user_id, chat_id, message_id, ti
 	reply = replies['3_1_bad_habit_remove_trigger_finished'].replace('[habit]', text)
 	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_3_7'))
 
+def show_change_bad_habit_reminder_text_for_trigger(user_id, chat_id, message_id, text, timestamp, message_info):
+	try:
+		parse_time_from_string(text)
+		notification_period = cache.get_updating_habit_info(user_id, "habit_reminder_time")
+		notification_period = weekdays_to_numbers(notification_period)
+		notification_time = text
+		habit_id = cache.get_updating_habit_info(user_id, "habit_id")
+		habit_name = cache.get_updating_habit_info(user_id, "habit_name")
+
+		db.update_habit(habit_id, "avoid_trigger_notif_period", f"'{notification_period}'")
+		db.update_habit(habit_id, "avoid_trigger_notif_time", f"'{notification_time}'")
+
+		reply = replies['3_1_bad_habit_avoid_trigger_reminder_text'].replace('[habit]', habit_name)
+		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_3_1_bad_habit_avoid_trigger_reminder_text'))
+		message_info["callback_data"]="scr_3_1_bad_habit_avoid_trigger_reminder_text"
+	except ValueError:
+		reply = "Неверно указано время.\nВремя должно быть указано в формате HH:MM. Например: 21:45.\n\nПопробуйте еще раз."
+		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_3_1_bad_habit_avoid_trigger_3'))
+		message_info["callback_data"]="scr_3_1_bad_habit_avoid_trigger_3"
+
+def show_change_bad_habit_trigger_avoided(user_id, chat_id, message_id, timestamp, text=None, notifications=True):
+	habit_id = cache.get_updating_habit_info(user_id, "habit_id")
+	db.update_habit(habit_id, "fighting_method", f"'avoid trigger'")
+	db.update_habit(habit_id, "last_updated", f"CAST('{timestamp}'AS Timestamp)")
+	if text:
+		db.update_habit(habit_id, "avoid_trigger_notif_text", f"'{text}'")
+
+	if notifications==False:
+		db.update_habit_with_null(habit_id, "avoid_trigger_notif_period")
+		db.update_habit_with_null(habit_id, "avoid_trigger_notif_time")
+		db.update_habit_with_null(habit_id, "avoid_trigger_notif_text")
+		reply = "Напоминания присылаться не будут\n\n" + replies['3_7']
+	else:
+		reply = replies['3_7']
+	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_3_7'))
+
 def show_change_bad_habit_harden_behavior(user_id, chat_id, message_id):
 	habit_name = cache.get_updating_habit_info(user_id, "habit_name")
 	reply = replies['3_1_bad_habit_harden_behavior'].replace('[habit]', habit_name)

@@ -997,7 +997,7 @@
         },
         {
           "text": "Нет",
-          "callback_data": "scr_3_1_bad_habit_avoid_trigger_finished"
+          "callback_data": "scr_3_1_bad_habit_avoid_trigger_finished_no_notif"
         }
       ],
       [
@@ -1123,7 +1123,7 @@
     ]
   },
 
-  "3_1_bad_habit_remove_trigger_finished":{
+  "scr_3_1_bad_habit_remove_trigger_finished":{
     "inline_keyboard":[
         [
           {
