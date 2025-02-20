@@ -777,6 +777,33 @@ def show_bad_habit_tracked_with_hardening(text, user_id, chat_id, message_id, ti
 
 	switch_screen(replies['37_finished'], chat_id, message_id, keyboard=get_button('scr_20'))
 
+def show_change_bad_habit_remove_trigger(user_id, chat_id, message_id):
+	habit_name = cache.get_updating_habit_info(user_id, "habit_name")
+	reply = replies['3_1_bad_habit_remove_trigger'].replace('[habit]', habit_name)
+	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_3_1_bad_habit_remove_trigger'))
+
+def show_change_bad_habit_trigger_removed(text, user_id, chat_id, message_id, timestamp):
+	habit_id = cache.get_updating_habit_info(user_id, "habit_id")
+	habit_name = cache.get_updating_habit_info(user_id, "habit_name")
+	db.add_habit(habit=text, creation_datetime=timestamp, user_id=user_id, aspiration=habit_name)
+	db.update_habit(habit_id, "fighting_method", f"'remove trigger'")
+	db.update_habit(habit_id, "last_updated", f"CAST('{timestamp}'AS Timestamp)")
+	reply = replies['3_1_bad_habit_remove_trigger_finished'].replace('[habit]', text)
+	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_3_7'))
+
+def show_change_bad_habit_harden_behavior(user_id, chat_id, message_id):
+	habit_name = cache.get_updating_habit_info(user_id, "habit_name")
+	reply = replies['3_1_bad_habit_harden_behavior'].replace('[habit]', habit_name)
+	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_3_1_bad_habit_harden_behavior'))
+
+def show_change_bad_habit_hardened(text, user_id, chat_id, message_id, timestamp):
+	habit_id = cache.get_updating_habit_info(user_id, "habit_id")
+	db.update_habit(habit_id, "fighting_method", f"'harden habit'")
+	db.update_habit(habit_id, "habit_hardening_desc", f"'{text}'")
+	db.update_habit(habit_id, "last_updated", f"CAST('{timestamp}'AS Timestamp)")
+	
+	switch_screen(replies['3_1_bad_habit_harden_behavior_finished'], chat_id, message_id, keyboard=get_button('scr_3_7'))
+
 def show_one_time_habit_created(text, chat_id, message_id, user_id, timestamp, message_info):
 	reminder_date = text
 	try:

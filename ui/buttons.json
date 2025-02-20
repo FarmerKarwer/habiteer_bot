@@ -633,6 +633,12 @@
       ],
       [
         {
+          "text": "Изменить способ борьбы",
+          "callback_data": "scr_3_1_bad_habit_fighting_method"
+        }
+      ],
+      [
+        {
           "text": "Изменить название",
           "callback_data": "scr_19"
         }
@@ -751,6 +757,12 @@
         {
           "text": "Сбросить последнее выполнение ↩️",
           "callback_data": "scr_3_2_bad_habit_proxy_reset"
+        }
+      ],
+      [
+        {
+          "text": "Изменить способ борьбы",
+          "callback_data": "scr_3_1_bad_habit_fighting_method"
         }
       ],
       [
@@ -913,6 +925,229 @@
         {
           "text": "К списку привычек",
           "callback_data": "scr_3"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+
+  "scr_3_1_bad_habit_fighting_method":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Убрать триггер",
+          "callback_data": "scr_3_1_bad_habit_remove_trigger"
+        }
+      ],
+      [
+        {
+          "text": "Избегать или игнорировать триггер",
+          "callback_data": "scr_3_1_bad_habit_avoid_trigger"
+        }
+      ],
+      [
+        {
+          "text": "Усложнить вредную привычку",
+          "callback_data": "scr_3_1_bad_habit_harden_behavior"
+        }
+      ],
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_3_1"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+
+  "scr_3_1_bad_habit_remove_trigger":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_3_1_bad_habit_fighting_method"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+
+  "scr_3_1_bad_habit_avoid_trigger":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Да",
+          "callback_data": "scr_3_1_bad_habit_avoid_trigger_1"
+        },
+        {
+          "text": "Нет",
+          "callback_data": "scr_3_1_bad_habit_avoid_trigger_finished"
+        }
+      ],
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_3_1_bad_habit_fighting_method"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_3_1_bad_habit_avoid_trigger_1":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Каждый день",
+          "callback_data": "scr_3_1_bad_habit_avoid_trigger_3"
+        }
+      ],
+      [
+        {
+          "text": "Выбрать дни недели >>",
+          "callback_data": "scr_3_1_bad_habit_avoid_trigger_2"
+        }
+      ],
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_3_1_bad_habit_avoid_trigger"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_3_1_bad_habit_avoid_trigger_2":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Пн",
+          "callback_data": "mon"
+        },
+        {
+          "text": "Вт",
+          "callback_data": "tue"
+        },
+        {
+          "text": "Ср",
+          "callback_data": "wed"
+        },
+        {
+          "text": "Чт",
+          "callback_data": "thu"
+        }
+      ],
+      [
+        {
+          "text": "Пт",
+          "callback_data": "fri"
+        },
+        {
+          "text": "Сб",
+          "callback_data": "sat"
+        },
+        {
+          "text": "Вс",
+          "callback_data": "sun"
+        }
+      ],
+      [
+        {
+          "text": "Подтвердить",
+          "callback_data": "scr_3_1_bad_habit_avoid_trigger_3"
+        }
+      ],
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_3_1_bad_habit_avoid_trigger_1"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_3_1_bad_habit_avoid_trigger_3":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_3_1_bad_habit_avoid_trigger_1"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_3_1_bad_habit_avoid_trigger_reminder_text":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Пропустить",
+          "callback_data": "scr_3_1_bad_habit_avoid_trigger_finished"
+        }
+      ]
+    ]
+  },
+
+  "3_1_bad_habit_remove_trigger_finished":{
+    "inline_keyboard":[
+        [
+          {
+            "text":"Вернуться к привычке",
+            "callback_data":"scr_3_1"
+          }
+      ],
+
+        [
+          {
+            "text":"В главное меню",
+            "callback_data":"scr_1"
+          }
+      ]
+        
+    ]
+  },
+
+  "scr_3_1_bad_habit_harden_behavior":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_3_1_bad_habit_fighting_method"
         }
       ],
       [
@@ -3242,7 +3477,7 @@
       ]
     ]
   },
-  
+
   "scr_41":{
     "inline_keyboard": [
       [
