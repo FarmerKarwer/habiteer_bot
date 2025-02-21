@@ -1,8 +1,8 @@
 # Constants for file paths
-REPLIES_FILEPATH = "./ui/replies.json"
-BUTTONS_FILEPATH = "./ui/buttons.json"
-PREMADE_HABITS_FILEPATH = "./ui/premade_habits.json"
-PREMADE_TRIGGERS_FILEPATH = "./ui/triggers.json"
+REPLIES_FILEPATH = "src/ui/replies.json"
+BUTTONS_FILEPATH = "src/ui/buttons.json"
+PREMADE_HABITS_FILEPATH = "src/ui/premade_habits.json"
+PREMADE_TRIGGERS_FILEPATH = "src/ui/triggers.json"
 
 TIMEZONE_DICT ={
     "utc-12": "Международная линия перемены дат",
