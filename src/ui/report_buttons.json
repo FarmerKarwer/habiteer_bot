@@ -1,0 +1,30 @@
+{
+	"scr_report": {
+    "inline_keyboard": [
+      [
+        {
+          "text": "✅ Да",
+          "callback_data": "scr_report_done"
+        },
+        {
+          "text": "❌ Нет",
+          "callback_data": "scr_report_skipped"
+        }
+      ]
+    ]
+  },
+  "scr_srbai_report": {
+    "inline_keyboard": [
+      [
+        {
+          "text": "✅ Да",
+          "callback_data": "scr_srbai_report_1"
+        },
+        {
+          "text": "❌ Нет",
+          "callback_data": "scr_srbai_no"
+        }
+      ]
+    ]
+  }
+}
