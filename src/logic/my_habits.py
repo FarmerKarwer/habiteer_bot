@@ -479,10 +479,14 @@ def show_pick_report_for_habit(user_id, chat_id, message_id, callback_data=None,
 	reply = main_message+additional_message
 	if habit_status not in ("tracked", "marked", "stopped"):
 		keyboard = add_report_buttons('scr_29', user_id)
+		if keyboard is None:
+			keyboard = get_button('scr_29')
 	else:
 		report_name = cache.get_updating_habit_info(user_id, "report_name")
 		reply = f"*Текущий отчет*: _{report_name}_\n\n"+reply
 		keyboard = add_report_buttons('scr_3_4', user_id)
+		if keyboard is None:
+			keyboard = get_button('scr_3_4')
 	switch_screen(reply, chat_id, message_id, keyboard=keyboard)
 
 def show_habit_is_tracked(user_id, chat_id, message_id, callback_data=None, text=None, timestamp=None, message_info=None):

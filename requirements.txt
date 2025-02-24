@@ -2,3 +2,5 @@ boto3
 ydb
 pytest
 python-dotenv
+
+tzdata

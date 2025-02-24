@@ -39,6 +39,11 @@ class DatabaseClient:
 		query = f"SELECT * FROM users WHERE id={user_id}"
 		result = self.execute_query(query)[0].rows
 		return result
+	
+	def get_user_property(self, user_id, property_name):
+		query = f"SELECT {property_name} FROM users WHERE id={user_id}"
+		result = self.execute_query(query)[0].rows
+		return result[0][property_name]
 
 	def add_user(self, user_id, username, first_name, last_name, language, created_at):
 		query = f"""
@@ -166,6 +171,13 @@ class DatabaseClient:
 		DELETE FROM users WHERE id={user_id}
 		"""
 		self.execute_query(query)
+
+	def view_all_reports(self):
+		query = f"""
+		SELECT * FROM user_reports
+		"""
+		result = self.execute_query(query)[0].rows
+		return result
 
 	def view_reports(self, user_id):
 		query = f"""
