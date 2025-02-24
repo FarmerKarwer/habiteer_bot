@@ -157,6 +157,17 @@ def handle_callback_query(message):
 		"scr_report": lambda: show_report_to_do(user_id, chat_id, message_id),
 		"scr_report_done": lambda: show_report_done(user_id, chat_id, message_id, timestamp),
 		"scr_report_skipped": lambda: show_report_skipped(user_id, chat_id, message_id, timestamp),
+		"scr_report_simply_forgot": lambda: show_report_repetition(user_id, chat_id, message_id),
+		"scr_report_keep_forgetting": lambda: show_report_change_trigger(user_id, chat_id, message_id),
+		"scr_report_keep_forgetting_1": lambda: show_report_forgetting_repetition(user_id, chat_id, message_id),
+		"scr_report_keep_skipping_notif_trigger": lambda: show_report_enter_trigger(user_id, chat_id, message_id),
+		"scr_report_too_hard": lambda: show_report_too_hard(user_id, chat_id, message_id),
+		"scr_report_dont_want": lambda: show_report_delete_habit_confirmation(user_id, chat_id, message_id),
+		"scr_report_dont_want_yes": lambda: show_report_habit_deleted(user_id, chat_id, message_id),
+		"scr_report_dont_want_no": lambda: show_report_habit_not_deleted(user_id, chat_id, message_id),
+		"scr_report_skipped_notif_finish": lambda: show_report_skipped_finish(user_id, chat_id, message_id),
+		"scr_report_skipped_finish_refused": lambda: show_report_skipped_finish_refused(user_id, chat_id, message_id),
+		"scr_report_skipped_finish": lambda: show_report_skipped_finish(user_id, chat_id, message_id),
 
 		"scr_0_2": lambda: show_onboarding_secret(user_id, chat_id, message_id),
 		"scr_0_41": lambda: edit_message_reply_markup(chat_id, message_id, json.loads(get_button('scr_0_41'))),
@@ -303,6 +314,10 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 	previous_screen = cache.get_previous_message(user_id)['callback_data']
 
 	SPECIAL_INPUT_HANDLERS = {
+		"scr_report_keep_forgetting": lambda: show_report_forgetting_repetition(user_id, chat_id, message_id),
+		"scr_report_keep_skipping_notif_trigger": lambda: show_report_forgetting_repetition(user_id, chat_id, message_id),
+		"scr_report_too_hard": lambda: show_report_skipped_finish(user_id, chat_id, message_id),
+
 		"scr_0_timezone_1": lambda: show_onboarding_habit(user_id, chat_id, message_id, callback_data=None, text=text, message_info=message_info),
 		"scr_0_5_add_3": lambda: show_onboarding_report_added(user_id, chat_id, message_id, text, timestamp, message_info),
 		"scr_2": lambda: show_adding_habit(text, user_id, chat_id, message_id, timestamp),

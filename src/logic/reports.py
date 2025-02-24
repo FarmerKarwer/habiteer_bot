@@ -59,9 +59,70 @@ def show_report_done(user_id, chat_id, message_id, timestamp):
 		
 	reply = reply.replace('[habit]', habit_name)
 	reply = reply.replace('[days]', days_string)
-	switch_screen(reply, chat_id, message_id, keyboard=keyboard)
-		
-    
+	switch_screen(reply, chat_id, message_id, keyboard=keyboard)		   
 
 def show_report_skipped(user_id, chat_id, message_id, timestamp):
-    pass
+    """
+	Show different buttons depending on the type of trigger (behavior/notification),
+	as well as on how many consecutive times the habit was skipped.
+	"""
+
+def show_report_repetition(user_id, chat_id, message_id):
+	"""
+	Show repetition screen with habit name and trigger description.
+	"""
+
+def show_report_change_trigger(user_id, chat_id, message_id):
+	"""
+	Show enter trigger screen with habit name.
+	"""
+
+def show_report_forgetting_repetition(user_id, chat_id, message_id):
+	"""
+	Show another repetition screen with habit name and trigger description.
+	"""
+
+def show_report_enter_trigger(user_id, chat_id, message_id):
+	"""
+	Show enter trigger screen with habit name.
+	"""
+
+def show_report_too_hard(user_id, chat_id, message_id):
+	"""
+	Show harden habit screen with habit name.
+	"""
+
+def show_report_delete_habit_confirmation(user_id, chat_id, message_id):
+	"""
+	Show deletion confirmation screen with habit name.
+	"""
+
+def show_report_habit_deleted(user_id, chat_id, message_id):
+	"""
+	Show habit deleted screen with habit name.
+	"""
+
+def show_report_habit_not_deleted(user_id, chat_id, message_id):
+	"""
+	Show habit not deleted screen with habit name.
+	"""
+
+def show_report_skipped_finish(user_id, chat_id, message_id):
+	"""
+	Show report is completed with buttons, depending on current habit index.
+	If there are multiple habits to evaluate, increment the index by 1.
+	"""
+
+def show_report_skipped_finish_refused(user_id, chat_id, message_id):
+	"""
+	Show report is completed (even though a user did not repeat a habit) with buttons, depending on current habit index.
+	If there are multiple habits to evaluate, increment the index by 1.
+	"""
+
+def show_report_skipped_notif_finish(user_id, chat_id, message_id):
+	"""
+	Show report is completed with buttons, depending on current habit index.
+	If there are multiple habits to evaluate, increment the index by 1.
+
+	This screen will be shown if a user skipped notification no more than 2 consecutive times.
+	"""

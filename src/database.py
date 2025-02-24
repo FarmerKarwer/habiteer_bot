@@ -223,12 +223,19 @@ class DatabaseClient:
 		result = self.execute_query(query)[0].rows
 		return result
 
-	def get_user_habits_linked_to_report(self, report_id):
+	def get_user_habits_linked_to_report(self, report_id, valid=True):
 		query = f"""
 		SELECT h.id
 		FROM habits h
 		JOIN user_reports ur ON h.report_id = ur.id
 		WHERE ur.id = {report_id};
+		"""
+		if valid:
+			query = f"""
+		SELECT h.id
+		FROM habits h
+		JOIN user_reports ur ON h.report_id = ur.id
+		WHERE ur.id = {report_id} AND status NOT IN ('stopped', 'finished');
 		"""
 		result = self.execute_query(query)[0].rows
 		return result
