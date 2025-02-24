@@ -154,6 +154,10 @@ def handle_callback_query(message):
 		)
 
 	SPECIAL_CALLBACK_HANDLERS = {
+		"scr_report": lambda: show_report_to_do(user_id, chat_id, message_id),
+		"scr_report_done": lambda: show_report_done(user_id, chat_id, message_id, timestamp),
+		"scr_report_skipped": lambda: show_report_skipped(user_id, chat_id, message_id, timestamp),
+
 		"scr_0_2": lambda: show_onboarding_secret(user_id, chat_id, message_id),
 		"scr_0_41": lambda: edit_message_reply_markup(chat_id, message_id, json.loads(get_button('scr_0_41'))),
 		"scr_0_4_back": lambda: edit_message_reply_markup(chat_id, message_id, json.loads(get_button('scr_0_4'))),

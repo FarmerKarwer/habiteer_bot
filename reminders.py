@@ -50,38 +50,47 @@ def get_user_time_now(user_id):
 		user_timezone = ZoneInfo(tz_name)
 	return datetime.datetime.now(user_timezone)
 
+def is_time_to_send(report):
+	report_weekday = json.loads(report["on_weekdays"])
+	report_time = report["on_time"]
+	
+	user_now = get_user_time_now(report["user_id"])
+	user_weekday_number = user_now.weekday() + 1
+	user_time_hhmm = user_now.strftime("%H:%M")
+
+	is_time_to_send = (user_time_hhmm == report_time) and (user_weekday_number in report_weekday)
+	return is_time_to_send
+
 
 def send_daily_report():
 	reports = db.view_all_reports()
 	for report in reports:
-		report_weekday = json.loads(report["on_weekdays"])
-		report_time = report["on_time"]
-		
-		user_now = get_user_time_now(report["user_id"])
-		user_weekday_number = user_now.weekday() + 1
-		user_time_hhmm = user_now.strftime("%H:%M")
-
-		is_time_to_send = (user_time_hhmm == report_time) and (user_weekday_number in report_weekday)
-		is_time_to_send = True # get rid of this line in production
-
-		if is_time_to_send:
+		if is_time_to_send(report)==False: # Change to True in production
 			tied_habits = db.get_user_habits_linked_to_report(report["id"])
 			if len(tied_habits)==0:
 				continue
 			elif len(tied_habits)==1:
 				habit_id = tied_habits[0]["h.id"]
 				habit_info = db.get_habit_by_id(habit_id)[0]
+				cache.save_daily_report_info(report["user_id"], one_habit=True, data=habit_info)
+
 				chat_id = report["user_id"]
 				reply = get_reply('report').replace('[habit]', habit_info["name"])
 				keyboard = get_button('scr_report')
-				continue
 				send_text_message(reply, chat_id, keyboard=keyboard)
 			else:
-				habit_id = tied_habits[0]["id"]
+				habits_info = []
+				for habit in tied_habits:
+					habit_id = habit["h.id"]
+					habit_info = db.get_habit_by_id(habit_id)[0]
+					habits_info.append(habit_info)
+				cache.save_daily_report_info(report["user_id"], one_habit=False, data=habits_info)
+
+				habit_id = tied_habits[0]["h.id"]
+				habit_info = db.get_habit_by_id(habit_id)[0]
 				chat_id = report["user_id"]
-				reply = get_reply('report').replace('[habit]', db.get_habit_name(habit_id))
+				reply = get_reply('report').replace('[habit]', habit_info["name"])
 				keyboard = get_button('scr_report')
-				continue
 				send_text_message(reply, chat_id, keyboard=keyboard)
 
 def send_srbai_report():

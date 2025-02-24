@@ -22,6 +22,8 @@ class CacheManager:
         self.creating_report_table = self.connection.Table('Cache/creating_report')
         self.updating_habit_table = self.connection.Table('Cache/updating_habit')
 
+        self.report_table = self.connection.Table('Cache/passing_report')
+
     def save_previous_message(self, data):
         self.message_history_table.put_item(Item=data)
 
@@ -220,7 +222,38 @@ class CacheManager:
         for table in user_tables:
             table.delete_item(Key={'user_id': user_id})
 
+    def save_daily_report_info(self, user_id, one_habit, data):
+        item = {'user_id': user_id, 'one_habit':int(one_habit), 'data': json.dumps(data), 'current_habit_idx':0}
+        self.report_table.put_item(Item=item)
+
+    def is_daily_report_one_habit(self, user_id):
+        response = self.report_table.get_item(Key={'user_id': user_id}).get('Item')
+        return bool(response.get('one_habit'))
+    
+    def get_current_habit_idx(self, user_id):
+        response = self.report_table.get_item(Key={'user_id': user_id}).get('Item')
+        return int(response.get('current_habit_idx'))
+
+    def get_daily_report_info(self, user_id, habit_idx=None):
+        response = self.report_table.get_item(Key={'user_id': user_id}).get('Item')
+        if response is None:
+            return response
+        if habit_idx is None:
+            return json.loads(response.get('data'))
+        return json.loads(response.get('data'))[habit_idx]
+    
+    def set_current_habit_idx(self, user_id, idx):
+        try:
+            self.report_table.update_item(
+                Key={'user_id': user_id},
+                UpdateExpression="SET current_habit_idx = :idx",
+                ExpressionAttributeValues={':idx': idx}
+            )
+            print(f"Updated current_habit_idx for user_id: {user_id} to {idx}")
+        except Exception as e:
+            print(f"Error updating current_habit_idx for user_id {user_id}: {e}")
+
 if __name__ == "__main__":
     cache = CacheManager()
-    res = cache.get_picking_habit_info(940985788)
+    res = cache.get_daily_report_info(940985788, cache.get_current_habit_idx(940985788))
     print(res)
