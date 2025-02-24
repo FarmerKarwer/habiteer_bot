@@ -1,4 +1,5 @@
 import json
+import random
 import re
 
 from logic import *
@@ -10,13 +11,14 @@ from common import (
 	unix_to_timestamp
 	)
 from tg_methods import edit_message_reply_markup, delete_message
-from config import REPLIES_FILEPATH
+from config import REPLIES_FILEPATH, REPORT_REPLIES_FILEPATH, REPORT_BUTTONS_FILEPATH
 
 # Load cache manager
 cache = CacheManager()
 
 # Load JSON data
 replies = load_json(REPLIES_FILEPATH)
+report_replies = load_json(REPORT_REPLIES_FILEPATH)
 
 # Sets of buttons
 callback_weekdays = ("mon", "tue", "wed", "thu", "fri", "sat", "sun")
@@ -52,9 +54,12 @@ def use_logic(message):
 
 def handle_callback_query(message):
 
-	def handle_default_callback(callback_data):
+	def handle_default_callback(callback_data, mode="general"):
 		screen_id = '_'.join(callback_data.split('_')[1:])
-		show_callback_reply(screen_id)
+		if mode=="general":
+			show_callback_reply(screen_id)
+		elif mode=="report":
+			show_callback_reply_report(screen_id)
 
 	def handle_special_callback(special_handlers_dict, transition):
 		action = special_handlers_dict.get(transition)
@@ -80,6 +85,11 @@ def handle_callback_query(message):
 	def show_callback_reply(screen_id, delete_previous=True):
 		switch_screen(replies[screen_id], chat_id, message_id, delete_previous=delete_previous,
 						keyboard=get_button(f'scr_{screen_id}'))
+
+	def show_callback_reply_report(screen_id, delete_previous=True):
+		reply = random.choice(report_replies[screen_id])
+		switch_screen(reply, chat_id, message_id, delete_previous=delete_previous,
+						keyboard=get_button(f'scr_{screen_id}', buttons_filepath=REPORT_BUTTONS_FILEPATH))
 
 	def choose_weekdays_and_time(scr_freq, scr_weekdays, scr_time, type):
 		if type=="report":
@@ -135,6 +145,12 @@ def handle_callback_query(message):
 		"scr_review", "scr_25", "scr_26", "scr_26_1", "scr_28", 
 		"scr_29_add_1", "scr_32", "scr_33", "scr_33_1", "scr_38", "scr_39",
 		"scr_40_1", "scr_41_add_1", "scr_41_1_conf_deletion", "scr_41_1_change_1", "scr_plug"
+		)
+
+	DEFAULT_CALLBACK_SCREENS_REPORTS = (
+		"scr_report_skipped", "scr_report_skipped_2_cons_times", "scr_report_skipped_notif",
+		"scr_report_keep_skipping_notif", "scr_report_skipped_finish", "scr_report_skipped_notif_finish",
+		"scr_report_skipped_finish_refused", "scr_srbai_no", "scr_srbai_low_no"
 		)
 
 	SPECIAL_CALLBACK_HANDLERS = {
@@ -254,6 +270,9 @@ def handle_callback_query(message):
 
 	elif callback_data in DEFAULT_CALLBACK_SCREENS:
 		handle_default_callback(callback_data)
+
+	elif callback_data in DEFAULT_CALLBACK_SCREENS_REPORTS:
+		handle_default_callback(callback_data, mode="report")
 
 	elif is_callback_in_screens_weekdays_and_time_report:
 		handle_weekdays_and_time_choice(callback_data, callback_screens_weekdays_and_time)
