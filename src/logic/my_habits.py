@@ -140,8 +140,8 @@ def show_habit_info(text, user_id, chat_id, message_id, message_info, timestamp)
 				max_streak = habits[habit_idx].get("max_streak_days", None)
 			else:
 				logs = db.get_habit_logs_for_habit(habit_id, status="completed")
-				creation_datetime = habits[habit_idx].get("creation_datetime", None)
-				current_streak, max_streak = calculate_streak_for_bad_habit(logs, timestamp, creation_datetime).values()
+				started_tracking_at = db.get_habit_logs_for_habit(habit_id, status="started")[0].get("timestamp")
+				current_streak, max_streak = calculate_streak_for_bad_habit(logs, timestamp, started_tracking_at).values()
 				db.update_habit(habit_id, "current_streak_days", f"{current_streak}")
 				db.update_habit(habit_id, "max_streak_days", f"{max_streak}")
 				keyboard = get_button('scr_3_1_bad_habit')
@@ -610,10 +610,12 @@ def show_reset_habit_completion(user_id, chat_id, message_id, timestamp):
 
 def show_reset_bad_habit_completion(user_id, chat_id, message_id, timestamp):
 	habit_id = cache.get_updating_habit_info(user_id, "habit_id")
-	creation_datetime = db.get_habit_by_id(habit_id)[0].get("creation_datetime", None)
+	started_tracking_at = db.get_habit_logs_for_habit(habit_id, status="started")[0].get("timestamp")
 	db.remove_last_habit_log(habit_id)
 	logs = db.get_habit_logs_for_habit(habit_id, status="completed")
-	current_streak, max_streak = calculate_streak_for_bad_habit(logs, timestamp, creation_datetime).values()
+	current_streak, max_streak = calculate_streak_for_bad_habit(logs, timestamp, started_tracking_at).values()
+	db.update_habit(habit_id, "current_streak_days", f"{current_streak}")
+	db.update_habit(habit_id, "max_streak_days", f"{max_streak}")
 	switch_screen(replies['3_2_bad_habit_reset'], chat_id, message_id, keyboard=get_button('scr_3_2_bad_habit_reset'))
 
 def show_finish_tracking_habit(user_id, chat_id, message_id, timestamp):
@@ -733,8 +735,8 @@ def show_bad_habit_done(user_id, chat_id, message_id, timestamp):
 	habit_id = cache.get_updating_habit_info(user_id, "habit_id")
 	db.add_habit_log(user_id, habit_id, "completed", timestamp)
 	logs = db.get_habit_logs_for_habit(habit_id, status="completed")
-	creation_datetime = db.get_habit_by_id(habit_id)[0].get('creation_datetime')
-	current_streak, max_streak = calculate_streak_for_bad_habit(logs, timestamp, creation_datetime).values()
+	started_tracking_at = db.get_habit_logs_for_habit(habit_id, status="started")[0].get("timestamp")
+	current_streak, max_streak = calculate_streak_for_bad_habit(logs, timestamp, started_tracking_at).values()
 	
 	db.update_habit(habit_id, "current_streak_days", f"{current_streak}")
 	db.update_habit(habit_id, "max_streak_days", f"{max_streak}")

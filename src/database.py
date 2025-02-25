@@ -129,12 +129,12 @@ class DatabaseClient:
 
 	def get_habit_logs_for_habit(self, habit_id, status=None):
 		query = f"""
-		SELECT date 
+		SELECT date, timestamp 
 		FROM habit_logs WHERE habit_id={habit_id} 
 		"""
 		if status:
 			query = f"""
-			SELECT date 
+			SELECT date, timestamp
 			FROM habit_logs WHERE habit_id={habit_id} AND status='{status}'
 			"""
 		result = self.execute_query(query)[0].rows
