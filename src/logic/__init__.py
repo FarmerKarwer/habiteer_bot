@@ -94,6 +94,17 @@ from .reports import (
     show_report_to_do,
 	show_report_done,
 	show_report_skipped,
+    show_report_repetition,
+    show_report_change_trigger,
+    show_report_forgetting_repetition,
+    show_report_enter_trigger,
+    show_report_too_hard,
+    show_report_delete_habit_confirmation,
+    show_report_habit_deleted,
+    show_report_habit_not_deleted,
+    show_report_skipped_finish,
+    show_report_skipped_finish_refused,
+    show_report_skipped_notif_finish
 	)
 
 __all__ = [
@@ -185,5 +196,16 @@ __all__ = [
 
 "show_report_to_do",
 "show_report_done",
-"show_report_skipped"
+"show_report_skipped",
+"show_report_repetition",
+"show_report_change_trigger",
+"show_report_forgetting_repetition",
+"show_report_enter_trigger",
+"show_report_too_hard",
+"show_report_delete_habit_confirmation",
+"show_report_habit_deleted",
+"show_report_habit_not_deleted",
+"show_report_skipped_finish",
+"show_report_skipped_finish_refused",
+"show_report_skipped_notif_finish"
 ]

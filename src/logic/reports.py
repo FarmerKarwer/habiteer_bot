@@ -104,53 +104,128 @@ def show_report_repetition(user_id, chat_id, message_id):
 	"""
 	Show repetition screen with habit name and trigger description.
 	"""
+	habit_idx = cache.get_current_habit_idx(user_id)
+	habit_name = cache.get_daily_report_info(user_id, habit_idx).get("name", None)
+	trigger_description = cache.get_daily_report_info(user_id, habit_idx).get("trigger_action_desc", None)
+	reply = get_reply("report_simply_forgot").replace('[habit]', habit_name)
+	reply = reply.replace('[trigger]', trigger_description)
+
+	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_report_simply_forgot', REPORT_BUTTONS_FILEPATH))
 
 def show_report_change_trigger(user_id, chat_id, message_id):
 	"""
 	Show enter trigger screen with habit name.
 	"""
+	habit_idx = cache.get_current_habit_idx(user_id)
+	habit_name = cache.get_daily_report_info(user_id, habit_idx).get("name", None)
+	reply = get_reply("report_keep_forgetting").replace('[habit]', habit_name)
 
-def show_report_forgetting_repetition(user_id, chat_id, message_id):
+	switch_screen(reply, chat_id, message_id, keyboard=None)
+
+def show_report_forgetting_repetition(user_id, chat_id, message_id, text):
 	"""
-	Show another repetition screen with habit name and trigger description.
+	Show another repetition screen with habit name and trigger description. 
+	Update habit with new trigger_description.
 	"""
+	habit_idx = cache.get_current_habit_idx(user_id)
+	habit_id = cache.get_daily_report_info(user_id, habit_idx).get("id", None)
+	habit_name = cache.get_daily_report_info(user_id, habit_idx).get("name", None)
+	trigger_description = text
+	db.update_habit(habit_id, "trigger_action_desc", f"'{trigger_description}'")
+	reply = get_reply("report_keep_forgetting_1").replace('[habit]', habit_name)
+	reply = reply.replace('[trigger]', trigger_description)
+
+	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_report_keep_forgetting_1', REPORT_BUTTONS_FILEPATH))
 
 def show_report_enter_trigger(user_id, chat_id, message_id):
 	"""
 	Show enter trigger screen with habit name.
 	"""
+	habit_idx = cache.get_current_habit_idx(user_id)
+	habit_name = cache.get_daily_report_info(user_id, habit_idx).get("name", None)
+
+	reply = get_reply("report_keep_skipping_notif_trigger").replace('[habit]', habit_name)
+	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_report_keep_skipping_notif_trigger', REPORT_BUTTONS_FILEPATH))
 
 def show_report_too_hard(user_id, chat_id, message_id):
 	"""
 	Show harden habit screen with habit name.
 	"""
+	habit_idx = cache.get_current_habit_idx(user_id)
+	habit_name = cache.get_daily_report_info(user_id, habit_idx).get("name", None)
+
+	reply = get_reply("report_too_hard").replace('[habit]', habit_name)
+	switch_screen(reply, chat_id, message_id, keyboard=None)
 
 def show_report_delete_habit_confirmation(user_id, chat_id, message_id):
 	"""
 	Show deletion confirmation screen with habit name.
 	"""
+	habit_idx = cache.get_current_habit_idx(user_id)
+	habit_name = cache.get_daily_report_info(user_id, habit_idx).get("name", None)
+
+	reply = get_reply("report_dont_want").replace('[habit]', habit_name)
+	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_report_dont_want', REPORT_BUTTONS_FILEPATH))
 
 def show_report_habit_deleted(user_id, chat_id, message_id):
 	"""
 	Show habit deleted screen with habit name.
 	"""
+	habit_idx = cache.get_current_habit_idx(user_id)
+	habit_id = cache.get_daily_report_info(user_id, habit_idx).get("id", None)
+	habit_name = cache.get_daily_report_info(user_id, habit_idx).get("name", None)
+
+	reply = get_reply("report_dont_want_yes").replace('[habit]', habit_name)
+	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_report_dont_want_yes', REPORT_BUTTONS_FILEPATH))
+
+	db.delete_habit(habit_id)
 
 def show_report_habit_not_deleted(user_id, chat_id, message_id):
 	"""
 	Show habit not deleted screen with habit name.
 	"""
+	habit_idx = cache.get_current_habit_idx(user_id)
+	habit_name = cache.get_daily_report_info(user_id, habit_idx).get("name", None)
 
-def show_report_skipped_finish(user_id, chat_id, message_id):
+	reply = get_reply("report_dont_want_no").replace('[habit]', habit_name)
+	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_report_dont_want_no', REPORT_BUTTONS_FILEPATH))
+
+def show_report_skipped_finish(user_id, chat_id, message_id, text=None):
 	"""
 	Show report is completed with buttons, depending on current habit index.
 	If there are multiple habits to evaluate, increment the index by 1.
 	"""
+	habit_idx = cache.get_current_habit_idx(user_id)
+	habit_id = cache.get_daily_report_info(user_id, habit_idx).get("id", None)
+	if text:
+		db.update_habit(habit_id, "name", f"'{text}'")
+
+	if cache.is_daily_report_one_habit(user_id) or len(cache.get_daily_report_info(user_id))-(habit_idx+1)==0:
+		reply = get_reply("report_skipped_finish")
+		keyboard = get_button("scr_report_skipped_finish", REPORT_BUTTONS_FILEPATH)
+	else:
+		reply = get_reply("report_skipped_to_next")
+		keyboard = get_button("scr_report_skipped_to_next", REPORT_BUTTONS_FILEPATH)
+		cache.set_current_habit_idx(user_id, habit_idx+1)
+	
+	switch_screen(reply, chat_id, message_id, keyboard=keyboard)
 
 def show_report_skipped_finish_refused(user_id, chat_id, message_id):
 	"""
 	Show report is completed (even though a user did not repeat a habit) with buttons, depending on current habit index.
 	If there are multiple habits to evaluate, increment the index by 1.
+	If a user entered before a simple version of a habit, save it.
 	"""
+	habit_idx = cache.get_current_habit_idx(user_id)
+	habit_id = cache.get_daily_report_info(user_id, habit_idx).get("id", None)
+
+	if cache.is_daily_report_one_habit(user_id) or len(cache.get_daily_report_info(user_id))-(habit_idx+1)==0:
+		keyboard = get_button("scr_report_skipped_finish_refused", REPORT_BUTTONS_FILEPATH)
+	else:
+		keyboard = get_button("scr_report_skipped_finish_refused_to_next", REPORT_BUTTONS_FILEPATH)
+		cache.set_current_habit_idx(user_id, habit_idx+1)
+	reply = get_reply("report_skipped_finish_refused")
+	switch_screen(reply, chat_id, message_id, keyboard=keyboard)
 
 def show_report_skipped_notif_finish(user_id, chat_id, message_id):
 	"""
@@ -159,3 +234,14 @@ def show_report_skipped_notif_finish(user_id, chat_id, message_id):
 
 	This screen will be shown if a user skipped notification no more than 2 consecutive times.
 	"""
+	habit_idx = cache.get_current_habit_idx(user_id)
+	habit_id = cache.get_daily_report_info(user_id, habit_idx).get("id", None)
+
+	if cache.is_daily_report_one_habit(user_id) or len(cache.get_daily_report_info(user_id))-(habit_idx+1)==0:
+		keyboard = get_button("scr_report_skipped_notif_finish", REPORT_BUTTONS_FILEPATH)
+	else:
+		keyboard = get_button("scr_report_skipped_notif_finish_to_next", REPORT_BUTTONS_FILEPATH)
+		cache.set_current_habit_idx(user_id, habit_idx+1)
+
+	reply = get_reply("report_skipped_notif_finish")
+	switch_screen(reply, chat_id, message_id, keyboard=keyboard)

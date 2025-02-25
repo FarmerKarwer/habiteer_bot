@@ -169,7 +169,7 @@
       [
         {
           "text": "Изменить триггер",
-          "callback_data": "report_keep_skipping_notif_trigger"
+          "callback_data": "scr_report_keep_skipping_notif_trigger"
         }
       ]
     ]
@@ -273,12 +273,34 @@
     ]
   },
 
+  "scr_report_skipped_finish_refused_to_next": {
+    "inline_keyboard": [
+      [
+        {
+          "text": "К следующей привычке>>",
+          "callback_data": "scr_report"
+        }
+      ]
+    ]
+  },
+
   "scr_report_skipped_notif_finish": {
     "inline_keyboard": [
       [
         {
           "text": "👌Хорошо!",
           "callback_data": "no_scr"
+        }
+      ]
+    ]
+  },
+
+  "scr_report_skipped_notif_finish_to_next": {
+    "inline_keyboard": [
+      [
+        {
+          "text": "К следующей привычке>>",
+          "callback_data": "scr_report"
         }
       ]
     ]

@@ -159,7 +159,6 @@ def handle_callback_query(message):
 		"scr_report_skipped": lambda: show_report_skipped(user_id, chat_id, message_id, timestamp),
 		"scr_report_simply_forgot": lambda: show_report_repetition(user_id, chat_id, message_id),
 		"scr_report_keep_forgetting": lambda: show_report_change_trigger(user_id, chat_id, message_id),
-		"scr_report_keep_forgetting_1": lambda: show_report_forgetting_repetition(user_id, chat_id, message_id),
 		"scr_report_keep_skipping_notif_trigger": lambda: show_report_enter_trigger(user_id, chat_id, message_id),
 		"scr_report_too_hard": lambda: show_report_too_hard(user_id, chat_id, message_id),
 		"scr_report_dont_want": lambda: show_report_delete_habit_confirmation(user_id, chat_id, message_id),
@@ -313,9 +312,9 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 	previous_screen = cache.get_previous_message(user_id)['callback_data']
 
 	SPECIAL_INPUT_HANDLERS = {
-		"scr_report_keep_forgetting": lambda: show_report_forgetting_repetition(user_id, chat_id, message_id),
-		"scr_report_keep_skipping_notif_trigger": lambda: show_report_forgetting_repetition(user_id, chat_id, message_id),
-		"scr_report_too_hard": lambda: show_report_skipped_finish(user_id, chat_id, message_id),
+		"scr_report_keep_forgetting": lambda: show_report_forgetting_repetition(user_id, chat_id, message_id, text),
+		"scr_report_keep_skipping_notif_trigger": lambda: show_report_forgetting_repetition(user_id, chat_id, message_id, text),
+		"scr_report_too_hard": lambda: show_report_skipped_finish(user_id, chat_id, message_id, text),
 
 		"scr_0_timezone_1": lambda: show_onboarding_habit(user_id, chat_id, message_id, message, timestamp, callback_data=None, text=text, message_info=message_info),
 		"scr_0_5_add_3": lambda: show_onboarding_report_added(user_id, chat_id, message_id, text, timestamp, message_info),
