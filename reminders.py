@@ -71,8 +71,9 @@ def send_daily_report():
 				continue
 			elif len(tied_habits)==1:
 				habit_id = tied_habits[0]["h.id"]
-				habit_info = db.get_habit_by_id(habit_id)[0]
-				cache.save_daily_report_info(report["user_id"], one_habit=True, data=habit_info)
+				habits_info = db.get_habit_by_id(habit_id)
+				habit_info = habits_info[0]
+				cache.save_daily_report_info(report["user_id"], one_habit=True, data=habits_info)
 
 				chat_id = report["user_id"]
 				reply = get_reply('report').replace('[habit]', habit_info["name"])
