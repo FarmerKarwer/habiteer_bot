@@ -7,8 +7,14 @@ import random
 
 from database import DatabaseClient
 from cache_manager import CacheManager
-from common import switch_screen, get_button, load_json, calculate_streak, get_days_string, calculate_usual_streak
-from common import switch_screen, get_button, load_json
+from common import (switch_screen, 
+					get_button, 
+					load_json, 
+					calculate_streak, 
+					get_days_string, 
+					calculate_usual_streak,
+					get_consecutive_skipped_days_for_habit
+					)
 
 replies = load_json(REPORT_REPLIES_FILEPATH)
 db = DatabaseClient()
@@ -62,10 +68,24 @@ def show_report_done(user_id, chat_id, message_id, timestamp):
 	switch_screen(reply, chat_id, message_id, keyboard=keyboard)		   
 
 def show_report_skipped(user_id, chat_id, message_id, timestamp):
-    """
+	"""
 	Show different buttons depending on the type of trigger (behavior/notification),
 	as well as on how many consecutive times the habit was skipped.
 	"""
+	habit_idx = cache.get_current_habit_idx(user_id)
+	habit_id = cache.get_daily_report_info(user_id, habit_idx).get("id", None)
+	report_id = db.get_habit_by_id(habit_id)[0].get("report_id", None)
+
+	logs = db.get_habit_logs_for_habit(habit_id, status="completed")
+	if report_id:
+		period = db.get_report_by_id(report_id)[0]['on_weekdays']
+		period = json.loads(period)
+		consecutive_skipped_days = get_consecutive_skipped_days_for_habit(logs, timestamp, period)
+	else:
+		period = [1,2,3,4,5,6,7]
+		consecutive_skipped_days = get_consecutive_skipped_days_for_habit(logs, timestamp, period)
+
+	print(consecutive_skipped_days)
 
 def show_report_repetition(user_id, chat_id, message_id):
 	"""

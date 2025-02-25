@@ -6,28 +6,14 @@ from common import (
 	)
 from common.exceptions import InvalidTimezoneFormat, TimezoneOutOfRangeError
 
-def show_start_onboarding(user_id, chat_id, message_id, message, timestamp):
-	if "last_name" in message['message']['from'].keys():
-		last_name = f"'{message['message']['from']['last_name']}'"
-	else:
-		last_name = "NULL"
-	if "username" in message['message']['from'].keys():
-		username = f"'{message['message']['from']['username']}'"
-	else:
-		username = "NULL"
-	user_data = {
-		"id":user_id,
-		"username":username,
-		"first_name":f"'{message['message']['from']['first_name']}'",
-		"language":f"'{message['message']['from']['language_code']}'",
-		"last_name":last_name,
-		"created_at":f"CAST('{timestamp}' AS Timestamp)"
-	}
-
-	db.add_user(user_data['id'], user_data['username'], user_data['first_name'], user_data['last_name'], user_data['language'], user_data['created_at'])
+def show_start_onboarding(chat_id, message_id):
 	switch_screen(replies['0'], chat_id, message_id, keyboard=get_button('scr_0'))
 
-def show_onboarding_habit(user_id, chat_id, message_id, callback_data=None, text=None, message_info=None):
+def show_onboarding_habit(user_id, chat_id, message_id, message, timestamp, callback_data=None, text=None, message_info=None):
+	user_exist = db.select_user(user_id)
+	if user_exist is None:
+		add_user_from_onboarding(user_id, message, timestamp)
+
 	if text:
 		try:
 			timezone = convert_timezone(text)
@@ -90,5 +76,27 @@ def show_onboarding_report_added(user_id, chat_id, message_id, text, timestamp, 
 	status="tracked"
 
 	db.add_onboarding_habit(habit_name, timestamp, habit_type, trigger_type, trigger_action_desc, user_id, status, aspiration, report_id)
+	habit_id = db.view_habits(user_id)[-1]['id']
+	db.add_habit_log(user_id, habit_id, "started", timestamp)
 
 	switch_screen(replies['0_6'], chat_id, message_id, keyboard=get_button('scr_0_6'))
+
+def add_user_from_onboarding(user_id, message, timestamp):
+	if "last_name" in message['message']['from'].keys():
+		last_name = f"'{message['message']['from']['last_name']}'"
+	else:
+		last_name = "NULL"
+	if "username" in message['message']['from'].keys():
+		username = f"'{message['message']['from']['username']}'"
+	else:
+		username = "NULL"
+	user_data = {
+		"id":user_id,
+		"username":username,
+		"first_name":f"'{message['message']['from']['first_name']}'",
+		"language":f"'{message['message']['from']['language_code']}'",
+		"last_name":last_name,
+		"created_at":f"CAST('{timestamp}' AS Timestamp)"
+	}
+
+	db.add_user(user_data['id'], user_data['username'], user_data['first_name'], user_data['last_name'], user_data['language'], user_data['created_at'])

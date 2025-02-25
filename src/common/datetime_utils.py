@@ -485,3 +485,70 @@ def calculate_streak_for_bad_habit(habit_logs, timestamp, creation_datetime):
     current_streak = 0 if current_date_completed else current_running
 
     return {"current_streak": current_streak, "max_streak": max_running}
+
+from datetime import datetime, timedelta, date
+
+def get_consecutive_skipped_days_for_habit(habit_logs, timestamp, period):
+    """
+    Returns the number of consecutive scheduled habit days (per the given period)
+    that were skipped (i.e. not logged), working backwards from the most recent scheduled day.
+    
+    Parameters:
+      habit_logs: list of dicts, each with a key 'date' which is the number of days since
+                  the epoch (1970-01-01). Example: [{'date': 20127}, {'date': 20126}].
+      timestamp: ISO timestamp string (e.g., "2025-02-24T16:26:36.000Z")
+      period:    list of integers representing the weekdays when the habit should be performed,
+                 where Monday = 1, Tuesday = 2, …, Sunday = 7. Example: [1,2,3,4,5,6,7] for every day.
+    
+    Returns:
+      An integer count of consecutive scheduled days that were skipped, starting from
+      the most recent scheduled day (on or before the current date) and going backwards
+      until a scheduled day is found with a habit log.
+      
+    Note:
+      - Only scheduled days (as per the period) are considered.
+      - If the most recent scheduled day (or any previous scheduled day) has a log,
+        the streak stops immediately.
+      - This function assumes that if the current day is scheduled and has not been logged,
+        it counts toward the skip count.
+    """
+    
+    # Convert the provided timestamp into a date object.
+    current_dt = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
+    current_date = current_dt.date()
+    
+    # Define the epoch and build a set of logged dates for fast lookup.
+    epoch_date = date(1970, 1, 1)
+    logged_dates = set()
+    for log in habit_logs:
+        days_since_epoch = log.get('date')
+        log_date = epoch_date + timedelta(days=days_since_epoch)
+        logged_dates.add(log_date)
+    
+    # Helper: determine if a given date is a scheduled habit day.
+    # Python’s date.weekday() gives 0 for Monday ... 6 for Sunday, so add 1.
+    def is_scheduled(d):
+        return (d.weekday() + 1) in period
+
+    # Find the most recent scheduled date on or before current_date.
+    candidate_date = current_date
+    while not is_scheduled(candidate_date):
+        candidate_date -= timedelta(days=1)
+    
+    consecutive_skips = 0
+    # Iterate backwards over scheduled days until a day with a log is found.
+    while candidate_date:
+        # (By construction, candidate_date is scheduled.)
+        if candidate_date in logged_dates:
+            # The streak stops if a scheduled day has a log.
+            break
+        else:
+            consecutive_skips += 1
+        
+        # Move to the previous scheduled day.
+        prev_date = candidate_date - timedelta(days=1)
+        while not is_scheduled(prev_date):
+            prev_date -= timedelta(days=1)
+        candidate_date = prev_date
+
+    return consecutive_skips

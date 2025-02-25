@@ -20,7 +20,8 @@ from .datetime_utils import (
 	calculate_streak,
 	calculate_usual_streak,
 	calculate_streak_for_bad_habit,
-	get_days_string
+	get_days_string,
+    get_consecutive_skipped_days_for_habit
 	)
 
 from .json_utils import load_json

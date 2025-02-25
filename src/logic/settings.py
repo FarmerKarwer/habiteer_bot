@@ -16,6 +16,8 @@ from config import TIMEZONE_DICT
 
 def show_user_timezone(user_id, chat_id, message_id):
 	current_timezone = db.select_user(user_id)[0]['timezone']
+	if current_timezone is None:
+		current_timezone = "utc+3"
 	timezone_name = TIMEZONE_DICT[current_timezone]
 	reply = replies['40'].replace('[timezone]', f"{current_timezone.upper()} ({timezone_name})")
 	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_40'))

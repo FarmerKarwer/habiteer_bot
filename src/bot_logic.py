@@ -134,8 +134,8 @@ def handle_callback_query(message):
 
 	# Actual logic
 	DEFAULT_CALLBACK_SCREENS = (
-		"scr_0_timezone", "scr_0_timezone_1", "scr_0_11", "scr_0_3", "scr_0_4", "scr_0_42", "scr_0_412",
-		"scr_0_5", "scr_0_5_add_1", "scr_0_7", "scr_0_421", "scr_0_422", "scr_0_413", 
+		"scr_0_timezone", "scr_0_timezone_1", "scr_0_11", "scr_0_3", "scr_0_4", "scr_0_42", 
+		"scr_0_5", "scr_0_5_add_1", "scr_0_7", "scr_0_421", "scr_0_422", "scr_0_413", "scr_0_412",
 		"scr_2", "scr_3_2_proxy", "scr_3_1_trigger_type", "scr_3_1_reminder_1",
 		"scr_3_1_bad_habit_fighting_method", "scr_3_1_bad_habit_avoid_trigger", "scr_3_1_bad_habit_avoid_trigger_1",
 		"scr_3_2_proxy_reset", "scr_3_2_bad_habit_proxy_reset", "scr_3_2_proxy_resume", "scr_3_2_one_time_proxy",
@@ -300,7 +300,7 @@ def handle_callback_query(message):
 	data = {"user_id":user_id,"chat_id":chat_id, "message_id":message_id, "callback_data":callback_data, "text":None}
 	return data
 
-def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_info):
+def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_info, message):
 
 	def handle_special_input(special_handlers_dict, transition):
 		action = special_handlers_dict.get(transition)
@@ -318,7 +318,7 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 		"scr_report_keep_skipping_notif_trigger": lambda: show_report_forgetting_repetition(user_id, chat_id, message_id),
 		"scr_report_too_hard": lambda: show_report_skipped_finish(user_id, chat_id, message_id),
 
-		"scr_0_timezone_1": lambda: show_onboarding_habit(user_id, chat_id, message_id, callback_data=None, text=text, message_info=message_info),
+		"scr_0_timezone_1": lambda: show_onboarding_habit(user_id, chat_id, message_id, message, timestamp, callback_data=None, text=text, message_info=message_info),
 		"scr_0_5_add_3": lambda: show_onboarding_report_added(user_id, chat_id, message_id, text, timestamp, message_info),
 		"scr_2": lambda: show_adding_habit(text, user_id, chat_id, message_id, timestamp),
 		"scr_3": lambda: show_habit_info(text, user_id, chat_id, message_id, message_info, timestamp),
@@ -392,7 +392,7 @@ def handle_text_message(message):
 	if text=="/start":
 		show_start_screen(user_id, chat_id, message_id, message, timestamp)
 	else:
-		handle_text_input(text, chat_id, message_id, user_id, timestamp, message_info)
+		handle_text_input(text, chat_id, message_id, user_id, timestamp, message_info, message)
 
 	return message_info
 

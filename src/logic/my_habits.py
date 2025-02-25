@@ -547,6 +547,7 @@ def show_habit_is_tracked(user_id, chat_id, message_id, callback_data=None, text
 	for key in data_to_update.keys():
 		db.update_habit(unique_id=habit_id, column=key, value=data_to_update[key])
 
+	db.add_habit_log(user_id, habit_id, "started", timestamp)
 	switch_screen(replies['20'], chat_id, message_id, keyboard=get_button('scr_20'))
 
 
@@ -724,6 +725,8 @@ def show_bad_habit_tracked(user_id, chat_id, message_id, timestamp):
 	db.update_habit(habit_id, "last_updated", f"CAST('{timestamp}'AS Timestamp)")
 	db.update_habit(habit_id, "status", f"'tracked'")
 
+	db.add_habit_log(user_id, habit_id, "started", timestamp)
+
 	switch_screen(replies['31_finished'], chat_id, message_id, keyboard=get_button('scr_20'))
 
 def show_bad_habit_done(user_id, chat_id, message_id, timestamp):
@@ -764,6 +767,8 @@ def show_bad_habit_tracked_with_reminder(user_id, chat_id, message_id, timestamp
 	db.update_habit(habit_id, "status", f"'tracked'")
 	if text:
 		db.update_habit(habit_id, "avoid_trigger_notif_text", f"'{text}'")
+
+	db.add_habit_log(user_id, habit_id, "started", timestamp)
 	switch_screen(replies['33_finished'], chat_id, message_id, keyboard=get_button('scr_20'))
 
 def show_hardening_bad_habit(user_id, chat_id, message_id):
@@ -779,6 +784,7 @@ def show_bad_habit_tracked_with_hardening(text, user_id, chat_id, message_id, ti
 	db.update_habit(habit_id, "last_updated", f"CAST('{timestamp}'AS Timestamp)")
 	db.update_habit(habit_id, "status", f"'tracked'")
 
+	db.add_habit_log(user_id, habit_id, "started", timestamp)
 	switch_screen(replies['37_finished'], chat_id, message_id, keyboard=get_button('scr_20'))
 
 def show_change_bad_habit_remove_trigger(user_id, chat_id, message_id):

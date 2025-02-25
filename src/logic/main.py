@@ -8,7 +8,7 @@ def show_start_screen(user_id, chat_id, message_id, message, timestamp):
 	user = db.select_user(user_id)
 	no_user = len(user)==0
 	if no_user:
-		show_start_onboarding(user_id, chat_id, message_id, message, timestamp)
+		show_start_onboarding(chat_id, message_id)
 	else:
 		show_main_menu(user_id, chat_id, message_id)
 
