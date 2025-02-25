@@ -100,6 +100,29 @@
       [
         {
           "text": "⏳Пропустил уведомление",
+          "callback_data": "scr_report_skipped_notif_finish"
+        }
+      ],
+      [
+        {
+          "text": "🤯Слишком сложно",
+          "callback_data": "scr_report_too_hard"
+        }
+      ],
+      [
+        {
+          "text": "🚫Я больше не хочу эту привычку...",
+          "callback_data": "scr_report_dont_want"
+        }
+      ]
+    ]
+  },
+
+  "scr_report_skipped_notif_2_cons_times": {
+    "inline_keyboard": [
+      [
+        {
+          "text": "⏳Уведомления никак не помогают",
           "callback_data": "scr_report_keep_skipping_notif"
         }
       ],

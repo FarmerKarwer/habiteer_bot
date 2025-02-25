@@ -74,6 +74,7 @@ def show_report_skipped(user_id, chat_id, message_id, timestamp):
 	"""
 	habit_idx = cache.get_current_habit_idx(user_id)
 	habit_id = cache.get_daily_report_info(user_id, habit_idx).get("id", None)
+	trigger_type = cache.get_daily_report_info(user_id, habit_idx).get("trigger_type", None)
 	report_id = db.get_habit_by_id(habit_id)[0].get("report_id", None)
 
 	logs = db.get_habit_logs_for_habit(habit_id, status="completed")
@@ -86,7 +87,18 @@ def show_report_skipped(user_id, chat_id, message_id, timestamp):
 		period = [1,2,3,4,5,6,7]
 		consecutive_skipped_days = get_consecutive_skipped_days_for_habit(logs, timestamp, period, started_tracking_at)
 
-	print(consecutive_skipped_days)
+	if trigger_type=="behavior":
+		if consecutive_skipped_days<=2:
+			keyboard = get_button("scr_report_skipped", REPORT_BUTTONS_FILEPATH)
+		else:
+			keyboard = get_button("scr_report_skipped_2_cons_times", REPORT_BUTTONS_FILEPATH)
+	elif trigger_type=="notification":
+		if consecutive_skipped_days<=2:
+			keyboard = get_button("scr_report_skipped_notif", REPORT_BUTTONS_FILEPATH)
+		else:
+			keyboard = get_button("scr_report_skipped_notif_2_cons_times", REPORT_BUTTONS_FILEPATH)
+	
+	switch_screen(get_reply("report_skipped"), chat_id, message_id, keyboard=keyboard)
 
 def show_report_repetition(user_id, chat_id, message_id):
 	"""

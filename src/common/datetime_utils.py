@@ -1,7 +1,7 @@
 from datetime import datetime, timezone, timedelta
 import re
 
-from .exceptions import InvalidTimezoneFormat, TimezoneOutOfRangeError
+from .exceptions import InvalidTimezoneFormat, TimezoneOutOfRangeError, ValueOutOfRangeError
 
 def unix_to_timestamp(unix_time):
     # Convert the Unix timestamp to a datetime object
