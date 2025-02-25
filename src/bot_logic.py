@@ -331,6 +331,7 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 		"scr_report_keep_forgetting": lambda: show_report_forgetting_repetition(user_id, chat_id, message_id, text),
 		"scr_report_keep_skipping_notif_trigger": lambda: show_report_forgetting_repetition(user_id, chat_id, message_id, text),
 		"scr_report_too_hard": lambda: show_report_skipped_finish(user_id, chat_id, message_id, text),
+		"scr_report_keep_skipping_notif_3": lambda: show_report_keep_skipping_notif_finish(user_id, chat_id, message_id, text, message_info),
 
 		"scr_0_timezone_1": lambda: show_onboarding_habit(user_id, chat_id, message_id, message, timestamp, callback_data=None, text=text, message_info=message_info),
 		"scr_0_5_add_3": lambda: show_onboarding_report_added(user_id, chat_id, message_id, text, timestamp, message_info),

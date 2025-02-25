@@ -13,7 +13,9 @@ from common import (switch_screen,
 					calculate_streak, 
 					get_days_string, 
 					calculate_usual_streak,
-					get_consecutive_skipped_days_for_habit
+					get_consecutive_skipped_days_for_habit,
+					parse_time_from_string,
+					weekdays_to_numbers
 					)
 from common import select_multiple_days
 
@@ -178,8 +180,14 @@ def show_report_habit_deleted(user_id, chat_id, message_id):
 	habit_id = cache.get_daily_report_info(user_id, habit_idx).get("id", None)
 	habit_name = cache.get_daily_report_info(user_id, habit_idx).get("name", None)
 
+	if cache.is_daily_report_one_habit(user_id) or len(cache.get_daily_report_info(user_id))-(habit_idx+1)==0:
+		keyboard = get_button("scr_report_dont_want_yes", REPORT_BUTTONS_FILEPATH)
+	else:
+		keyboard = get_button("scr_report_dont_want_yes_to_next", REPORT_BUTTONS_FILEPATH)
+		cache.set_current_habit_idx(user_id, habit_idx+1)
+
 	reply = get_reply("report_dont_want_yes").replace('[habit]', habit_name)
-	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_report_dont_want_yes', REPORT_BUTTONS_FILEPATH))
+	switch_screen(reply, chat_id, message_id, keyboard=keyboard)
 
 	db.delete_habit(habit_id)
 
@@ -190,8 +198,14 @@ def show_report_habit_not_deleted(user_id, chat_id, message_id):
 	habit_idx = cache.get_current_habit_idx(user_id)
 	habit_name = cache.get_daily_report_info(user_id, habit_idx).get("name", None)
 
+	if cache.is_daily_report_one_habit(user_id) or len(cache.get_daily_report_info(user_id))-(habit_idx+1)==0:
+		keyboard = get_button("scr_report_dont_want_no", REPORT_BUTTONS_FILEPATH)
+	else:
+		keyboard = get_button("scr_report_dont_want_no_to_next", REPORT_BUTTONS_FILEPATH)
+		cache.set_current_habit_idx(user_id, habit_idx+1)
+
 	reply = get_reply("report_dont_want_no").replace('[habit]', habit_name)
-	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_report_dont_want_no', REPORT_BUTTONS_FILEPATH))
+	switch_screen(reply, chat_id, message_id, keyboard=keyboard)
 
 def show_report_skipped_finish(user_id, chat_id, message_id, text=None):
 	"""
@@ -220,7 +234,6 @@ def show_report_skipped_finish_refused(user_id, chat_id, message_id):
 	If a user entered before a simple version of a habit, save it.
 	"""
 	habit_idx = cache.get_current_habit_idx(user_id)
-	habit_id = cache.get_daily_report_info(user_id, habit_idx).get("id", None)
 
 	if cache.is_daily_report_one_habit(user_id) or len(cache.get_daily_report_info(user_id))-(habit_idx+1)==0:
 		keyboard = get_button("scr_report_skipped_finish_refused", REPORT_BUTTONS_FILEPATH)
@@ -247,6 +260,36 @@ def show_report_skipped_notif_finish(user_id, chat_id, message_id):
 
 	reply = get_reply("report_skipped_notif_finish")
 	switch_screen(reply, chat_id, message_id, keyboard=keyboard)
+
+def show_report_keep_skipping_notif_finish(user_id, chat_id, message_id, text, message_info):
+	habit_idx = cache.get_current_habit_idx(user_id)
+
+	if cache.is_daily_report_one_habit(user_id) or len(cache.get_daily_report_info(user_id))-(habit_idx+1)==0:
+		reply = get_reply("report_keep_skipping_notif_finish")
+		keyboard = get_button("scr_report_keep_skipping_notif_finish", REPORT_BUTTONS_FILEPATH)
+	else:
+		reply = get_reply("report_keep_skipping_notif_finish_to_next")
+		keyboard = get_button("scr_report_keep_skipping_notif_finish_to_next", REPORT_BUTTONS_FILEPATH)
+		cache.set_current_habit_idx(user_id, habit_idx+1)
+
+	try:
+		parse_time_from_string(text)
+		notification_period = cache.get_daily_report_info(user_id, habit_idx).get("trigger_reminder_period", None)
+		notification_period = weekdays_to_numbers(notification_period)
+		notification_time = text
+		habit_id = cache.get_daily_report_info(user_id, habit_idx).get("id", None)
+
+		db.update_habit(habit_id, "trigger_reminder_period", f"'{notification_period}'")
+		db.update_habit(habit_id, "trigger_reminder_time", f"'{notification_time}'")
+		db.update_habit(habit_id, "trigger_type", "'notification'")
+		db.update_habit(habit_id, "trigger_action_desc", "NULL")
+
+		switch_screen(reply, chat_id, message_id, keyboard=keyboard)
+	except ValueError:
+		reply="Неверно указано время.\nВремя должно быть указано в формате HH:MM. Например: 21:45.\n\nПопробуйте еще раз."
+		switch_screen(reply, chat_id, message_id, keyboard=get_button("scr_report_keep_skipping_notif_3", REPORT_BUTTONS_FILEPATH))
+		message_info["callback_data"]="scr_report_keep_skipping_notif_3"
+		return
 
 def show_choose_time_for_habit_report(user_id, chat_id, message_id, scr_name, type=None):
 	habit_idx = cache.get_current_habit_idx(user_id)
