@@ -15,10 +15,13 @@ from common import (switch_screen,
 					calculate_usual_streak,
 					get_consecutive_skipped_days_for_habit
 					)
+from common import select_multiple_days
 
 replies = load_json(REPORT_REPLIES_FILEPATH)
 db = DatabaseClient()
 cache = CacheManager() 
+
+callback_weekdays = ("mon", "tue", "wed", "thu", "fri", "sat", "sun")
 
 def get_reply(screen_name):
 	return random.choice(replies[screen_name])
@@ -86,7 +89,7 @@ def show_report_skipped(user_id, chat_id, message_id, timestamp):
 	else:
 		period = [1,2,3,4,5,6,7]
 		consecutive_skipped_days = get_consecutive_skipped_days_for_habit(logs, timestamp, period, started_tracking_at)
-
+	consecutive_skipped_days =3
 	if trigger_type=="behavior":
 		if consecutive_skipped_days<=2:
 			keyboard = get_button("scr_report_skipped", REPORT_BUTTONS_FILEPATH)
@@ -235,7 +238,6 @@ def show_report_skipped_notif_finish(user_id, chat_id, message_id):
 	This screen will be shown if a user skipped notification no more than 2 consecutive times.
 	"""
 	habit_idx = cache.get_current_habit_idx(user_id)
-	habit_id = cache.get_daily_report_info(user_id, habit_idx).get("id", None)
 
 	if cache.is_daily_report_one_habit(user_id) or len(cache.get_daily_report_info(user_id))-(habit_idx+1)==0:
 		keyboard = get_button("scr_report_skipped_notif_finish", REPORT_BUTTONS_FILEPATH)
@@ -245,3 +247,44 @@ def show_report_skipped_notif_finish(user_id, chat_id, message_id):
 
 	reply = get_reply("report_skipped_notif_finish")
 	switch_screen(reply, chat_id, message_id, keyboard=keyboard)
+
+def show_choose_time_for_habit_report(user_id, chat_id, message_id, scr_name, type=None):
+	habit_idx = cache.get_current_habit_idx(user_id)
+	screen_id = '_'.join(scr_name.split('_')[1:])
+	if type=="everyday":
+		trigger_reminder_period = callback_weekdays
+		cache.update_daily_report_info(user_id, habit_idx, "trigger_reminder_period", trigger_reminder_period)
+		reply = get_reply(screen_id).replace("[period]", "каждый день")
+	elif type=="selected_days":
+		weekdays_rus_dict = {
+			"mon":"понедельник",
+			"tue":"вторник",
+			"wed":"среда",
+			"thu":"четверг",
+			"fri":"пятница",
+			"sat":"суббота",
+			"sun":"воскресенье"
+		}
+		weekdays_order = list(weekdays_rus_dict.keys())
+		trigger_reminder_period = tuple(cache.get_button_selection(user_id, "user_selections"))
+		cache.update_daily_report_info(user_id, habit_idx, "trigger_reminder_period", trigger_reminder_period)
+
+		if trigger_reminder_period==callback_weekdays:
+			reply = get_reply(screen_id).replace("[period]", "каждый день")
+		else:
+			trigger_reminder_period = sorted(trigger_reminder_period, key=lambda day: weekdays_order.index(day))
+			trigger_reminder_period_rus = [weekdays_rus_dict[day] for day in trigger_reminder_period]
+			trigger_reminder_period_str_rus = ", ".join(trigger_reminder_period_rus)
+			reply = get_reply(screen_id).replace("[period]", trigger_reminder_period_str_rus)
+
+	cache.delete_button_selection(user_id)
+	switch_screen(reply, chat_id, message_id, keyboard=get_button(scr_name, REPORT_BUTTONS_FILEPATH))
+
+def show_choose_weekdays_for_daily_report(user_id, chat_id, message_id, scr_name):
+	screen_id = '_'.join(scr_name.split('_')[1:])
+	cache.delete_button_selection(user_id)
+	switch_screen(get_reply(screen_id), chat_id, message_id, keyboard=get_button(scr_name, REPORT_BUTTONS_FILEPATH))
+
+def show_multiple_selection_for_daily_report(user_id, chat_id, message_id, callback_data, scr_name):
+	additional_actions = json.loads(get_button(scr_name, REPORT_BUTTONS_FILEPATH))['inline_keyboard'][2:]
+	select_multiple_days(callback_data, additional_actions, user_id, chat_id, message_id)

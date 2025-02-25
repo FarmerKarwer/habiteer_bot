@@ -104,7 +104,10 @@ from .reports import (
     show_report_habit_not_deleted,
     show_report_skipped_finish,
     show_report_skipped_finish_refused,
-    show_report_skipped_notif_finish
+    show_report_skipped_notif_finish,
+    show_choose_time_for_habit_report,
+    show_choose_weekdays_for_daily_report,
+    show_multiple_selection_for_daily_report
 	)
 
 __all__ = [
@@ -207,5 +210,8 @@ __all__ = [
 "show_report_habit_not_deleted",
 "show_report_skipped_finish",
 "show_report_skipped_finish_refused",
-"show_report_skipped_notif_finish"
+"show_report_skipped_notif_finish",
+"show_choose_time_for_habit_report",
+"show_choose_weekdays_for_daily_report",
+"show_multiple_selection_for_daily_report"
 ]

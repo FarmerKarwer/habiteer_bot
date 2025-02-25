@@ -39,6 +39,9 @@ callback_screens_weekdays_and_time = {
 			("scr_22_1", "scr_22_1_1", "scr_22_2"),
 			("scr_28", "scr_28_1", "scr_28_2"),
 			("scr_33_1", "scr_33_2", "scr_33_3"),
+		],
+	"daily_report":[
+			("scr_report_keep_skipping_notif_1", "scr_report_keep_skipping_notif_2", "scr_report_keep_skipping_notif_3"),
 		]
 	}
 
@@ -110,9 +113,17 @@ def handle_callback_query(message):
 				show_choose_time_for_habit(user_id, chat_id, message_id, scr_time, type="everyday")
 			elif previous_screen in callback_weekdays and callback_data==scr_time:
 				show_choose_time_for_habit(user_id, chat_id, message_id, scr_time, type="selected_days")
+		elif type=="daily_report":
+			if (previous_screen==scr_weekdays or previous_screen_button_selection==scr_weekdays) and callback_data in callback_weekdays:
+				show_multiple_selection_for_daily_report(user_id, chat_id, message_id, callback_data=callback_data, scr_name=scr_weekdays)
+			elif previous_screen==scr_freq and callback_data==scr_time:
+				show_choose_time_for_habit_report(user_id, chat_id, message_id, scr_time, type="everyday")
+			elif previous_screen==scr_weekdays and callback_data==scr_time:
+				show_choose_time_for_habit_report(user_id, chat_id, message_id, scr_time, type="everyday")
+			elif previous_screen in callback_weekdays and callback_data==scr_time:
+				show_choose_time_for_habit_report(user_id, chat_id, message_id, scr_time, type="selected_days")
 
 	# Getting data
-	callback_query_id = message['callback_query']['id']
 	callback_data = message['callback_query']['data']
 	chat_id = message['callback_query']['message']['chat']['id']
 	message_id = message['callback_query']['message']['message_id']
@@ -129,6 +140,7 @@ def handle_callback_query(message):
 	is_previous_screen_in_magic_wanding = bool(re.match(r"^scr_12_proxy_\d+$", previous_screen))
 	is_callback_in_screens_weekdays_and_time_report = any(callback_data in sublist or previous_screen_button_selection in sublist for sublist in callback_screens_weekdays_and_time['report']) or callback_data in callback_weekdays
 	is_callback_in_screens_weekdays_and_time_habit = any(callback_data in sublist or previous_screen_button_selection in sublist for sublist in callback_screens_weekdays_and_time['habit']) or callback_data in callback_weekdays
+	is_callback_in_screens_weekdays_and_time_habit_report = any(callback_data in sublist or previous_screen_button_selection in sublist for sublist in callback_screens_weekdays_and_time['daily_report']) or callback_data in callback_weekdays
 	is_callback_in_repetition_reminders = bool(re.match(r"^rep_\w+$", callback_data))
 	is_callback_in_reports = bool(re.match(r"^report_\d+$", callback_data))
 
@@ -149,7 +161,8 @@ def handle_callback_query(message):
 
 	DEFAULT_CALLBACK_SCREENS_REPORTS = (
 		"scr_report_skipped", "scr_report_skipped_2_cons_times", "scr_report_skipped_notif",
-		"scr_report_keep_skipping_notif", "scr_report_skipped_finish", "scr_report_skipped_notif_finish",
+		"scr_report_keep_skipping_notif", "scr_report_keep_skipping_notif_1",
+		"scr_report_skipped_finish", "scr_report_skipped_notif_finish",
 		"scr_report_skipped_finish_refused", "scr_srbai_no", "scr_srbai_low_no"
 		)
 
@@ -160,6 +173,7 @@ def handle_callback_query(message):
 		"scr_report_simply_forgot": lambda: show_report_repetition(user_id, chat_id, message_id),
 		"scr_report_keep_forgetting": lambda: show_report_change_trigger(user_id, chat_id, message_id),
 		"scr_report_keep_skipping_notif_trigger": lambda: show_report_enter_trigger(user_id, chat_id, message_id),
+		"scr_report_keep_skipping_notif_2": lambda: show_choose_weekdays_for_daily_report(user_id, chat_id, message_id, scr_name='scr_report_keep_skipping_notif_2'),
 		"scr_report_too_hard": lambda: show_report_too_hard(user_id, chat_id, message_id),
 		"scr_report_dont_want": lambda: show_report_delete_habit_confirmation(user_id, chat_id, message_id),
 		"scr_report_dont_want_yes": lambda: show_report_habit_deleted(user_id, chat_id, message_id),
@@ -291,6 +305,8 @@ def handle_callback_query(message):
 	elif is_callback_in_screens_weekdays_and_time_report:
 		handle_weekdays_and_time_choice(callback_data, callback_screens_weekdays_and_time)
 	elif is_callback_in_screens_weekdays_and_time_habit:
+		handle_weekdays_and_time_choice(callback_data, callback_screens_weekdays_and_time)
+	elif is_callback_in_screens_weekdays_and_time_habit_report:
 		handle_weekdays_and_time_choice(callback_data, callback_screens_weekdays_and_time)
 	else:
 		handle_unknown_callback(callback_data)
