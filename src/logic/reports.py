@@ -77,13 +77,14 @@ def show_report_skipped(user_id, chat_id, message_id, timestamp):
 	report_id = db.get_habit_by_id(habit_id)[0].get("report_id", None)
 
 	logs = db.get_habit_logs_for_habit(habit_id, status="completed")
+	started_tracking_at = db.get_habit_logs_for_habit(habit_id, status="started")[0]['timestamp']
 	if report_id:
 		period = db.get_report_by_id(report_id)[0]['on_weekdays']
 		period = json.loads(period)
-		consecutive_skipped_days = get_consecutive_skipped_days_for_habit(logs, timestamp, period)
+		consecutive_skipped_days = get_consecutive_skipped_days_for_habit(logs, timestamp, period, started_tracking_at)
 	else:
 		period = [1,2,3,4,5,6,7]
-		consecutive_skipped_days = get_consecutive_skipped_days_for_habit(logs, timestamp, period)
+		consecutive_skipped_days = get_consecutive_skipped_days_for_habit(logs, timestamp, period, started_tracking_at)
 
 	print(consecutive_skipped_days)
 

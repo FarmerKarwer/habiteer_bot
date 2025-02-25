@@ -260,7 +260,7 @@ def handle_callback_query(message):
 		handle_conditional_callback(CONDITIONAL_CALLBACK_HANDLERS, CONDITIONAL_CALLBACK_SCREENS, callback_data)
 
 	elif previous_screen=="scr_0_timezone" and callback_data.startswith("utc"):
-		show_onboarding_habit(user_id, chat_id, message_id, callback_data, text=None, message_info=None)
+		show_onboarding_habit(user_id, chat_id, message_id, message, timestamp, callback_data, text=None, message_info=None)
 
 	elif previous_screen=="scr_40" and callback_data.startswith("utc"):
 		change_user_timezone(user_id, chat_id, message_id, callback_data, text=None, message_info=None)
@@ -301,7 +301,6 @@ def handle_callback_query(message):
 	return data
 
 def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_info, message):
-
 	def handle_special_input(special_handlers_dict, transition):
 		action = special_handlers_dict.get(transition)
 		action()
@@ -390,7 +389,7 @@ def handle_text_message(message):
 	delete_message(message_id-1, chat_id)
 
 	if text=="/start":
-		show_start_screen(user_id, chat_id, message_id, message, timestamp)
+		show_start_screen(user_id, chat_id, message_id)
 	else:
 		handle_text_input(text, chat_id, message_id, user_id, timestamp, message_info, message)
 

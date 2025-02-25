@@ -10,11 +10,10 @@ def show_start_onboarding(chat_id, message_id):
 	switch_screen(replies['0'], chat_id, message_id, keyboard=get_button('scr_0'))
 
 def show_onboarding_habit(user_id, chat_id, message_id, message, timestamp, callback_data=None, text=None, message_info=None):
-	user_exist = db.select_user(user_id)
-	if user_exist is None:
-		add_user_from_onboarding(user_id, message, timestamp)
-
+	user_exist = len(db.select_user(user_id))!=0
 	if text:
+		if not user_exist:
+			add_user_from_onboarding(user_id, message, timestamp, text=True)
 		try:
 			timezone = convert_timezone(text)
 			db.update_user_timezone(user_id, timezone)
@@ -27,6 +26,8 @@ def show_onboarding_habit(user_id, chat_id, message_id, message, timestamp, call
 			message_info['callback_data']="scr_0_timezone_1"
 			return
 	elif callback_data:
+		if not user_exist:
+			add_user_from_onboarding(user_id, message, timestamp, text=False)
 		db.update_user_timezone(user_id, callback_data)
 
 	switch_screen(replies['0_1'], chat_id, message_id, keyboard=get_button('scr_0_1'))
@@ -81,20 +82,25 @@ def show_onboarding_report_added(user_id, chat_id, message_id, text, timestamp, 
 
 	switch_screen(replies['0_6'], chat_id, message_id, keyboard=get_button('scr_0_6'))
 
-def add_user_from_onboarding(user_id, message, timestamp):
-	if "last_name" in message['message']['from'].keys():
-		last_name = f"'{message['message']['from']['last_name']}'"
+def add_user_from_onboarding(user_id, message, timestamp, text):
+	if text:
+		message = message['message']
+	else:
+		message = message['callback_query']
+
+	if "last_name" in message['from'].keys():
+		last_name = f"'{message['from']['last_name']}'"
 	else:
 		last_name = "NULL"
-	if "username" in message['message']['from'].keys():
-		username = f"'{message['message']['from']['username']}'"
+	if "username" in message['from'].keys():
+		username = f"'{message['from']['username']}'"
 	else:
 		username = "NULL"
 	user_data = {
 		"id":user_id,
 		"username":username,
-		"first_name":f"'{message['message']['from']['first_name']}'",
-		"language":f"'{message['message']['from']['language_code']}'",
+		"first_name":f"'{message['from']['first_name']}'",
+		"language":f"'{message['from']['language_code']}'",
 		"last_name":last_name,
 		"created_at":f"CAST('{timestamp}' AS Timestamp)"
 	}

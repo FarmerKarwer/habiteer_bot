@@ -4,7 +4,7 @@ from ._common_imports import *
 from .onboarding import show_start_onboarding
 from common import select_multiple_days
 
-def show_start_screen(user_id, chat_id, message_id, message, timestamp):
+def show_start_screen(user_id, chat_id, message_id):
 	user = db.select_user(user_id)
 	no_user = len(user)==0
 	if no_user:

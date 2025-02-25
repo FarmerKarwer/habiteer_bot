@@ -488,67 +488,64 @@ def calculate_streak_for_bad_habit(habit_logs, timestamp, creation_datetime):
 
 from datetime import datetime, timedelta, date
 
-def get_consecutive_skipped_days_for_habit(habit_logs, timestamp, period):
+from datetime import datetime, timedelta
+
+def get_consecutive_skipped_days_for_habit(habit_logs, timestamp, period, started_tracking_at):
     """
-    Returns the number of consecutive scheduled habit days (per the given period)
-    that were skipped (i.e. not logged), working backwards from the most recent scheduled day.
+    Returns the number of consecutive scheduled days (per the given period) that the user skipped.
     
     Parameters:
-      habit_logs: list of dicts, each with a key 'date' which is the number of days since
-                  the epoch (1970-01-01). Example: [{'date': 20127}, {'date': 20126}].
-      timestamp: ISO timestamp string (e.g., "2025-02-24T16:26:36.000Z")
-      period:    list of integers representing the weekdays when the habit should be performed,
-                 where Monday = 1, Tuesday = 2, …, Sunday = 7. Example: [1,2,3,4,5,6,7] for every day.
+      - habit_logs: list of dicts, each with a 'date' key representing the number of days since Jan 1, 1970.
+      - timestamp: ISO 8601 timestamp string (e.g., "2025-02-24T16:26:36.000Z")
+      - period: list of weekdays (Monday=1, ..., Sunday=7) on which the habit is expected.
+      - started_tracking_at: timestamp in microseconds since the Unix epoch indicating when tracking began.
     
-    Returns:
-      An integer count of consecutive scheduled days that were skipped, starting from
-      the most recent scheduled day (on or before the current date) and going backwards
-      until a scheduled day is found with a habit log.
-      
     Note:
-      - Only scheduled days (as per the period) are considered.
-      - If the most recent scheduled day (or any previous scheduled day) has a log,
-        the streak stops immediately.
-      - This function assumes that if the current day is scheduled and has not been logged,
-        it counts toward the skip count.
+      This function counts only complete days. That is, it considers scheduled days strictly before
+      the date part of the provided timestamp. For example, if today is Wednesday, only days up to Tuesday
+      are evaluated.
     """
-    
-    # Convert the provided timestamp into a date object.
-    current_dt = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
+    # Convert provided timestamp to a datetime object.
+    ts = timestamp.replace("Z", "+00:00")
+    current_dt = datetime.fromisoformat(ts)
     current_date = current_dt.date()
     
-    # Define the epoch and build a set of logged dates for fast lookup.
-    epoch_date = date(1970, 1, 1)
-    logged_dates = set()
-    for log in habit_logs:
-        days_since_epoch = log.get('date')
-        log_date = epoch_date + timedelta(days=days_since_epoch)
-        logged_dates.add(log_date)
+    # Convert started_tracking_at (microseconds) to a date.
+    start_dt = datetime.utcfromtimestamp(started_tracking_at / 1e6)
+    start_date = start_dt.date()
     
-    # Helper: determine if a given date is a scheduled habit day.
-    # Python’s date.weekday() gives 0 for Monday ... 6 for Sunday, so add 1.
+    # Build a set of dates (as datetime.date) when the habit was logged.
+    epoch = datetime(1970, 1, 1).date()
+    logged_dates = {epoch + timedelta(days=log['date']) for log in habit_logs}
+    
+    # Helper: checks if a given date is a scheduled day.
+    # Note: Python's weekday() returns 0 for Monday, so we add 1.
     def is_scheduled(d):
         return (d.weekday() + 1) in period
-
-    # Find the most recent scheduled date on or before current_date.
-    candidate_date = current_date
-    while not is_scheduled(candidate_date):
-        candidate_date -= timedelta(days=1)
     
-    consecutive_skips = 0
-    # Iterate backwards over scheduled days until a day with a log is found.
-    while candidate_date:
-        # (By construction, candidate_date is scheduled.)
-        if candidate_date in logged_dates:
-            # The streak stops if a scheduled day has a log.
+    # For consistency with the examples, we count only days before the current date.
+    # Find the most recent scheduled day strictly before current_date.
+    d = current_date - timedelta(days=1)
+    last_scheduled = None
+    while d >= start_date:
+        if is_scheduled(d):
+            last_scheduled = d
             break
-        else:
-            consecutive_skips += 1
-        
-        # Move to the previous scheduled day.
-        prev_date = candidate_date - timedelta(days=1)
-        while not is_scheduled(prev_date):
-            prev_date -= timedelta(days=1)
-        candidate_date = prev_date
+        d -= timedelta(days=1)
+    
+    if last_scheduled is None:
+        return 0  # No scheduled day exists in the period before current_date.
+    
+    # Count consecutive skipped scheduled days by iterating backward.
+    streak = 0
+    current_day = last_scheduled
+    while current_day >= start_date:
+        if is_scheduled(current_day):
+            if current_day not in logged_dates:
+                streak += 1
+            else:
+                break  # A completed day breaks the consecutive skip streak.
+        current_day -= timedelta(days=1)
+    
+    return streak
 
-    return consecutive_skips
