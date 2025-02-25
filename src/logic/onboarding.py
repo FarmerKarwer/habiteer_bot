@@ -12,10 +12,10 @@ def show_start_onboarding(chat_id, message_id):
 def show_onboarding_habit(user_id, chat_id, message_id, message, timestamp, callback_data=None, text=None, message_info=None):
 	user_exist = len(db.select_user(user_id))!=0
 	if text:
-		if not user_exist:
-			add_user_from_onboarding(user_id, message, timestamp, text=True)
 		try:
 			timezone = convert_timezone(text)
+			if not user_exist:
+				add_user_from_onboarding(user_id, message, timestamp, text=True)
 			db.update_user_timezone(user_id, timezone)
 		except InvalidTimezoneFormat:
 			switch_screen(replies['timezone_errors']['invalid_format'], chat_id, message_id, keyboard=get_button('scr_0_timezone_1'))
