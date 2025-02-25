@@ -91,7 +91,7 @@ def show_report_skipped(user_id, chat_id, message_id, timestamp):
 	else:
 		period = [1,2,3,4,5,6,7]
 		consecutive_skipped_days = get_consecutive_skipped_days_for_habit(logs, timestamp, period, started_tracking_at)
-	consecutive_skipped_days =3
+
 	if trigger_type=="behavior":
 		if consecutive_skipped_days<=2:
 			keyboard = get_button("scr_report_skipped", REPORT_BUTTONS_FILEPATH)
