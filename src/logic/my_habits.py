@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 import json
 import random
+from zoneinfo import ZoneInfo
 
 from ._common_imports import *
 from ._common_imports import premade_triggers, callback_weekdays
@@ -372,7 +373,11 @@ def show_repetition_reminder_set(user_id, chat_id, message_id, callback_data=Non
 	if text:
 		try:
 			validate_marginal_datetime_entry(text)
-			reminder_time = calculate_datetime_margin_from_user_input(text, timestamp)
+			user_utc = db.get_user_property(user_id, "timezone")
+			if user_utc is None:
+				user_utc_offset = 3
+			user_utc_offset = int(user_utc.replace("utc", ""))
+			reminder_time = calculate_datetime_margin_from_user_input(text, timestamp, user_timezone_offset=user_utc_offset)
 		except ValueError:
 			previous_screen = cache.get_previous_message(user_id)['callback_data']
 			reply="Неверно указан период.\nУкажите в формате: “Через X дн в HH:MM”. Например, если хотите отрепетировать сегодня: “через 0 дн в 21:25”.\n\nПопробуйте еще раз."

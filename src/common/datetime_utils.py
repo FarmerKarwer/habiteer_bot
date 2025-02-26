@@ -229,9 +229,9 @@ def calculate_datetime_margin_from_user_input(user_input, timestamp, user_timezo
     if precise_time<=user_local_time:
         raise ValueOutOfRangeError
 
-    target_utc_time = precise_time - timedelta(hours=user_timezone_offset)
+    target_time = precise_time #- timedelta(hours=user_timezone_offset)
 
-    return target_utc_time
+    return target_time
 
 def weekdays_to_numbers(weekdays, start_from_sunday=False):
     # Define the mapping
