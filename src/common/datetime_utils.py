@@ -1,7 +1,9 @@
 from datetime import datetime, timezone, timedelta
 import re
+from zoneinfo import ZoneInfo
 
 from .exceptions import InvalidTimezoneFormat, TimezoneOutOfRangeError, ValueOutOfRangeError
+from database import DatabaseClient
 
 def unix_to_timestamp(unix_time):
     # Convert the Unix timestamp to a datetime object
@@ -11,6 +13,30 @@ def unix_to_timestamp(unix_time):
     formatted_time = dt.strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
     
     return formatted_time
+
+def get_user_time_now(user_id):
+    """
+    Get the current time for a user based on their timezone.
+
+    Args:
+        user_id (int): The ID of the user.
+
+    Returns:
+        datetime: The current datetime for the user in their timezone.
+
+    Notes:
+        - If the user's timezone is not found in the database, it defaults to "Europe/Moscow".
+        - The user's timezone is expected to be stored in the database as a string in the format "utc±offset".
+    """
+    db = DatabaseClient()
+    user_utc = db.get_user_property(user_id, "timezone")
+    if user_utc is None:
+        user_timezone = ZoneInfo("Europe/Moscow")
+    else:
+        offset_hours = int(user_utc.replace("utc", ""))
+        tz_name = f"Etc/GMT{'+' if offset_hours < 0 else '-'}{abs(offset_hours)}"
+        user_timezone = ZoneInfo(tz_name)
+    return datetime.now(user_timezone)
 
 def convert_timezone(timezone_str: str) -> str:
     """

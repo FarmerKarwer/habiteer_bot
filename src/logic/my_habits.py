@@ -5,6 +5,7 @@ import random
 from ._common_imports import *
 from ._common_imports import premade_triggers, callback_weekdays
 from common import (
+	get_user_time_now,
 	add_report_buttons,
 	format_numbered_list,
 	parse_numbers,
@@ -365,7 +366,7 @@ def show_repetition_reminder_set(user_id, chat_id, message_id, callback_data=Non
 	if callback_data:
 		reminder_margin = callback_data.split('_')[-1]
 		reminder_margin = time_values[reminder_margin]
-		timestamp_dt = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S.%fZ")
+		timestamp_dt = get_user_time_now(user_id)
 		reminder_time = timestamp_dt+reminder_margin
 		
 	if text:
