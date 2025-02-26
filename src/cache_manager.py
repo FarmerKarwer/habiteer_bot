@@ -316,7 +316,39 @@ class CacheManager:
         except Exception as e:
             print(f"Error updating current_habit_idx for user_id {user_id}: {e}")
 
+    def update_srbai_report_info(self, user_id, habit_idx, key, value):
+        try:
+            response = self.srbai_table.get_item(Key={'user_id': user_id})
+            item = response.get('Item')
+            if not item:
+                print(f"No item found for user_id: {user_id}")
+                return
+
+            # Deserialize the JSON string into a Python dictionary
+            data = json.loads(item.get('data', '{}'))
+
+            # Update the specific key-value pair
+            data[habit_idx][key] = value
+
+            # Serialize the dictionary back into a JSON string
+            updated_data_json = json.dumps(data)
+
+            # Update the item in the table
+            self.srbai_table.update_item(
+                Key={'user_id': user_id},
+                UpdateExpression="SET #data = :data",
+                ExpressionAttributeNames={
+                    '#data': 'data'  # Use ExpressionAttributeNames to handle reserved keywords
+                },
+                ExpressionAttributeValues={
+                    ':data': updated_data_json
+                }
+            )
+            print(f"Data updated successfully for user_id: {user_id}")
+        except Exception as e:
+            print(f"Error updating data for user_id {user_id}: {e}")
+
 if __name__ == "__main__":
     cache = CacheManager()
-    res = cache.get_daily_report_info(940985788, cache.get_current_habit_idx(940985788))
+    res = cache.get_srbai_report_info(940985788, cache.get_current_srbai_habit_idx(940985788))
     print(res)

@@ -156,6 +156,14 @@ class DatabaseClient:
 		"""
 		result = self.execute_query(query)[0].rows
 		return result
+	
+	def save_srbai_info(self, user_id, habit_id, srbai_score, timestamp):
+		date = datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S.%fZ").strftime("%Y-%m-%d")
+		query = f"""
+		INSERT INTO habit_strength (habit_id, user_id, srbai_score, date, timestamp)
+		VALUES ({habit_id}, {user_id}, {srbai_score}, CAST('{date}' AS Date), TIMESTAMP('{timestamp}'));
+		"""
+		self.execute_query(query)
 
 	def remove_last_habit_log(self, habit_id):
 		query = f"""

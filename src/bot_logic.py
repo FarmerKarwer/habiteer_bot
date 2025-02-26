@@ -163,7 +163,7 @@ def handle_callback_query(message):
 		"scr_report_skipped", "scr_report_skipped_2_cons_times", "scr_report_skipped_notif",
 		"scr_report_keep_skipping_notif", "scr_report_keep_skipping_notif_1",
 		"scr_report_skipped_finish", "scr_report_skipped_notif_finish",
-		"scr_report_skipped_finish_refused", "scr_srbai_no", "scr_srbai_low_no"
+		"scr_report_skipped_finish_refused", "scr_srbai_no"
 		)
 
 	SPECIAL_CALLBACK_HANDLERS = {
@@ -184,12 +184,13 @@ def handle_callback_query(message):
 
 		"scr_srbai_report": lambda: show_srbai_report(user_id, chat_id, message_id),
 		"scr_srbai_tomorrow": lambda: show_srbai_tomorrow(user_id, chat_id, message_id, timestamp),
-		"scr_srbai_in_a_month": lambda: show_srbai_in_a_month(user_id, chat_id, message_id, timestamp),
-		"scr_srbai_question_1": lambda: show_srbai_question_1(user_id, chat_id, message_id),
-		"scr_srbai_question_2": lambda: show_srbai_question_2(user_id, chat_id, message_id),
-		"scr_srbai_question_3": lambda: show_srbai_question_3(user_id, chat_id, message_id),
-		"scr_srbai_question_4": lambda: show_srbai_question_4(user_id, chat_id, message_id),
-		"scr_srbai_result": lambda: show_srbai_result(user_id, chat_id, message_id, timestamp),
+		"scr_srbai_month_later": lambda: show_srbai_in_a_month(user_id, chat_id, message_id, timestamp),
+		"scr_srbai_report_1": lambda: show_srbai_question_1(user_id, chat_id, message_id),
+		"scr_srbai_report_2": lambda: show_srbai_question_2(user_id, chat_id, message_id, callback_data),
+		"scr_srbai_report_3": lambda: show_srbai_question_3(user_id, chat_id, message_id, callback_data),
+		"scr_srbai_report_4": lambda: show_srbai_question_4(user_id, chat_id, message_id, callback_data),
+		"scr_srbai_too_hard": lambda: show_srbai_simplify_habit(user_id, chat_id, message_id),
+		"scr_srbai_low_no": lambda: show_srbai_habit_refused(user_id, chat_id, message_id),
 
 		"scr_0_2": lambda: show_onboarding_secret(user_id, chat_id, message_id),
 		"scr_0_41": lambda: edit_message_reply_markup(chat_id, message_id, json.loads(get_button('scr_0_41'))),
@@ -262,6 +263,11 @@ def handle_callback_query(message):
 	SPECIAL_CALLBACK_SCREENS = SPECIAL_CALLBACK_HANDLERS.keys()
 
 	CONDITIONAL_CALLBACK_HANDLERS = {
+		"scr_srbai_report_2_": lambda: show_srbai_question_2(user_id, chat_id, message_id, callback_data),
+		"scr_srbai_report_3_": lambda: show_srbai_question_3(user_id, chat_id, message_id, callback_data),
+		"scr_srbai_report_4_": lambda: show_srbai_question_4(user_id, chat_id, message_id, callback_data),
+		"scr_srbai_finish_": lambda: show_srbai_result(user_id, chat_id, message_id, timestamp, callback_data),
+
 		"scr_12_proxy_": lambda: show_magic_wanding_return_back(callback_data, user_id, chat_id, message_id),
 		"hab_": lambda: show_predefined_habits(callback_data, user_id, chat_id, message_id),
 		"suitability_": lambda: show_evaluation(callback_data, user_id, chat_id, message_id, type="suitability"),

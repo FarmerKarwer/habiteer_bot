@@ -457,12 +457,34 @@
     ]
   },
 
+  "scr_srbai_tomorrow_to_next": {
+    "inline_keyboard": [
+      [
+        {
+          "text": "К следующей привычке>>",
+          "callback_data": "scr_srbai_report"
+        }
+      ]
+    ]
+  },
+
   "scr_srbai_month_later": {
     "inline_keyboard": [
       [
         {
           "text": "👌Хорошо!",
           "callback_data": "no_scr"
+        }
+      ]
+    ]
+  },
+
+  "scr_srbai_month_later_to_next": {
+    "inline_keyboard": [
+      [
+        {
+          "text": "К следующей привычке>>",
+          "callback_data": "scr_srbai_report"
         }
       ]
     ]
@@ -611,12 +633,34 @@
     ]
   },
 
+  "scr_srbai_high_to_next": {
+    "inline_keyboard": [
+      [
+        {
+          "text": "К следующей привычке>>",
+          "callback_data": "scr_srbai_report"
+        }
+      ]
+    ]
+  },
+
   "scr_srbai_medium": {
     "inline_keyboard": [
       [
         {
           "text": "👌Хорошо!",
           "callback_data": "no_scr"
+        }
+      ]
+    ]
+  },
+
+  "scr_srbai_medium_to_next": {
+    "inline_keyboard": [
+      [
+        {
+          "text": "К следующей привычке>>",
+          "callback_data": "scr_srbai_report"
         }
       ]
     ]
@@ -644,11 +688,16 @@
           "text": "👌Хорошо!",
           "callback_data": "no_scr"
         }
-      ],
+      ]
+    ]
+  },
+
+  "scr_srbai_low_no_to_next": {
+    "inline_keyboard": [
       [
         {
-          "text": "Назад",
-          "callback_data": "scr_srbai_low"
+          "text": "К следующей привычке>>",
+          "callback_data": "scr_srbai_report"
         }
       ]
     ]
@@ -671,12 +720,6 @@
         {
           "text": "👌Хорошо!",
           "callback_data": "no_scr"
-        }
-      ],
-      [
-        {
-          "text": "Назад",
-          "callback_data": "scr_srbai_too_hard"
         }
       ]
     ]

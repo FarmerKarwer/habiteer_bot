@@ -120,6 +120,8 @@ from .srbai_reports import (
 	show_srbai_question_3,
 	show_srbai_question_4,
 	show_srbai_result,
+    show_srbai_simplify_habit,
+    show_srbai_habit_refused,
 	show_srbai_habit_changed
 	)
 
@@ -237,5 +239,7 @@ __all__ = [
 "show_srbai_question_3",
 "show_srbai_question_4",
 "show_srbai_result",
+"show_srbai_simplify_habit",
+"show_srbai_habit_refused",
 "show_srbai_habit_changed"
 ]
