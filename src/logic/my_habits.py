@@ -396,6 +396,7 @@ def show_repetition_reminder_set(user_id, chat_id, message_id, callback_data=Non
 	habit_name = habit_info.get('habit_name', None)
 	new_habit_name = habit_info.get('new_habit_name', None)
 	trigger = habit_info.get('trigger', None)
+	reminder_time_to_update = datetime.strftime(reminder_time, "%Y-%m-%dT%H:%M:%SZ")
 
 	habit_type = "regular"
 	trigger_type = "behavior"
@@ -410,7 +411,7 @@ def show_repetition_reminder_set(user_id, chat_id, message_id, callback_data=Non
 		"type" : f"'{habit_type}'",
 		"trigger_type":f"'{trigger_type}'",
 		"trigger_action_desc":f"'{trigger}'",
-		"repetition_reminder_time":f"CAST('{reminder_time}' AS Datetime)"
+		"repetition_reminder_time":f"CAST('{reminder_time_to_update}' AS Datetime)"
 	}
 
 	for key in data_to_update.keys():
