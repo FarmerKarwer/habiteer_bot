@@ -111,10 +111,10 @@ class DatabaseClient:
 		result = self.execute_query(query)[0].rows
 		return result
 	
-	def get_all_habit_ids_eligible_for_srbai(self):
+	def get_all_habit_ids_eligible_for_srbai(self, user_id):
 		query = f"""
 		SELECT DISTINCT id 
-		FROM habits WHERE type='regular' AND status IN ('tracked', 'marked');
+		FROM habits WHERE user_id={user_id} AND type='regular' AND status IN ('tracked', 'marked');
 		"""
 		result = self.execute_query(query)[0].rows
 		return result

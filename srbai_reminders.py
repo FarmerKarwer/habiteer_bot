@@ -77,18 +77,44 @@ def is_time_to_send(started_tracking_at, status):
 		return False
 
 def send_srbai_report():
-	all_eligible_habits = db.get_all_habit_ids_eligible_for_srbai()
-	for habit in all_eligible_habits:
-		habit_id = habit['id']
-		latest_log = db.get_latest_habit_log_for_srbai(habit_id)
-		if latest_log:
-			status = latest_log[0]['status']
-			started_tracking_at = latest_log[0]['timestamp']
-			if is_time_to_send(started_tracking_at, status)==False:# Change to True in production
-				habit_info = db.get_habit_by_id(habit_id)[0]
-				chat_id = habit_info['user_id']
-				reply = get_reply('srbai_report').replace('[habit]', habit_info['name'])
-				send_text_message(reply, chat_id, keyboard=get_button('scr_srbai_report'))
+	all_users = db.select_all("users")
+	for user in all_users:
+		user_id = user['id']
+		if user_id!=940985788: #Remove this if statement in production
+			continue
+		all_eligible_habits = db.get_all_habit_ids_eligible_for_srbai(user_id)
+		habits_to_send = []
+		for habit in all_eligible_habits:
+			habit_id = habit['id']
+			latest_log = db.get_latest_habit_log_for_srbai(habit_id)
+			if latest_log:
+				status = latest_log[0]['status']
+				started_tracking_at = latest_log[0]['timestamp']
+				if is_time_to_send(started_tracking_at, status)==False:# Change to True in production
+					habit_info = db.get_habit_by_id(habit_id)[0]
+					habit_info = {
+						'id': habit_info['id'],
+						'name': habit_info['name'],
+                    }
+					habits_to_send.append(habit_info)		
+	
+		if len(habits_to_send)==0:
+			continue
+		elif len(habits_to_send)==1:
+			habit_id = habits_to_send[0]["id"]
+			habit_name = habits_to_send[0]["name"]
+			cache.save_srbai_report(user_id, one_habit=True, data=habits_to_send)
+			reply = get_reply('srbai_report').replace('[habit]', habit_name)
+			keyboard = get_button('scr_srbai_report')
+			send_text_message(reply, user_id, keyboard=keyboard)
+		else:
+			habit_id = habits_to_send[0]["id"]
+			habit_name = habits_to_send[0]["name"]
+			cache.save_srbai_report(user_id, one_habit=False, data=habits_to_send)
+			reply = get_reply('srbai_report').replace('[habit]', habit_name)
+			keyboard = get_button('scr_srbai_report')
+			send_text_message(reply, user_id, keyboard=keyboard)
+	return
 	
 if __name__=="__main__":
 	send_srbai_report()

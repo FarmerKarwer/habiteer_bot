@@ -23,6 +23,7 @@ class CacheManager:
         self.updating_habit_table = self.connection.Table('Cache/updating_habit')
 
         self.report_table = self.connection.Table('Cache/passing_report')
+        self.srbai_table = self.connection.Table('Cache/srbai_report')
 
     def save_previous_message(self, data):
         self.message_history_table.put_item(Item=data)
@@ -283,6 +284,37 @@ class CacheManager:
             print(f"Data updated successfully for user_id: {user_id}")
         except Exception as e:
             print(f"Error updating data for user_id {user_id}: {e}")
+
+    def save_srbai_report(self, user_id, one_habit, data):
+        item = {'user_id': user_id, 'one_habit':int(one_habit), 'data': json.dumps(data), 'current_habit_idx':0}
+        self.srbai_table.put_item(Item=item)
+
+    def is_srbai_report_one_habit(self, user_id):
+        response = self.srbai_table.get_item(Key={'user_id': user_id}).get('Item')
+        return bool(response.get('one_habit'))
+    
+    def get_current_srbai_habit_idx(self, user_id):
+        response = self.srbai_table.get_item(Key={'user_id': user_id}).get('Item')
+        return int(response.get('current_habit_idx'))
+    
+    def get_srbai_report_info(self, user_id, habit_idx=None):
+        response = self.srbai_table.get_item(Key={'user_id': user_id}).get('Item')
+        if response is None:
+            return response
+        if habit_idx is None:
+            return json.loads(response.get('data'))
+        return json.loads(response.get('data'))[habit_idx]
+    
+    def set_current_srbai_habit_idx(self, user_id, idx):
+        try:
+            self.srbai_table.update_item(
+                Key={'user_id': user_id},
+                UpdateExpression="SET current_habit_idx = :idx",
+                ExpressionAttributeValues={':idx': idx}
+            )
+            print(f"Updated current_habit_idx for user_id: {user_id} to {idx}")
+        except Exception as e:
+            print(f"Error updating current_habit_idx for user_id {user_id}: {e}")
 
 if __name__ == "__main__":
     cache = CacheManager()
