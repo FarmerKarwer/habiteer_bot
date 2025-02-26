@@ -182,6 +182,15 @@ def handle_callback_query(message):
 		"scr_report_skipped_finish_refused": lambda: show_report_skipped_finish_refused(user_id, chat_id, message_id),
 		"scr_report_skipped_finish": lambda: show_report_skipped_finish(user_id, chat_id, message_id),
 
+		"scr_srbai_report": lambda: show_srbai_report(user_id, chat_id, message_id),
+		"scr_srbai_tomorrow": lambda: show_srbai_tomorrow(user_id, chat_id, message_id, timestamp),
+		"scr_srbai_in_a_month": lambda: show_srbai_in_a_month(user_id, chat_id, message_id, timestamp),
+		"scr_srbai_question_1": lambda: show_srbai_question_1(user_id, chat_id, message_id),
+		"scr_srbai_question_2": lambda: show_srbai_question_2(user_id, chat_id, message_id),
+		"scr_srbai_question_3": lambda: show_srbai_question_3(user_id, chat_id, message_id),
+		"scr_srbai_question_4": lambda: show_srbai_question_4(user_id, chat_id, message_id),
+		"scr_srbai_result": lambda: show_srbai_result(user_id, chat_id, message_id, timestamp),
+
 		"scr_0_2": lambda: show_onboarding_secret(user_id, chat_id, message_id),
 		"scr_0_41": lambda: edit_message_reply_markup(chat_id, message_id, json.loads(get_button('scr_0_41'))),
 		"scr_0_4_back": lambda: edit_message_reply_markup(chat_id, message_id, json.loads(get_button('scr_0_4'))),
@@ -332,6 +341,8 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 		"scr_report_keep_skipping_notif_trigger": lambda: show_report_forgetting_repetition(user_id, chat_id, message_id, text),
 		"scr_report_too_hard": lambda: show_report_skipped_finish(user_id, chat_id, message_id, text),
 		"scr_report_keep_skipping_notif_3": lambda: show_report_keep_skipping_notif_finish(user_id, chat_id, message_id, text, message_info),
+
+		"scr_srbai_too_hard": lambda: show_srbai_habit_changed(user_id, chat_id, message_id, timestamp, text),
 
 		"scr_0_timezone_1": lambda: show_onboarding_habit(user_id, chat_id, message_id, message, timestamp, callback_data=None, text=text, message_info=message_info),
 		"scr_0_5_add_3": lambda: show_onboarding_report_added(user_id, chat_id, message_id, text, timestamp, message_info),

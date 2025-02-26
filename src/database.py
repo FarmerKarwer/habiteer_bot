@@ -110,6 +110,14 @@ class DatabaseClient:
 		"""
 		result = self.execute_query(query)[0].rows
 		return result
+	
+	def get_all_habit_ids_eligible_for_srbai(self):
+		query = f"""
+		SELECT DISTINCT id 
+		FROM habits WHERE type='regular' AND status IN ('tracked', 'marked');
+		"""
+		result = self.execute_query(query)[0].rows
+		return result
 
 	def view_finished_habits(self, user_id):
 		query = f"""
@@ -137,6 +145,15 @@ class DatabaseClient:
 			SELECT date, timestamp
 			FROM habit_logs WHERE habit_id={habit_id} AND status='{status}'
 			"""
+		result = self.execute_query(query)[0].rows
+		return result
+	
+	def get_latest_habit_log_for_srbai(self, habit_id):
+		query = f"""
+		SELECT date, timestamp, status FROM habit_logs 
+		WHERE habit_id={habit_id} AND status IN ('started', 'srbai_reschedule_1m', 'srbai_reschedule_1d')
+		ORDER BY timestamp DESC LIMIT 1
+		"""
 		result = self.execute_query(query)[0].rows
 		return result
 

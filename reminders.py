@@ -94,11 +94,6 @@ def send_daily_report():
 				keyboard = get_button('scr_report')
 				send_text_message(reply, chat_id, keyboard=keyboard)
 
-def send_srbai_report():
-	chat_id = 940985788
-	reply = get_reply('srbai_report').replace('[habit]', "тестовая привычка")
-	send_text_message(reply, chat_id, keyboard=get_button('scr_srbai_report'))
-
 def send_repetition_reminder():
 	pass
 
