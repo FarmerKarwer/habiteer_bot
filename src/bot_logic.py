@@ -235,6 +235,7 @@ def handle_callback_query(message):
 		"scr_23_1": lambda: show_premade_triggers(user_id, chat_id, message_id),
 		"scr_24": lambda: show_habit_repetition(user_id, chat_id, message_id, callback_data=callback_data, text=None),
 		"scr_24_resume": lambda: show_habit_repetition(user_id, chat_id, message_id, callback_data=callback_data, text=None),
+		"scr_24_resume_from_reminder": lambda: show_habit_repetition(user_id, chat_id, message_id, callback_data=callback_data, text=None),
 		"scr_27": lambda: show_set_trigger_notification_confirmation(user_id, chat_id, message_id),
 		"scr_28_1": lambda: show_choose_weekdays(user_id, chat_id, message_id, scr_name='scr_28_1'),
 		"scr_29": lambda: show_pick_report_for_habit(user_id, chat_id, message_id, callback_data=callback_data),

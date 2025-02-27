@@ -2748,6 +2748,24 @@
       ]
     ]
   },
+
+  "scr_24_resume_from_reminder":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Я отрепетировал!",
+          "callback_data": "scr_29"
+        }
+      ],
+      [
+        {
+          "text": "Пока не могу...",
+          "callback_data": "no_scr"
+        }
+      ]
+    ]
+  },
+
   "scr_25":{
     "inline_keyboard": [
       [

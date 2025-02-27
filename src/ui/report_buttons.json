@@ -730,7 +730,7 @@
       [
         {
           "text": "Начать репетицию ⏯️",
-          "callback_data": "scr_24_resume"
+          "callback_data": "scr_24_resume_from_reminder"
         }
       ]
     ]

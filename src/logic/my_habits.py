@@ -338,21 +338,25 @@ def show_habit_repetition(user_id, chat_id, message_id, callback_data=None, text
 	if text:
 		chosen_trigger = text
 		cache.update_updating_habit_info(user_id, "trigger", chosen_trigger)
-	if callback_data and callback_data!="scr_24" and callback_data!="scr_24_resume":
+	if callback_data and callback_data not in ("scr_24", "scr_24_resume", "scr_24_resume_from_reminder"):
 		trigger_options = cache.get_updating_habit_info(user_id, "trigger_options")
 		chosen_trigger_idx = int(callback_data.split('_')[-1])-1
 		chosen_trigger = trigger_options[chosen_trigger_idx]
 		cache.update_updating_habit_info(user_id, "trigger", chosen_trigger)
 	if callback_data=="scr_24":
 		chosen_trigger = cache.get_updating_habit_info(user_id, "trigger")
-	if callback_data=="scr_24_resume":
+	if callback_data in ("scr_24_resume", "scr_24_resume_from_reminder"):
 		habit_id = cache.get_updating_habit_info(user_id, "habit_id")
 		chosen_trigger = db.get_habit_by_id(habit_id)[0].get("trigger_action_desc")
 		cache.update_updating_habit_info(user_id, "trigger", chosen_trigger)
 
 		reply = replies['24_resume'].replace('[trigger]', chosen_trigger)
 		reply = reply.replace('[habit]', habit_name)
-		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_24_resume'))
+		if callback_data=="scr_24_resume":
+			keyboard=get_button('scr_24_resume')
+		elif callback_data=="scr_24_resume_from_reminder":
+			keyboard=get_button('scr_24_resume_from_reminder')
+		switch_screen(reply, chat_id, message_id, keyboard=keyboard)
 		return
 	reply = replies['24'].replace('[trigger]', chosen_trigger)
 	reply = reply.replace('[habit]', habit_name)
