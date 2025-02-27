@@ -158,6 +158,8 @@ def show_habit_info(text, user_id, chat_id, message_id, message_info, timestamp)
 			if single_notif_time is None:
 				reply = reply.replace('[datetime]', '_не указано_')
 			else:
+				single_notif_time = datetime.fromtimestamp(single_notif_time)
+				single_notif_time = single_notif_time.strftime("%d.%m.%Y %H:%M")
 				reply = reply.replace('[datetime]', single_notif_time)
 			keyboard = get_button('scr_3_1_one_time')
 

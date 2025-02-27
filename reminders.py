@@ -126,7 +126,27 @@ def send_avoid_trigger_reminder():
 
 
 def send_trigger_reminder():
-	pass
+	habits = db.select_all("habits")
+	for habit in habits:
+		user_id = habit["user_id"]
+		if user_id!=940985788: #Remove this if statement in production
+			continue
+		reminder_period = habit["trigger_reminder_period"]
+		reminder_time = habit["trigger_reminder_time"]
+		if reminder_period is None or reminder_time is None:
+			continue
+		reminder_period = json.loads(reminder_period)
+		user_now = get_user_time_now(user_id)
+		user_weekday_number = user_now.weekday() + 1
+		user_time_hhmm = user_now.strftime("%H:%M")
+		is_time_to_send = (user_time_hhmm == reminder_time) and (user_weekday_number in reminder_period)
+		if is_time_to_send==False:# Remove ==False in production
+			chat_id = user_id
+			trigger = habit["trigger_action_desc"]
+			habit_name = habit["name"]
+			reply = get_reply('trigger_reminder').replace('[trigger]', trigger).replace('[habit]', habit_name)
+			keyboard = get_button('scr_trigger_reminder')
+			send_text_message(reply, chat_id, keyboard=keyboard)
 
 if __name__=="__main__":
 	send_avoid_trigger_reminder()
