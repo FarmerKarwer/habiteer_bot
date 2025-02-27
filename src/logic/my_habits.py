@@ -581,7 +581,10 @@ def show_mark_habit_as_completed(user_id, chat_id, message_id, timestamp):
 		period = db.get_report_by_id(report_id)[0]['on_weekdays']
 		period = json.loads(period)
 
-		current_streak, max_streak = calculate_streak(logs, timestamp, period).values()
+		if period!=[1,2,3,4,5,6,7]:
+			current_streak, max_streak = calculate_streak(logs, timestamp, period).values()
+		else:
+			current_streak, max_streak = calculate_usual_streak(logs, timestamp).values()
 	else:
 		current_streak, max_streak = calculate_usual_streak(logs, timestamp).values()
 
@@ -614,7 +617,10 @@ def show_reset_habit_completion(user_id, chat_id, message_id, timestamp):
 		period = db.get_report_by_id(report_id)[0]['on_weekdays']
 		period = json.loads(period)
 
-		current_streak, max_streak = calculate_streak(logs, timestamp, period).values()
+		if period!=[1,2,3,4,5,6,7]:
+			current_streak, max_streak = calculate_streak(logs, timestamp, period).values()
+		else:
+			current_streak, max_streak = calculate_usual_streak(logs, timestamp).values()
 	else:
 		current_streak, max_streak = calculate_usual_streak(logs, timestamp).values()
 

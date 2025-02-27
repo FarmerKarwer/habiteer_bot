@@ -67,28 +67,42 @@ def send_daily_report():
 	for report in reports:
 		if is_time_to_send(report)==False: # Remove ==False in production
 			tied_habits = db.get_user_habits_linked_to_report(report["id"])
+			user_now = get_user_time_now(report["user_id"])
 			if len(tied_habits)==0:
 				continue
 			elif len(tied_habits)==1:
 				habit_id = tied_habits[0]["h.id"]
-				habits_info = db.get_habit_by_id(habit_id)
-				habit_info = habits_info[0]
-				cache.save_daily_report_info(report["user_id"], one_habit=True, data=habits_info)
+				if is_habit_already_marked(habit_id, user_now):
+					continue
+				else:
+					habits_info = db.get_habit_by_id(habit_id)
+					habit_info = habits_info[0]
+					print(is_habit_already_marked(habit_id, user_now))
+					cache.save_daily_report_info(report["user_id"], one_habit=True, data=habits_info)
 
-				chat_id = report["user_id"]
-				reply = get_reply('report').replace('[habit]', habit_info["name"])
-				keyboard = get_button('scr_report')
-				send_text_message(reply, chat_id, keyboard=keyboard)
+					chat_id = report["user_id"]
+					reply = get_reply('report').replace('[habit]', habit_info["name"])
+					keyboard = get_button('scr_report')
+					send_text_message(reply, chat_id, keyboard=keyboard)
 			else:
 				habits_info = []
 				for habit in tied_habits:
 					habit_id = habit["h.id"]
-					habit_info = db.get_habit_by_id(habit_id)[0]
-					habits_info.append(habit_info)
-				cache.save_daily_report_info(report["user_id"], one_habit=False, data=habits_info)
+					if is_habit_already_marked(habit_id, user_now):
+						continue
+					else:
+						habit_info = db.get_habit_by_id(habit_id)[0]
+						habits_info.append(habit_info)
 
-				habit_id = tied_habits[0]["h.id"]
-				habit_info = db.get_habit_by_id(habit_id)[0]
+				if len(habits_info)==0:
+					continue
+				elif len(habits_info)==1:
+					one_habit = True
+				else:
+					one_habit = False
+				cache.save_daily_report_info(report["user_id"], one_habit=one_habit, data=habits_info)
+
+				habit_info = habits_info[0]
 				chat_id = report["user_id"]
 				reply = get_reply('report').replace('[habit]', habit_info["name"])
 				keyboard = get_button('scr_report')
@@ -216,5 +230,55 @@ def send_trigger_reminder():
 		else:
 			continue
 
+def is_habit_already_marked(habit_id, datetime_obj):
+    # 1. Get habit logs for the habit_id with status "completed"
+    habit_logs = db.get_habit_logs_for_habit(habit_id, status="completed")
+    
+    # 2. Get the report period (scheduled weekdays)
+    habit = db.get_habit_by_id(habit_id)[0]
+    report_id = habit.get("report_id", None)
+    
+    if report_id is None:
+        # If no report_id, the period is every day: [1, 2, 3, 4, 5, 6, 7]
+        period = [1, 2, 3, 4, 5, 6, 7]
+    else:
+        report = db.get_report_by_id(report_id)[0]
+        period = json.loads(report['on_weekdays'])
+    
+    # 3. Determine today's date and its weekday
+    # Convert the provided timestamp to a date object.
+    current_date = datetime_obj.date()
+    # Python's datetime.weekday() returns 0 for Monday, so adjust to [1-7].
+    current_weekday = current_date.weekday() + 1
+    
+    # 4. Determine the target date that should have been marked.
+    # If today is a scheduled day, target is today.
+    if current_weekday in period:
+        target_date = current_date
+    else:
+        # Otherwise, look backwards up to 7 days to find the most recent scheduled day.
+        target_date = None
+        for days_back in range(1, 8):
+            candidate_date = current_date - datetime.timedelta(days=days_back)
+            candidate_weekday = candidate_date.weekday() + 1
+            if candidate_weekday in period:
+                target_date = candidate_date
+                break
+        if target_date is None:
+            # This should not occur if period is non-empty.
+            return False
+
+    # 5. Convert target_date to an integer representing days since epoch.
+    epoch_date = datetime.datetime(1970, 1, 1).date()
+    target_date_int = (target_date - epoch_date).days
+
+    # 6. Check if any log in habit_logs matches the target_date.
+    for log in habit_logs:
+        # Using an exact match on the 'date' field.
+        if log.get("date") == target_date_int:
+            return True
+
+    return False
+
 if __name__=="__main__":
-	send_repetition_reminder()
+	send_daily_report()
