@@ -427,10 +427,11 @@ def show_repetition_reminder_set(user_id, chat_id, message_id, callback_data=Non
 def show_set_trigger_notification_confirmation(user_id, chat_id, message_id):
 	habit_info = cache.get_updating_habit_info(user_id)
 	habit_name = habit_info['habit_name']
-	new_habit_name = habit_info['new_habit_name']
+	if 'new_habit_name' in habit_info:
+		new_habit_name = habit_info['new_habit_name']
+		if new_habit_name:
+			habit_name = new_habit_name
 	trigger = habit_info['trigger']
-	if new_habit_name:
-		habit_name = new_habit_name
 	reply = replies['27'].replace('[trigger]', trigger)
 	reply = reply.replace('[habit]', habit_name)
 
