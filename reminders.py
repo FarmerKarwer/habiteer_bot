@@ -77,7 +77,6 @@ def send_daily_report():
 				else:
 					habits_info = db.get_habit_by_id(habit_id)
 					habit_info = habits_info[0]
-					print(is_habit_already_marked(habit_id, user_now))
 					cache.save_daily_report_info(report["user_id"], one_habit=True, data=habits_info)
 
 					chat_id = report["user_id"]
