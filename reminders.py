@@ -164,21 +164,25 @@ def send_avoid_trigger_reminder():
 			continue
 		reminder_period = habit["avoid_trigger_notif_period"]
 		reminder_time = habit["avoid_trigger_notif_time"]
-		if reminder_period is None or reminder_time is None:
+		if reminder_period == "None":
+			reminder_period = None
+		reminder_exists = (reminder_period is not None) and (reminder_time is not None)
+		if not reminder_exists:
 			continue
-		reminder_period = json.loads(reminder_period)
-		user_now = get_user_time_now(user_id)
-		user_weekday_number = user_now.weekday() + 1
-		user_time_hhmm = user_now.strftime("%H:%M")
-		is_time_to_send = (user_time_hhmm == reminder_time) and (user_weekday_number in reminder_period)
-		if is_time_to_send==False:# Remove ==False in production
-			chat_id = user_id
-			if habit["avoid_trigger_notif_text"]:
-				reply = habit["avoid_trigger_notif_text"]
-			else:
-				reply = get_reply('avoid_trigger_reminder')
-			keyboard = get_button('scr_avoid_trigger_reminder')
-			send_text_message(reply, chat_id, keyboard=keyboard)
+		else:
+			reminder_period = json.loads(reminder_period)
+			user_now = get_user_time_now(user_id)
+			user_weekday_number = user_now.weekday() + 1
+			user_time_hhmm = user_now.strftime("%H:%M")
+			is_time_to_send = (user_time_hhmm == reminder_time) and (user_weekday_number in reminder_period)
+			if is_time_to_send==False:# Remove ==False in production
+				chat_id = user_id
+				if habit["avoid_trigger_notif_text"]:
+					reply = habit["avoid_trigger_notif_text"]
+				else:
+					reply = get_reply('avoid_trigger_reminder')
+				keyboard = get_button('scr_avoid_trigger_reminder')
+				send_text_message(reply, chat_id, keyboard=keyboard)
 
 
 def send_trigger_reminder():
@@ -189,20 +193,28 @@ def send_trigger_reminder():
 			continue
 		reminder_period = habit["trigger_reminder_period"]
 		reminder_time = habit["trigger_reminder_time"]
-		if reminder_period is None or reminder_time is None:
+		if reminder_period == "None":
+			reminder_period = None
+		reminder_exists = (reminder_period is not None) and (reminder_time is not None)
+		
+		if reminder_exists:
+			reminder_period = json.loads(reminder_period)
+			user_now = get_user_time_now(user_id)
+			user_weekday_number = user_now.weekday() + 1
+			user_time_hhmm = user_now.strftime("%H:%M")
+			is_time_to_send = (user_time_hhmm == reminder_time) and (user_weekday_number in reminder_period)
+			if is_time_to_send==False:# Remove ==False in production
+				chat_id = user_id
+				trigger = habit["trigger_action_desc"]
+				habit_name = habit["name"]
+				if trigger:
+					reply = get_reply('trigger_reminder').replace('[trigger]', trigger).replace('[habit]', habit_name)
+				else:
+					reply = get_reply('notification_reminder').replace('[habit]', habit_name)
+				keyboard = get_button('scr_trigger_reminder')
+				send_text_message(reply, chat_id, keyboard=keyboard)
+		else:
 			continue
-		reminder_period = json.loads(reminder_period)
-		user_now = get_user_time_now(user_id)
-		user_weekday_number = user_now.weekday() + 1
-		user_time_hhmm = user_now.strftime("%H:%M")
-		is_time_to_send = (user_time_hhmm == reminder_time) and (user_weekday_number in reminder_period)
-		if is_time_to_send==False:# Remove ==False in production
-			chat_id = user_id
-			trigger = habit["trigger_action_desc"]
-			habit_name = habit["name"]
-			reply = get_reply('trigger_reminder').replace('[trigger]', trigger).replace('[habit]', habit_name)
-			keyboard = get_button('scr_trigger_reminder')
-			send_text_message(reply, chat_id, keyboard=keyboard)
 
 if __name__=="__main__":
 	send_repetition_reminder()
