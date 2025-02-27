@@ -747,7 +747,7 @@
     ]
   },
 
-  "avoid_trigger_reminder": {
+  "scr_avoid_trigger_reminder": {
     "inline_keyboard": [
       [
         {
@@ -758,7 +758,7 @@
     ]
   },
 
-  "one_time_habit_reminder": {
+  "scr_one_time_habit_reminder": {
     "inline_keyboard": [
       [
         {

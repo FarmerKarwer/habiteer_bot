@@ -65,7 +65,7 @@ def is_time_to_send(report):
 def send_daily_report():
 	reports = db.view_all_reports()
 	for report in reports:
-		if is_time_to_send(report)==False: # Change to True in production
+		if is_time_to_send(report)==False: # Remove ==False in production
 			tied_habits = db.get_user_habits_linked_to_report(report["id"])
 			if len(tied_habits)==0:
 				continue
@@ -97,14 +97,36 @@ def send_daily_report():
 def send_repetition_reminder():
 	pass
 
-def send_trigger_reminder():
-	pass
-
 def send_single_notification():
 	pass
 
 def send_avoid_trigger_reminder():
+	habits = db.select_all("habits")
+	for habit in habits:
+		user_id = habit["user_id"]
+		if user_id!=940985788: #Remove this if statement in production
+			continue
+		reminder_period = habit["avoid_trigger_notif_period"]
+		reminder_time = habit["avoid_trigger_notif_time"]
+		if reminder_period is None or reminder_time is None:
+			continue
+		reminder_period = json.loads(reminder_period)
+		user_now = get_user_time_now(user_id)
+		user_weekday_number = user_now.weekday() + 1
+		user_time_hhmm = user_now.strftime("%H:%M")
+		is_time_to_send = (user_time_hhmm == reminder_time) and (user_weekday_number in reminder_period)
+		if is_time_to_send==False:# Remove ==False in production
+			chat_id = user_id
+			if habit["avoid_trigger_notif_text"]:
+				reply = habit["avoid_trigger_notif_text"]
+			else:
+				reply = get_reply('avoid_trigger_reminder')
+			keyboard = get_button('scr_avoid_trigger_reminder')
+			send_text_message(reply, chat_id, keyboard=keyboard)
+
+
+def send_trigger_reminder():
 	pass
 
 if __name__=="__main__":
-	send_daily_report()
+	send_avoid_trigger_reminder()
