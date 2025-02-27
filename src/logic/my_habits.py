@@ -863,15 +863,17 @@ def show_one_time_habit_created(text, chat_id, message_id, user_id, timestamp, m
 	reminder_date = text
 	try:
 		validate_datetime(reminder_date)
+		formatted_reminder_date = datetime.strptime(reminder_date, "%d.%m.%y %H:%M")
+		formatted_reminder_date = formatted_reminder_date.strftime("%Y-%m-%dT%H:%M:%SZ")
 		habit_id = cache.get_updating_habit_info(user_id, "habit_id")
-		db.update_habit(habit_id, "single_notif_time", f"'{reminder_date}'")
+		db.update_habit(habit_id, "single_notif_time", f"CAST('{formatted_reminder_date}' AS Datetime)")
 		db.update_habit(habit_id, "type", f"'one-time'")
 		db.update_habit(habit_id, "last_updated", f"CAST('{timestamp}'AS Timestamp)")
 		db.update_habit(habit_id, "status", f"'tracked'")
 
 		reply = replies['38_done'].replace('[datetime]', reminder_date)
 		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_38_done'))
-	except ValueError:
+	except ValueError as e:
 		reply = "Неверно указана дата. Пожалуйста, укажите дату в формате DD.MM.YY HH:MM"
 		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_38'))
 		message_info["callback_data"]="scr_38"
