@@ -2473,7 +2473,7 @@
       [
         {
           "text": "Хочу выполнить один раз",
-          "callback_data": "scr_38"
+          "callback_data": "scr_38_reminder_question"
         }
       ],
       [
@@ -3329,12 +3329,41 @@
       ]
     ]
   },
+
+  "scr_38_reminder_question":{
+    "inline_keyboard":[
+      [
+          {
+            "text":"✅Да",
+            "callback_data":"scr_38"
+          },
+          {
+            "text":"❌Нет",
+            "callback_data":"scr_38_no_reminder"
+          }
+      ],
+      [
+        {
+          "text":"Назад",
+          "callback_data":"scr_21"
+        }
+      ],
+      [
+          {
+            "text":"В главное меню",
+            "callback_data":"scr_1"
+          }
+      ]
+        
+    ]
+  },
+
   "scr_38":{
     "inline_keyboard": [
       [
         {
           "text": "Назад",
-          "callback_data": "scr_21"
+          "callback_data": "scr_38_reminder_question"
         }
       ],
       [
@@ -3346,6 +3375,16 @@
     ]
   },
   "scr_38_done":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_38_no_reminder":{
     "inline_keyboard": [
       [
         {

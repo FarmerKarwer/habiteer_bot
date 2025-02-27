@@ -155,7 +155,10 @@ def show_habit_info(text, user_id, chat_id, message_id, message_info, timestamp)
 			single_notif_time = habits[habit_idx].get("single_notif_time", None)
 			reply = replies['3_1']['one-time'].replace('[habit]', habit_name)
 			reply = reply.replace('[type]', "Одноразовая")
-			reply = reply.replace('[datetime]', single_notif_time)
+			if single_notif_time is None:
+				reply = reply.replace('[datetime]', '_не указано_')
+			else:
+				reply = reply.replace('[datetime]', single_notif_time)
 			keyboard = get_button('scr_3_1_one_time')
 
 		if aspiration is None or aspiration=="None":
@@ -859,6 +862,11 @@ def show_change_bad_habit_hardened(text, user_id, chat_id, message_id, timestamp
 	
 	switch_screen(replies['3_1_bad_habit_harden_behavior_finished'], chat_id, message_id, keyboard=get_button('scr_3_7'))
 
+def show_one_time_habit_reminder_question(user_id, chat_id, message_id):
+	habit_name = cache.get_updating_habit_info(user_id, "habit_name")
+	reply = replies['38_reminder_question'].replace('[habit]', habit_name)
+	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_38_reminder_question'))
+
 def show_one_time_habit_created(text, chat_id, message_id, user_id, timestamp, message_info):
 	reminder_date = text
 	try:
@@ -877,6 +885,14 @@ def show_one_time_habit_created(text, chat_id, message_id, user_id, timestamp, m
 		reply = "Неверно указана дата. Пожалуйста, укажите дату в формате DD.MM.YY HH:MM"
 		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_38'))
 		message_info["callback_data"]="scr_38"
+
+def show_one_time_habit_created_no_reminder(user_id, chat_id, message_id, timestamp):
+	habit_id = cache.get_updating_habit_info(user_id, "habit_id")
+	db.update_habit(habit_id, "type", f"'one-time'")
+	db.update_habit(habit_id, "last_updated", f"CAST('{timestamp}'AS Timestamp)")
+	db.update_habit(habit_id, "status", f"'tracked'")
+
+	switch_screen(replies['38_no_reminder'], chat_id, message_id, keyboard=get_button('scr_38_no_reminder'))
 
 def show_one_time_habit_completed(user_id, chat_id, message_id):
 	habit_id = cache.get_updating_habit_info(user_id, "habit_id")

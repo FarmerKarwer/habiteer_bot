@@ -245,6 +245,8 @@ def handle_callback_query(message):
 		"scr_33_2": lambda: show_choose_weekdays(user_id, chat_id, message_id, scr_name='scr_33_2'),
 		"scr_33_finished": lambda: show_bad_habit_tracked_with_reminder(user_id, chat_id, message_id, timestamp, text=None),
 		"scr_37": lambda: show_hardening_bad_habit(user_id, chat_id, message_id),
+		"scr_38_reminder_question": lambda: show_one_time_habit_reminder_question(user_id, chat_id, message_id),
+		"scr_38_no_reminder": lambda: show_one_time_habit_created_no_reminder(user_id, chat_id, message_id, timestamp),
 		"scr_review_sent": lambda: show_review_sent(user_id, chat_id, message_id, timestamp),
 		"scr_40": lambda: show_user_timezone(user_id, chat_id, message_id),
 		"scr_41": lambda: show_all_reports_in_settings(user_id, chat_id, message_id),
