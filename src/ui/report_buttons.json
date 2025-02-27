@@ -723,5 +723,49 @@
         }
       ]
     ]
+  },
+
+  "scr_repetition_reminder": {
+    "inline_keyboard": [
+      [
+        {
+          "text": "Начать репетицию ⏯️",
+          "callback_data": "scr_24_resume"
+        }
+      ]
+    ]
+  },
+
+  "scr_trigger_reminder": {
+    "inline_keyboard": [
+      [
+        {
+          "text": "👌Хорошо!",
+          "callback_data": "no_scr"
+        }
+      ]
+    ]
+  },
+
+  "avoid_trigger_reminder": {
+    "inline_keyboard": [
+      [
+        {
+          "text": "👌Хорошо!",
+          "callback_data": "no_scr"
+        }
+      ]
+    ]
+  },
+
+  "one_time_habit_reminder": {
+    "inline_keyboard": [
+      [
+        {
+          "text": "Отметить выполнение ✅",
+          "callback_data": "scr_3_2_one_time_proxy"
+        }
+      ]
+    ]
   }
 }
