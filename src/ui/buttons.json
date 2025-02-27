@@ -1419,6 +1419,22 @@
     ]
   },
 
+  "scr_3_2_one_time_proxy_from_reminder":{
+    "inline_keyboard":[
+      [
+          {
+            "text":"✅Да",
+            "callback_data":"scr_3_2_one_time_completed"
+          },
+          {
+            "text":"❌Нет",
+            "callback_data":"no_scr"
+          }
+      ]
+        
+    ]
+  },
+
   "scr_3_2_proxy_reset":{
     "inline_keyboard":[
       [

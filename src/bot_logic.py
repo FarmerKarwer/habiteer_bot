@@ -151,7 +151,7 @@ def handle_callback_query(message):
 		"scr_2", "scr_3_2_proxy", "scr_3_1_trigger_type", "scr_3_1_reminder_1",
 		"scr_3_1_bad_habit_fighting_method", "scr_3_1_bad_habit_avoid_trigger", "scr_3_1_bad_habit_avoid_trigger_1",
 		"scr_3_2_proxy_reset", "scr_3_2_bad_habit_proxy_reset", "scr_3_2_proxy_resume", "scr_3_2_one_time_proxy",
-		"scr_3_2_bad_habit_proxy", "scr_3_2_forbidden", "scr_3_4_change_1", 
+		"scr_3_2_one_time_proxy_from_reminder", "scr_3_2_bad_habit_proxy", "scr_3_2_forbidden", "scr_3_4_change_1", 
 		"scr_6", "scr_9", "scr_10", "scr_12", "scr_13", "scr_3_3",
 		"scr_16", "scr_17", "scr_19", "scr_22", "scr_22_1",
 		"scr_review", "scr_25", "scr_26", "scr_26_1", "scr_28", 

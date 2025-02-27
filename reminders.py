@@ -101,7 +101,7 @@ def send_repetition_reminder():
 		if user_id!=940985788: #Remove this if statement in production
 			continue
 		reminder_datetime = habit["repetition_reminder_time"]
-		if reminder_datetime is None:
+		if reminder_datetime is None or habit["status"]!="pending":
 			continue
 		user_now = get_user_time_now(user_id)
 		reminder_minutes = reminder_datetime// 60
@@ -123,10 +123,38 @@ def send_repetition_reminder():
 			"report_name":None
 		}
 
-		cache.save_updating_habit_info(user_id, new_data)
+			cache.save_updating_habit_info(user_id, new_data)
 
 def send_single_notification():
-	pass
+	habits = db.select_all("habits")
+	for habit in habits:
+		user_id = habit["user_id"]
+		if user_id!=940985788: #Remove this if statement in production
+			continue
+		reminder_datetime = habit["single_notif_time"]
+		if reminder_datetime is None:
+			continue
+		user_now = get_user_time_now(user_id)
+		reminder_minutes = reminder_datetime// 60
+		user_now_minutes = int(user_now.replace(tzinfo=datetime.timezone.utc).timestamp() // 60)
+		
+		is_time_to_send = reminder_minutes==user_now_minutes
+
+		if is_time_to_send==False:# Remove ==False in production
+			chat_id = user_id
+			reply = get_reply('one_time_habit_reminder').replace('[habit]', habit["name"])
+			keyboard = get_button('scr_one_time_habit_reminder')
+			send_text_message(reply, chat_id, keyboard=keyboard)
+
+			new_data = {
+			"habit_id":habit['id'],
+			"habit_name": habit['name'].capitalize(),
+			"status":habit['status'],
+			"aspiration":habit['aspiration'],
+			"report_name":None
+		}
+
+			cache.save_updating_habit_info(user_id, new_data)
 
 def send_avoid_trigger_reminder():
 	habits = db.select_all("habits")

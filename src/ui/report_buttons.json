@@ -763,7 +763,7 @@
       [
         {
           "text": "Отметить выполнение ✅",
-          "callback_data": "scr_3_2_one_time_proxy"
+          "callback_data": "scr_3_2_one_time_proxy_from_reminder"
         }
       ]
     ]
