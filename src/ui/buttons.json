@@ -1809,6 +1809,157 @@
     ]
   },
 
+  "scr_3_5_proxy":{
+    "inline_keyboard":[
+        [
+          {
+            "text":"Изменить время",
+            "callback_data":"scr_3_5_time_1"
+          }
+        ],
+
+        [
+          {
+            "text":"Отключить напоминания",
+            "callback_data":"scr_3_5_turn_off"
+          }
+        ],
+
+        [
+          {
+            "text":"Назад",
+            "callback_data":"scr_3_1"
+          }
+        ],
+
+        [
+          {
+            "text":"В главное меню",
+            "callback_data":"scr_1"
+          }
+      ]
+        
+    ]
+  },
+
+  "scr_3_5_time_1":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Каждый день",
+          "callback_data": "scr_3_5_time_3"
+        }
+      ],
+      [
+        {
+          "text": "Выбрать дни недели >>",
+          "callback_data": "scr_3_5_time_2"
+        }
+      ],
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_3_1"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_3_5_time_2":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Пн",
+          "callback_data": "mon"
+        },
+        {
+          "text": "Вт",
+          "callback_data": "tue"
+        },
+        {
+          "text": "Ср",
+          "callback_data": "wed"
+        },
+        {
+          "text": "Чт",
+          "callback_data": "thu"
+        }
+      ],
+      [
+        {
+          "text": "Пт",
+          "callback_data": "fri"
+        },
+        {
+          "text": "Сб",
+          "callback_data": "sat"
+        },
+        {
+          "text": "Вс",
+          "callback_data": "sun"
+        }
+      ],
+      [
+        {
+          "text": "Подтвердить",
+          "callback_data": "scr_3_5_time_3"
+        }
+      ],
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_3_5_time_1"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_3_5_time_3":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_3_5_time_1"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+
+  "scr_3_5_turn_off":{
+    "inline_keyboard":[
+        [
+          {
+            "text":"Вернуться к привычке",
+            "callback_data":"scr_3_1"
+          }
+      ],
+
+        [
+          {
+            "text":"В главное меню",
+            "callback_data":"scr_1"
+          }
+      ]
+        
+    ]
+  },
+
   "scr_3_7":{
     "inline_keyboard":[
         [

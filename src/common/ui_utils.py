@@ -138,3 +138,32 @@ def change_button(keyboard, row, col, changes):
     
     # Return the updated keyboard as a JSON string.
     return json.dumps(keyboard, ensure_ascii=False)
+
+def insert_inline_keyboard_row(keyboard: dict, new_row: list, position: int) -> dict:
+    """
+    Inserts a new row into the inline_keyboard at a specified position.
+
+    Parameters:
+        keyboard (dict): A dictionary with an "inline_keyboard" key,
+                         e.g., {"inline_keyboard": [[...], [...], ...]}.
+        new_row (list): A list of dicts representing a new keyboard row.
+        position (int): The index at which to insert the new_row.
+                        For example, position=1 inserts between row 0 and row 1.
+
+    Returns:
+        dict: The updated keyboard dictionary.
+
+    Raises:
+        KeyError: If the keyboard does not contain the "inline_keyboard" key.
+        IndexError: If the position is out of range.
+    """
+    if "inline_keyboard" not in keyboard:
+        raise KeyError("The keyboard does not have an 'inline_keyboard' key.")
+
+    rows = keyboard["inline_keyboard"]
+    if not 0 <= position <= len(rows):
+        raise IndexError("Position must be between 0 and the number of rows.")
+
+    rows.insert(position, new_row)
+    return keyboard
+

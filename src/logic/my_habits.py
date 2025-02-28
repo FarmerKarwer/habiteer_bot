@@ -19,7 +19,8 @@ from common import (
 	calculate_usual_streak,
 	calculate_streak_for_bad_habit,
 	get_days_string,
-	validate_datetime
+	validate_datetime,
+	insert_inline_keyboard_row
 	)
 from common.exceptions import ValueOutOfRangeError
 
@@ -122,6 +123,15 @@ def show_habit_info(text, user_id, chat_id, message_id, message_info, timestamp)
 					trigger_desc = f"Каждый {trigger_period} в {trigger_time}"
 			elif trigger_type=="behavior":
 				trigger_desc = habits[habit_idx].get("trigger_action_desc")
+				trigger_reminder = habits[habit_idx].get("trigger_reminder_period", None)
+				if trigger_reminder:
+					new_button = [{"text": "Изменить напоминания о триггере", "callback_data": "scr_3_5_proxy"}]
+					updated_keyboard = insert_inline_keyboard_row(json.loads(keyboard), new_button, 3)
+					keyboard = json.dumps(updated_keyboard)
+				else:
+					new_button = [{"text": "Добавить напоминания о триггере", "callback_data": "scr_3_5_time_1"}]
+					updated_keyboard = insert_inline_keyboard_row(json.loads(keyboard), new_button, 3)
+					keyboard = json.dumps(updated_keyboard)
 
 			reply = reply.replace('[trigger]', trigger_desc)
 			reply = reply.replace('[type]', "Обычная")
@@ -718,6 +728,58 @@ def show_report_updated_for_habit(user_id, chat_id, message_id, callback_data=No
 	db.update_habit(habit_id, "last_updated", f"CAST('{timestamp}'AS Timestamp)")
 
 	switch_screen(replies['3_4_changed'], chat_id, message_id, keyboard=get_button('scr_3_4_changed'))
+
+def show_change_or_delete_trigger_reminder(user_id, chat_id, message_id):
+	weekdays_rus_dict = {
+			"mon":"понедельник",
+			"tue":"вторник",
+			"wed":"среда",
+			"thu":"четверг",
+			"fri":"пятница",
+			"sat":"суббота",
+			"sun":"воскресенье"
+		}
+	weekdays_order = list(weekdays_rus_dict.keys())
+
+	habit_id = cache.get_updating_habit_info(user_id, "habit_id")
+	habit_info = db.get_habit_by_id(habit_id)[0]
+	trigger_time = habit_info.get("trigger_reminder_time")
+	trigger_period = habit_info.get("trigger_reminder_period")
+	trigger_period = json.loads(trigger_period)
+	trigger_period = numbers_to_weekdays(trigger_period)
+	trigger_period = sorted(trigger_period, key=lambda day: weekdays_order.index(day))
+	if tuple(trigger_period) == callback_weekdays:
+		trigger_desc = f"Каждый день в {trigger_time}"
+	else:
+		trigger_period = [weekdays_rus_dict[day] for day in trigger_period]
+		trigger_period = ", ".join(trigger_period)
+		trigger_desc = f"Каждый {trigger_period} в {trigger_time}"
+
+	reply = replies['3_5_proxy'].replace("[period]", trigger_desc)
+	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_3_5_proxy'))
+
+def show_trigger_reminder_changed(user_id, chat_id, message_id, text, timestamp, message_info):
+	habit_id = cache.get_updating_habit_info(user_id, "habit_id")
+	try:
+		parse_time_from_string(text)
+		notification_period = cache.get_updating_habit_info(user_id, "habit_reminder_time")
+		notification_period = weekdays_to_numbers(notification_period)
+		notification_time = text
+		db.update_habit(habit_id, "trigger_reminder_period", f"'{notification_period}'")
+		db.update_habit(habit_id, "trigger_reminder_time", f"'{notification_time}'")
+		db.update_habit(habit_id, "last_updated", f"CAST('{timestamp}'AS Timestamp)")
+		switch_screen(replies['3_7'], chat_id, message_id, keyboard=get_button('scr_3_7'))
+	except ValueError:
+		reply = "Неверно указано время.\nВремя должно быть указано в формате HH:MM. Например: 21:45.\n\nПопробуйте еще раз."
+		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_3_5_time_3'))
+		message_info["callback_data"]="scr_3_5_time_3"
+
+def show_trigger_reminder_deleted(user_id, chat_id, message_id, timestamp):
+	habit_id = cache.get_updating_habit_info(user_id, "habit_id")
+	db.update_habit_with_null(habit_id, "trigger_reminder_period")
+	db.update_habit_with_null(habit_id, "trigger_reminder_time")
+	db.update_habit(habit_id, "last_updated", f"CAST('{timestamp}'AS Timestamp)")
+	switch_screen(replies['3_5_turn_off'], chat_id, message_id, keyboard=get_button('scr_3_5_turn_off'))
 
 def show_change_habit_aspiration(text, chat_id, message_id, user_id, timestamp):
 	new_aspiration = text
