@@ -182,6 +182,8 @@ def send_avoid_trigger_reminder():
 		reminder_exists = (reminder_period is not None) and (reminder_time is not None)
 		if not reminder_exists:
 			continue
+		elif habit['status'] not in ("tracked", "marked"):
+			continue
 		else:
 			reminder_period = json.loads(reminder_period)
 			user_now = get_user_time_now(user_id)
@@ -210,7 +212,7 @@ def send_trigger_reminder():
 			reminder_period = None
 		reminder_exists = (reminder_period is not None) and (reminder_time is not None)
 		
-		if reminder_exists:
+		if reminder_exists and habit['status'] in ("tracked", "marked"):
 			reminder_period = json.loads(reminder_period)
 			user_now = get_user_time_now(user_id)
 			user_weekday_number = user_now.weekday() + 1
@@ -280,4 +282,4 @@ def is_habit_already_marked(habit_id, datetime_obj):
     return False
 
 if __name__=="__main__":
-	send_daily_report()
+	send_trigger_reminder()

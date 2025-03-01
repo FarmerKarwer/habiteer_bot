@@ -2275,7 +2275,7 @@
     "inline_keyboard": [
       [
         {
-          "text": "Выбрать предложенные",
+          "text": "Выбрать все",
           "callback_data": "scr_13"
         }
       ],

@@ -375,6 +375,7 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 		"scr_9": lambda: show_picked_predefined_habits(text, chat_id, message_id, user_id, timestamp, message_info),
 		"scr_10": lambda: show_aspiration_confirmation(chat_id, message_id, user_id, text=text),
 		"scr_12": lambda: show_magic_wanding(text, chat_id, message_id, user_id, message_info),
+		"scr_12_1": lambda: show_magic_wanding_from_ai_recommended_habits(user_id, chat_id, message_id, text, message_info),
 		"scr_17": lambda: show_magic_wanding(text, chat_id, message_id, user_id, message_info),
 		"scr_19": lambda: show_updated_habitname(text, chat_id, message_id, user_id, timestamp),
 		"scr_22_2": lambda: show_pick_report_for_habit(user_id, chat_id, message_id, text=text, message_info=message_info),

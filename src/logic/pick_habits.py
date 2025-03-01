@@ -11,7 +11,7 @@ from common import (
 	check_minimum_length,
 	change_button,
 	)
-from common.exceptions import ListTooShortError
+from common.exceptions import ListTooShortError, ValueOutOfRangeError
 from recommender import get_ai_response
 from tg_methods import delete_message
 
@@ -48,10 +48,37 @@ def show_ai_recommended_habits(user_id, chat_id, message_id):
 	habits = get_ai_response(aspiration=aspiration)
 	numbered_habits = format_numbered_list(habits.values())
 	behavior_options_list = [habit for habit in habits.values()]
-	reply = "Возможно, вам подойдут эти варианты:\n\n"+numbered_habits+'\n\n---\n\n'+replies['ai_warn']
+	reply = replies['12_1'].replace('[behaviors]', numbered_habits)
 
 	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_12_1'))
 	cache.update_picking_habit_info(user_id, {"behavior_options":json.dumps(behavior_options_list)})
+
+def show_magic_wanding_from_ai_recommended_habits(user_id, chat_id, message_id, text, message_info):
+	try:
+		behavior_options = cache.get_picking_habit_info(user_id)['behavior_options']
+		behavior_options = json.loads(behavior_options)
+		numbered_habits = format_numbered_list(behavior_options)
+		entered_numbers = parse_numbers(text)
+		if len(entered_numbers)>len(behavior_options):
+			raise IndexError
+		if len(entered_numbers)==1:
+			if entered_numbers[0]==0:
+				raise ValueOutOfRangeError
+		selected_habits = [behavior_options[i-1] for i in entered_numbers]
+		cache.update_picking_habit_info(user_id, {"behavior_options":json.dumps(selected_habits)})
+		show_magic_wanding(text=None, chat_id=chat_id, message_id=message_id, user_id=user_id, message_info=message_info)
+	except ValueError:
+		reply = replies['12_1_errors']['incorrect_format'].replace("[behaviors]", numbered_habits)
+		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_12_1'))
+		message_info["callback_data"]="scr_12_1"
+	except IndexError:
+		reply = replies['12_1_errors']['incorrect_range'].replace("[behaviors]", numbered_habits)
+		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_12_1'))
+		message_info["callback_data"]="scr_12_1"
+	except ValueOutOfRangeError:
+		reply = replies['12_1_errors']['zero_number'].replace("[behaviors]", numbered_habits)
+		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_12_1'))
+		message_info["callback_data"]="scr_12_1"
 
 def show_picked_habits(user_id, chat_id, message_id, timestamp):
 	habits = cache.get_picking_habit_info(user_id)['habits']
@@ -138,9 +165,13 @@ def show_magic_wanding(text, chat_id, message_id, user_id, message_info):
 
 	else:
 		behavior_options = json.loads(behavior_options)
-		entered_options_cnt = len(behavior_options)+1
+		if text is not None:
+			entered_options_cnt = len(behavior_options)+1
+		else:
+			entered_options_cnt = len(behavior_options)
 		if entered_options_cnt<5:
-			behavior_options.append(text)
+			if text is not None:
+				behavior_options.append(text)
 			behaviors_str = format_numbered_list(behavior_options)
 			cache.update_picking_habit_info(user_id, {"behavior_options": json.dumps(behavior_options)})
 			main_message = replies['12_proxy']['main_message'].replace('[behaviors]', behaviors_str)
@@ -151,7 +182,8 @@ def show_magic_wanding(text, chat_id, message_id, user_id, message_info):
 			message_info["callback_data"]=f"scr_12_proxy_{entered_options_cnt}"
 
 		elif entered_options_cnt==5:
-			behavior_options.append(text)
+			if text is not None:
+				behavior_options.append(text)
 			behaviors_str = format_numbered_list(behavior_options)
 			cache.update_picking_habit_info(user_id, {"behavior_options": json.dumps(behavior_options)})
 			main_message = replies['12_proxy']['main_message'].replace('[behaviors]', behaviors_str)
@@ -162,7 +194,8 @@ def show_magic_wanding(text, chat_id, message_id, user_id, message_info):
 			message_info["callback_data"]=f"scr_12_proxy_{entered_options_cnt}"
 
 		elif entered_options_cnt>5:
-			behavior_options.append(text)
+			if text is not None:
+				behavior_options.append(text)
 			behaviors_str = format_numbered_list(behavior_options)
 			cache.update_picking_habit_info(user_id, {"behavior_options": json.dumps(behavior_options)})
 			main_message = replies['12_proxy']['main_message'].replace('[behaviors]', behaviors_str)
@@ -187,8 +220,7 @@ def show_magic_wanding_return_back(callback_data, user_id, chat_id, message_id):
 	cache.update_picking_habit_info(user_id, {"behavior_options":json.dumps(behavior_options)})
 	# Updating message
 	main_message = replies['12_proxy']['main_message'].replace('[behaviors]', behaviors_str)
-	praise = random.choice(replies['12_proxy']['praises'])
-	reply = main_message + praise
+	reply = main_message
 	if len(behavior_options)>=5:
 		keyboard = change_button(get_button('scr_12_proxy_5_more'), 1, 0, {"callback_data":lambda old: old.replace("[n]", str(len(behavior_options)))})
 	elif len(behavior_options)==1:
