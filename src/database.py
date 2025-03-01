@@ -44,6 +44,14 @@ class DatabaseClient:
 		query = f"SELECT {property_name} FROM users WHERE id={user_id}"
 		result = self.execute_query(query)[0].rows
 		return result[0][property_name]
+	
+	def record_user_action(self, user_id, action, timestamp, metadata=None):
+		unique_id = self.autoincrement_id("id", "bot_usage")
+		query = f"""
+		INSERT INTO bot_usage (id, user_id, action, timestamp, metadata)
+		VALUES ({unique_id}, {user_id}, '{action}', CAST('{timestamp}' AS Timestamp), CAST('{metadata}' AS JsonDocument));
+		"""
+		self.execute_query(query)
 
 	def add_user(self, user_id, username, first_name, last_name, language, created_at):
 		query = f"""

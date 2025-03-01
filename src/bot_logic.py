@@ -4,6 +4,7 @@ import re
 
 from logic import *
 from cache_manager import CacheManager
+from database import DatabaseClient
 from common import (
 	load_json,
 	switch_screen, 
@@ -15,6 +16,7 @@ from config import REPLIES_FILEPATH, REPORT_REPLIES_FILEPATH, REPORT_BUTTONS_FIL
 
 # Load cache manager
 cache = CacheManager()
+db = DatabaseClient()
 
 # Load JSON data
 replies = load_json(REPLIES_FILEPATH)
@@ -336,6 +338,7 @@ def handle_callback_query(message):
 
 	# Saving data
 	data = {"user_id":user_id,"chat_id":chat_id, "message_id":message_id, "callback_data":callback_data, "text":None}
+	db.record_user_action(user_id, "button_pressed", timestamp, metadata=json.dumps({"callback_data":callback_data}))
 	return data
 
 def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_info, message):
@@ -433,8 +436,10 @@ def handle_text_message(message):
 
 	if text=="/start":
 		show_start_screen(user_id, chat_id, message_id)
+		db.record_user_action(user_id, "pressed_start", timestamp, metadata=json.dumps({"text":text}))
 	else:
 		handle_text_input(text, chat_id, message_id, user_id, timestamp, message_info, message)
+		db.record_user_action(user_id, "text_entered", timestamp, metadata=json.dumps({"text":text}))
 
 	return message_info
 
