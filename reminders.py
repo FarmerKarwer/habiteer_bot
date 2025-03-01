@@ -192,7 +192,7 @@ def send_avoid_trigger_reminder():
 			is_time_to_send = (user_time_hhmm == reminder_time) and (user_weekday_number in reminder_period)
 			if is_time_to_send==False:# Remove ==False in production
 				chat_id = user_id
-				if habit["avoid_trigger_notif_text"] and habit["trigger_type"]=="behavior":
+				if habit["avoid_trigger_notif_text"]:
 					reply = habit["avoid_trigger_notif_text"]
 				else:
 					reply = get_reply('avoid_trigger_reminder')
@@ -222,7 +222,7 @@ def send_trigger_reminder():
 				chat_id = user_id
 				trigger = habit["trigger_action_desc"]
 				habit_name = habit["name"]
-				if trigger:
+				if trigger and habit["trigger_type"]=="behavior":
 					reply = get_reply('trigger_reminder').replace('[trigger]', trigger).replace('[habit]', habit_name)
 				else:
 					reply = get_reply('notification_reminder').replace('[habit]', habit_name)
