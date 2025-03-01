@@ -83,6 +83,7 @@ from .pick_habits import (
 from .stats import show_user_stats, show_return_habit_back
 
 from .settings import (
+    show_settings_screen,
 	show_user_timezone,
 	change_user_timezone,
 	show_all_reports_in_settings,
@@ -93,7 +94,7 @@ from .settings import (
 	show_review_confirmation,
 	show_review_sent,
 	show_delete_all_data_confirmation,
-	show_user_deletion_screen,
+	show_user_deletion_screen
 	)
 
 from .reports import (
@@ -212,6 +213,7 @@ __all__ = [
 "show_user_stats",
 "show_return_habit_back",
 
+"show_settings_screen",
 "show_user_timezone",
 "change_user_timezone",
 "show_all_reports_in_settings",

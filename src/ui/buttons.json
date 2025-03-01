@@ -2275,7 +2275,7 @@
     "inline_keyboard": [
       [
         {
-          "text": "Выбрать все",
+          "text": "Выбрать все и перейти к оценке",
           "callback_data": "scr_13"
         }
       ],
@@ -2293,6 +2293,24 @@
       ]
     ]
   },
+
+  "scr_12_1_no_credits":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_12"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+
   "scr_12_proxy_1":{
     "inline_keyboard": [
       [

@@ -44,14 +44,23 @@ def show_getting_back_to_predefined_habits(user_id, chat_id, message_id):
 	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_9'))
 
 def show_ai_recommended_habits(user_id, chat_id, message_id):
-	aspiration = cache.get_picking_habit_info(user_id)['aspiration']
-	habits = get_ai_response(aspiration=aspiration)
-	numbered_habits = format_numbered_list(habits.values())
-	behavior_options_list = [habit for habit in habits.values()]
-	reply = replies['12_1'].replace('[behaviors]', numbered_habits)
+	user_credits = db.get_user_property(user_id, "daily_ai_credits")
+	if user_credits is None:
+		user_credits = 0
+	if user_credits<1:
+		reply = replies['12_1_no_credits']
+		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_12_1_no_credits'))
+	else:
+		user_credits -= 1
+		db.update_user_credits(user_id, user_credits)
+		aspiration = cache.get_picking_habit_info(user_id)['aspiration']
+		habits = get_ai_response(aspiration=aspiration)
+		numbered_habits = format_numbered_list(habits.values())
+		behavior_options_list = [habit for habit in habits.values()]
+		reply = replies['12_1'].replace('[behaviors]', numbered_habits)
 
-	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_12_1'))
-	cache.update_picking_habit_info(user_id, {"behavior_options":json.dumps(behavior_options_list)})
+		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_12_1'))
+		cache.update_picking_habit_info(user_id, {"behavior_options":json.dumps(behavior_options_list)})
 
 def show_magic_wanding_from_ai_recommended_habits(user_id, chat_id, message_id, text, message_info):
 	try:

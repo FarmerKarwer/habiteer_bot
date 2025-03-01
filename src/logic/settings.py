@@ -14,6 +14,13 @@ from common import (
 from common.exceptions import InvalidTimezoneFormat, TimezoneOutOfRangeError
 from config import TIMEZONE_DICT
 
+def show_settings_screen(user_id, chat_id, message_id):
+	user_credits = db.get_user_property(user_id, "daily_ai_credits")
+	if user_credits is None:
+		user_credits = 0
+	reply = replies['6'].replace('[credits]', str(user_credits))
+	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_6'))
+
 def show_user_timezone(user_id, chat_id, message_id):
 	current_timezone = db.select_user(user_id)[0]['timezone']
 	if current_timezone is None:

@@ -60,6 +60,14 @@ class DatabaseClient:
 		"""
 		self.execute_query(query)
 
+	def update_user_credits(self, user_id, credits):
+		query = f"""
+		UPDATE users
+		SET daily_ai_credits = {credits}
+		WHERE id={user_id};
+		"""
+		self.execute_query(query)
+
 	def add_habit(self, habit, creation_datetime, user_id, aspiration=None):
 		unique_id = self.autoincrement_id("id", "habits")
 		query = f"""
