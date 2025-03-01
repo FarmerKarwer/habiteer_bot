@@ -131,6 +131,7 @@ def handle_callback_query(message):
 	user_id = message['callback_query']['from']['id']
 	unix_timestamp = message['callback_query']['message']['date']
 	timestamp = unix_to_timestamp(unix_timestamp)
+	print(timestamp)
 
 	# Retrieve previous screen info
 	previous_screen = cache.get_previous_message(user_id)['callback_data']
