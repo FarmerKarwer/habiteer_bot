@@ -286,7 +286,7 @@ def show_report_keep_skipping_notif_finish(user_id, chat_id, message_id, text, m
 
 		switch_screen(reply, chat_id, message_id, keyboard=keyboard)
 	except ValueError:
-		reply="Неверно указано время.\nВремя должно быть указано в формате HH:MM. Например: 21:45.\n\nПопробуйте еще раз."
+		reply=get_reply("report_incorrect_time_error")
 		switch_screen(reply, chat_id, message_id, keyboard=get_button("scr_report_keep_skipping_notif_3", REPORT_BUTTONS_FILEPATH))
 		message_info["callback_data"]="scr_report_keep_skipping_notif_3"
 		return

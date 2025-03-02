@@ -31,12 +31,12 @@ def show_return_habit_back(text, user_id, chat_id, message_id, timestamp, messag
 	except ValueError:
 		habit_names = [item['name'] for item in accomplished_habits]
 		habit_names_str = format_numbered_list(habit_names)
-		reply = f"Пожалуйста, введите номер привычки, которую вы хотите выбрать числом.\n\nВаши привычки:\n\n{habit_names_str}"
+		reply = replies['5_errors']['incorrect_format'].replace("[habits]", habit_names_str)
 		switch_screen(reply, chat_id, message_id)
 		message_info["callback_data"]="scr_5"
 	except IndexError:
 		habit_names = [item['name'] for item in accomplished_habits]
 		habit_names_str = format_numbered_list(habit_names)
-		reply = f"Такой привычки не существует. Попробуйте ещё раз.\n\nВаши привычки:\n\n{habit_names_str}"
+		reply = replies['5_errors']['incorrect_format'].replace("[habits]", habit_names_str)
 		switch_screen(reply, chat_id, message_id)
 		message_info["callback_data"]="scr_5"

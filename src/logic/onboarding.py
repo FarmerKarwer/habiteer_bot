@@ -63,7 +63,7 @@ def show_onboarding_report_added(user_id, chat_id, message_id, text, timestamp, 
 		user_reports = db.view_reports(user_id)
 		report_id = max(item['id'] for item in user_reports)
 	except ValueError:
-		reply="Неверно указано время.\nВремя должно быть указано в формате HH:MM. Например: 21:45.\n\nПопробуйте еще раз."
+		reply=replies['incorrect_time_error']
 		switch_screen(reply, chat_id, message_id, keyboard=get_button(previous_screen))
 		message_info["callback_data"]=previous_screen
 		return

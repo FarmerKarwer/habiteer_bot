@@ -71,7 +71,7 @@ def show_add_report(text, chat_id, message_id, user_id, timestamp, message_info)
 		switch_screen(replies['41_added'], chat_id, message_id, keyboard=get_button('scr_41_added'))
 		cache.delete_report_info(user_id)
 	except ValueError:
-		reply="Неверно указано время.\nВремя должно быть указано в формате HH:MM. Например: 21:45.\n\nПопробуйте еще раз."
+		reply=replies["incorrect_time_error"]
 		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_41_add_3'))
 		message_info["callback_data"]="scr_41_add_3"
 
@@ -140,7 +140,7 @@ def show_report_changed(text, user_id, chat_id, message_id, timestamp, message_i
 
 		switch_screen(replies['41_1_changed'], chat_id, message_id, keyboard=get_button('scr_41_1_changed'))
 	except ValueError:
-		reply="Неверно указано время.\nВремя должно быть указано в формате HH:MM. Например: 21:45.\n\nПопробуйте еще раз."
+		reply=replies["incorrect_time_error"]
 		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_41_1_change_3'))
 		message_info["callback_data"]="scr_41_1_change_3"
 
@@ -167,5 +167,5 @@ def show_user_deletion_screen(text, chat_id, message_id, user_id, message_info):
 		db.delete_user_data(user_id)
 		switch_screen(replies['account_deleted'], chat_id, message_id, keyboard=get_button('scr_account_deleted'))
 	else:
-		reply = "*Кодовая фраза введена неверно.*\nУдаление данных не завершено. Если вы передумаете, мы всегда будем рады, что вы остались."
+		reply = replies['42_error']
 		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_plug'))

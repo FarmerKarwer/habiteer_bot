@@ -96,15 +96,15 @@ def show_picked_habits(user_id, chat_id, message_id, timestamp):
 	for habit in habits:
 		db.add_habit(habit=habit, creation_datetime=timestamp, user_id=user_id)	
 	cache.delete_picking_habit_info(user_id)
-	reply = replies['18']+f"\n\nСохраненные привычки:\n{habits_str}"
+	reply = replies['18'].replace('[habits]', habits_str)
 
 	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_18'))
 
 def show_picked_predefined_habits(text, chat_id, message_id, user_id, timestamp, message_info):
-	try:
-		entered_numbers = parse_numbers(text)	
+	try:	
 		habit_options = cache.get_picking_habit_info(user_id)['behavior_options']
 		habit_options = json.loads(habit_options)
+		entered_numbers = parse_numbers(text)
 		filtered_habits = [i-1 for i in entered_numbers if i < len(habit_options)+1]
 		selected_habits = [habit_options[i] for i in filtered_habits]
 		filtered_habits_str = format_numbered_list(selected_habits)
@@ -118,25 +118,22 @@ def show_picked_predefined_habits(text, chat_id, message_id, user_id, timestamp,
 			db.add_habit(habit=habit, creation_datetime=timestamp, user_id=user_id, aspiration=aspiration)
 		cache.delete_picking_habit_info(user_id)
 
-		reply = replies['18']+f"\n\nСохраненные привычки:\n{filtered_habits_str}"
+		reply = replies['18'].replace('[habits]', filtered_habits_str)
 		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_18'))				
 
 	except ValueError:
-		reply = "Введенный текст должен содержать числа, введеные через запятую. Возможно, у вас лишние пробелы. Попробуйте ввести еще раз."
-		switch_screen(reply, chat_id, message_id, 
-					delete_previous=False, keyboard=get_button('scr_9'))
+		reply = replies['9_errors']['incorrect_format'].replace("[habits]", format_numbered_list(habit_options))
+		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_9'))
 		message_info["callback_data"]="scr_9"
 
 	except IndexError:
-		reply = "Введенный текст должен содержать 1-3 привычки, введеные через запятую. Попробуйте ввести еще раз."
-		switch_screen(reply, chat_id, message_id, 
-					delete_previous=False, keyboard=get_button('scr_9'))
+		reply = replies['9_errors']['index_error'].replace("[habits]", format_numbered_list(habit_options))
+		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_9'))
 		message_info["callback_data"]="scr_9"
 
 	except ListTooShortError:
-		reply = "Введенный текст должен содержать хотя бы одну привычку из списка. Возможно, вы ввели слишком маленькое или большое число. Попробуйте ввести еще раз."
-		switch_screen(reply, chat_id, message_id, 
-					delete_previous=False, keyboard=get_button('scr_9'))
+		reply = replies['9_errors']['incorrect_range'].replace("[habits]", format_numbered_list(habit_options))
+		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_9'))
 		message_info["callback_data"]="scr_9"
 
 def show_aspiration_confirmation(chat_id, message_id, user_id, callback_data=None, text=None):
@@ -215,7 +212,7 @@ def show_magic_wanding(text, chat_id, message_id, user_id, message_info):
 			message_info["callback_data"]=f"scr_12_proxy_{entered_options_cnt}"
 
 		else:
-			reply = "Что-то пошло не так"
+			reply = "Что-то пошло не так\n\nSomething went wrong"
 			switch_screen(reply, chat_id, message_id)
 
 def show_magic_wanding_return_back(callback_data, user_id, chat_id, message_id):

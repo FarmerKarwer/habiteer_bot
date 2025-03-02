@@ -195,13 +195,13 @@ def show_habit_info(text, user_id, chat_id, message_id, message_info, timestamp)
 	except ValueError:
 		habit_names = [item['name'] for item in habits]
 		habit_names_str = format_numbered_list(habit_names)
-		reply = f"Пожалуйста, введите номер привычки, которую вы хотите выбрать числом.\n\nВаши привычки:\n\n{habit_names_str}"
+		reply = replies['3_1_errors']['incorrect_format'].replace('[habits]', habit_names_str)
 		switch_screen(reply, chat_id, message_id)
 		message_info["callback_data"]="scr_3"
 	except IndexError:
 		habit_names = [item['name'] for item in habits]
 		habit_names_str = format_numbered_list(habit_names)
-		reply = f"Такой привычки не существует. Попробуйте ещё раз.\n\nВаши привычки:\n\n{habit_names_str}"
+		reply = replies['3_1_errors']['incorrect_range'].replace('[habits]', habit_names_str)
 		switch_screen(reply, chat_id, message_id)
 		message_info["callback_data"]="scr_3"
 
@@ -399,13 +399,13 @@ def show_repetition_reminder_set(user_id, chat_id, message_id, callback_data=Non
 			reminder_time = calculate_datetime_margin_from_user_input(text, timestamp, user_timezone_offset=user_utc_offset)
 		except ValueError:
 			previous_screen = cache.get_previous_message(user_id)['callback_data']
-			reply="Неверно указан период.\nУкажите в формате: “Через X дн в HH:MM”. Например, если хотите отрепетировать сегодня: “через 0 дн в 21:25”.\n\nПопробуйте еще раз."
+			reply=replies['26_errors']['incorrect_format']
 			switch_screen(reply, chat_id, message_id, keyboard=get_button(previous_screen))
 			message_info["callback_data"]=previous_screen
 			return
 		except ValueOutOfRangeError:
 			previous_screen = cache.get_previous_message(user_id)['callback_data']
-			reply="Указанный период меньше текущего времени.\nУкажите в формате: “Через X дн в HH:MM”.\n\nПопробуйте еще раз."
+			reply=replies['26_errors']['incorrect_range']
 			switch_screen(reply, chat_id, message_id, keyboard=get_button(previous_screen))
 			message_info["callback_data"]=previous_screen
 			return
@@ -467,7 +467,7 @@ def show_pick_report_for_habit(user_id, chat_id, message_id, callback_data=None,
 			message_info['callback_data'] = 'scr_29'
 		except ValueError:
 			previous_screen = cache.get_previous_message(user_id)['callback_data']
-			reply="Неверно указано время.\nВремя должно быть указано в формате HH:MM. Например: 21:45.\n\nПопробуйте еще раз."
+			reply=replies['incorrect_time_error']
 			switch_screen(reply, chat_id, message_id, keyboard=get_button(previous_screen))
 			message_info["callback_data"]=previous_screen
 			return
@@ -531,7 +531,7 @@ def show_habit_is_tracked(user_id, chat_id, message_id, callback_data=None, text
 
 			trigger_reminder_time = cache.get_updating_habit_info(user_id, "trigger_reminder_time")
 		except ValueError:
-			reply="Неверно указано время.\nВремя должно быть указано в формате HH:MM. Например: 21:45.\n\nПопробуйте еще раз."
+			reply=replies['incorrect_time_error']
 			switch_screen(reply, chat_id, message_id, keyboard=get_button(previous_screen))
 			message_info["callback_data"]=previous_screen
 			return
@@ -696,7 +696,7 @@ def show_habit_reminder_updated(text, user_id, chat_id, message_id, timestamp, m
 		switch_screen(replies['3_7'], chat_id, message_id, keyboard=get_button('scr_3_7'))
 		
 	except ValueError:
-		reply="Неверно указано время.\nВремя должно быть указано в формате HH:MM. Например: 21:45.\n\nПопробуйте еще раз."
+		reply=replies['incorrect_time_error']
 		switch_screen(reply, chat_id, message_id, keyboard=get_button(previous_screen))
 		message_info["callback_data"]=previous_screen
 
@@ -713,7 +713,7 @@ def show_report_updated_for_habit(user_id, chat_id, message_id, callback_data=No
 			user_reports = db.view_reports(user_id)
 			report_id = max(item['id'] for item in user_reports)
 		except ValueError:
-			reply="Неверно указано время.\nВремя должно быть указано в формате HH:MM. Например: 21:45.\n\nПопробуйте еще раз."
+			reply=replies['incorrect_time_error']
 			switch_screen(reply, chat_id, message_id, keyboard=get_button(previous_screen))
 			message_info["callback_data"]=previous_screen
 			return
@@ -770,7 +770,7 @@ def show_trigger_reminder_changed(user_id, chat_id, message_id, text, timestamp,
 		db.update_habit(habit_id, "last_updated", f"CAST('{timestamp}'AS Timestamp)")
 		switch_screen(replies['3_7'], chat_id, message_id, keyboard=get_button('scr_3_7'))
 	except ValueError:
-		reply = "Неверно указано время.\nВремя должно быть указано в формате HH:MM. Например: 21:45.\n\nПопробуйте еще раз."
+		reply = replies['incorrect_time_error']
 		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_3_5_time_3'))
 		message_info["callback_data"]="scr_3_5_time_3"
 
@@ -842,7 +842,7 @@ def show_bad_habit_reminder_text_for_trigger(user_id, chat_id, message_id, text,
 		switch_screen(replies['36'], chat_id, message_id, keyboard=get_button('scr_36'))
 		message_info["callback_data"]="scr_36"
 	except ValueError:
-		reply = "Неверно указано время.\nВремя должно быть указано в формате HH:MM. Например: 21:45.\n\nПопробуйте еще раз."
+		reply = replies['incorrect_time_error']
 		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_33_3'))
 		message_info["callback_data"]="scr_33_3"
 
@@ -904,7 +904,7 @@ def show_change_bad_habit_reminder_text_for_trigger(user_id, chat_id, message_id
 		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_3_1_bad_habit_avoid_trigger_reminder_text'))
 		message_info["callback_data"]="scr_3_1_bad_habit_avoid_trigger_reminder_text"
 	except ValueError:
-		reply = "Неверно указано время.\nВремя должно быть указано в формате HH:MM. Например: 21:45.\n\nПопробуйте еще раз."
+		reply = replies['incorrect_time_error']
 		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_3_1_bad_habit_avoid_trigger_3'))
 		message_info["callback_data"]="scr_3_1_bad_habit_avoid_trigger_3"
 
@@ -957,7 +957,7 @@ def show_one_time_habit_created(text, chat_id, message_id, user_id, timestamp, m
 		reply = replies['38_done'].replace('[datetime]', reminder_date)
 		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_38_done'))
 	except ValueError as e:
-		reply = "Неверно указана дата. Пожалуйста, укажите дату в формате DD.MM.YY HH:MM"
+		reply = replies['incorrect_datetime_error']
 		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_38'))
 		message_info["callback_data"]="scr_38"
 
@@ -994,9 +994,20 @@ def show_habits_to_delete(user_id, chat_id, message_id):
 	switch_screen(reply, chat_id, message_id, keyboard=keyboard)
 
 def show_updated_habits_after_deletion(text, chat_id, message_id, user_id, message_info):
+	user_habits = db.view_habits(user_id)
+
+	all_habits = []
+	for item in user_habits:
+		if item['status'] in ("tracked", "marked"):
+			all_habits.append("🔄"+item['name'].capitalize())
+		elif item['status']=="pending":
+			all_habits.append("⏳"+item['name'].capitalize())
+		elif item['status']=="stopped":
+			all_habits.append("⏸️"+item['name'].capitalize())
+		else:
+			all_habits.append(item['name'].capitalize())
 	try:
 		entered_numbers = parse_numbers(text)
-		user_habits = db.view_habits(user_id)
 		if len(entered_numbers)>len(user_habits):
 			raise IndexError
 		if len(entered_numbers)==1:
@@ -1009,12 +1020,21 @@ def show_updated_habits_after_deletion(text, chat_id, message_id, user_id, messa
 
 		no_habits_left = len(updated_user_habits)==0
 		if no_habits_left:
-			reply = "У вас пока нет привычек. Создайте новую привычку или давайте их подберем"
+			reply = replies['3_no_habits']
 			switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_3_no_habits'))
 
 		else:
-			habit_names = [item['name'] for item in updated_user_habits]
-			habit_names_str = format_numbered_list(habit_names)
+			habit_names = []
+			for item in updated_user_habits:
+				if item['status'] in ("tracked", "marked"):
+					habit_names.append("🔄"+item['name'].capitalize())
+				elif item['status']=="pending":
+					habit_names.append("⏳"+item['name'].capitalize())
+				elif item['status']=="stopped":
+					habit_names.append("⏸️"+item['name'].capitalize())
+				else:
+					habit_names.append(item['name'].capitalize())
+			habit_names_str = format_numbered_list(habit_names, capitalize=False)
 			reply = replies['45'].replace('[updated_habits]', habit_names_str)
 			if len(entered_numbers)==1:
 				reply = reply.replace("[end1]","а")
@@ -1025,15 +1045,18 @@ def show_updated_habits_after_deletion(text, chat_id, message_id, user_id, messa
 			switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_45'))
 
 	except ValueError:
-		reply = "Введенный текст должен содержать привычки, введеные через запятую или через тире. Возможно, неверно указан диапазон. Попробуйте ввести еще раз."
+		habit_names_str = format_numbered_list(all_habits, capitalize=False)
+		reply = replies['44_errors']['incorrect_format'].replace("[habits]", habit_names_str)
 		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_44'))
 		message_info["callback_data"]="scr_44"
 	except IndexError:
-		reply = "Неверно указан диапазон. Число запрашиваемых для удаления привычек больше, чем число самих привычек. Попробуйте ввести еще раз."
+		habit_names_str = format_numbered_list(all_habits, capitalize=False)
+		reply = replies['44_errors']['incorrect_range'].replace("[habits]", habit_names_str)
 		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_44'))
 		message_info["callback_data"]="scr_44"
 	except ValueOutOfRangeError:
-		reply = "Номер привычки не может быть нулевым. Попробуйте ввести еще раз."
+		habit_names_str = format_numbered_list(all_habits, capitalize=False)
+		reply = replies['44_errors']['zero_number'].replace("[habits]", habit_names_str)
 		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_44'))
 		message_info["callback_data"]="scr_44"
 
