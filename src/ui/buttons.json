@@ -2081,12 +2081,6 @@
     "inline_keyboard": [
       [
         {
-          "text": "Мотивационные сообщения",
-          "callback_data": "scr_plug"
-        }
-      ],
-      [
-        {
           "text": "Изменить часовой пояс",
           "callback_data": "scr_40"
         }
