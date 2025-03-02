@@ -157,7 +157,7 @@ def show_magic_wanding_return_back_to_start(chat_id, message_id, user_id, keyboa
 	switch_screen(replies['12'], chat_id, message_id, keyboard=get_button(keyboard_name))
 
 def show_magic_wanding(text, chat_id, message_id, user_id, message_info):
-	# TO-DO After returning back to a screen, I should remove the old behaviours
+	ai_credits = db.get_user_property(user_id, "daily_ai_credits")
 	behavior_options = cache.get_picking_habit_info(user_id).get('behavior_options', None)
 	if behavior_options is None:
 		behaviors = [text]
@@ -195,6 +195,8 @@ def show_magic_wanding(text, chat_id, message_id, user_id, message_info):
 			main_message = replies['12_proxy']['main_message'].replace('[behaviors]', behaviors_str)
 			praise = replies['12_proxy']['5_options']
 			reply = main_message + praise
+			if ai_credits <5 and text is not None:
+				reply = reply + replies['12_proxy']['5_options_tease']
 			keyboard = change_button(get_button('scr_12_proxy_5_more'), 1, 0, {"callback_data":lambda old: old.replace("[n]", str(entered_options_cnt-1))})
 			switch_screen(reply, chat_id, message_id, keyboard=keyboard)
 			message_info["callback_data"]=f"scr_12_proxy_{entered_options_cnt}"
@@ -207,6 +209,12 @@ def show_magic_wanding(text, chat_id, message_id, user_id, message_info):
 			main_message = replies['12_proxy']['main_message'].replace('[behaviors]', behaviors_str)
 			praise = random.choice(replies['12_proxy']['praises'])
 			reply = main_message + praise
+			if ai_credits <5 and text is not None:
+				if random.random() < 0.15:
+					ai_credits+=1
+					db.update_user_credits(user_id, ai_credits)
+					reply = main_message+replies['12_proxy']['bonus'].replace("[credits]", str(ai_credits))
+
 			keyboard = change_button(get_button('scr_12_proxy_5_more'), 1, 0, {"callback_data":lambda old: old.replace("[n]", str(entered_options_cnt-1))})
 			switch_screen(reply, chat_id, message_id, keyboard=keyboard)
 			message_info["callback_data"]=f"scr_12_proxy_{entered_options_cnt}"
