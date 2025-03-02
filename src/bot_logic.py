@@ -201,7 +201,7 @@ def handle_callback_query(message):
 		"scr_0_414": lambda: edit_message_reply_markup(chat_id, message_id, json.loads(get_button('scr_0_414'))),
 		"scr_0_414_back": lambda: edit_message_reply_markup(chat_id, message_id, json.loads(get_button('scr_0_413'))),
 		"scr_0_5_add_2": lambda: show_choose_weekdays(user_id, chat_id, message_id, scr_name='scr_0_5_add_2'),
-		"scr_1": lambda: show_main_menu(user_id, chat_id, message_id),
+		"scr_1": lambda: show_main_menu(user_id, chat_id, message_id, unix_timestamp),
 		"scr_3": lambda: show_user_habits(user_id, chat_id, message_id),
 		"scr_3_1": lambda: get_back_to_habit(callback_data, user_id, chat_id, message_id, timestamp),
 		"scr_3_1_bad_habit_avoid_trigger_2": lambda: show_choose_weekdays(user_id, chat_id, message_id, scr_name='scr_3_1_bad_habit_avoid_trigger_2'),
@@ -435,7 +435,7 @@ def handle_text_message(message):
 	delete_message(message_id-1, chat_id)
 
 	if text=="/start":
-		show_start_screen(user_id, chat_id, message_id)
+		show_start_screen(user_id, chat_id, message_id, unix_timestamp)
 		db.record_user_action(user_id, "pressed_start", timestamp, metadata=json.dumps({"text":text}))
 	else:
 		handle_text_input(text, chat_id, message_id, user_id, timestamp, message_info, message)

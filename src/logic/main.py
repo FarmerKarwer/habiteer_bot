@@ -1,20 +1,29 @@
 import json
+import random
+from datetime import datetime
 
 from ._common_imports import *
 from .onboarding import show_start_onboarding
-from common import select_multiple_days
+from common import select_multiple_days, load_json
+from config import QUOTES_FILEPATH
 
-def show_start_screen(user_id, chat_id, message_id):
+def show_start_screen(user_id, chat_id, message_id, unix_timestamp):
 	user = db.select_user(user_id)
 	no_user = len(user)==0
 	if no_user:
 		show_start_onboarding(chat_id, message_id)
 	else:
-		show_main_menu(user_id, chat_id, message_id)
+		show_main_menu(user_id, chat_id, message_id, unix_timestamp)
 
-def show_main_menu(user_id, chat_id, message_id):
+def show_main_menu(user_id, chat_id, message_id, unix_timestamp):
+	date_obj = datetime.fromtimestamp(unix_timestamp)
+	date_int = int(date_obj.strftime("%Y%m%d"))
+	random.seed(date_int)
+	quotes = load_json(QUOTES_FILEPATH)
+	quote = random.choice(quotes['ru'])
 	cache.clear_cache(user_id)
-	switch_screen(replies['1'], chat_id, message_id, keyboard=get_button('scr_1'))
+	reply = replies['1'].replace('[quote]', quote)
+	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_1'))
 
 def show_choose_weekdays(user_id, chat_id, message_id, scr_name):
 	screen_id = '_'.join(scr_name.split('_')[1:])

@@ -5,6 +5,7 @@ PREMADE_HABITS_FILEPATH = "src/ui/premade_habits.json"
 PREMADE_TRIGGERS_FILEPATH = "src/ui/triggers.json"
 REPORT_REPLIES_FILEPATH = "src/ui/report_replies.json"
 REPORT_BUTTONS_FILEPATH = "src/ui/report_buttons.json"
+QUOTES_FILEPATH = "src/ui/daily_quotes.json"
 
 TIMEZONE_DICT ={
     "utc-12": "Международная линия перемены дат",
