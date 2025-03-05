@@ -151,10 +151,17 @@ def show_aspiration_confirmation(chat_id, message_id, user_id, callback_data=Non
 		delete_message(message_id-1, chat_id)
 		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_11'))
 
+def show_magic_wanding_start(user_id, chat_id, message_id):
+	aspiration = cache.get_picking_habit_info(user_id)['aspiration']
+	reply = replies['12'].replace("[aspiration]", aspiration)
+	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_12'))
+
 def show_magic_wanding_return_back_to_start(chat_id, message_id, user_id, keyboard_name):
 	behavior_options = None
 	cache.update_picking_habit_info(user_id, {"behavior_options":behavior_options})
-	switch_screen(replies['12'], chat_id, message_id, keyboard=get_button(keyboard_name))
+	aspiration = cache.get_picking_habit_info(user_id)['aspiration']
+	reply = replies['12'].replace("[aspiration]", aspiration)
+	switch_screen(reply, chat_id, message_id, keyboard=get_button(keyboard_name))
 
 def show_magic_wanding(text, chat_id, message_id, user_id, message_info):
 	ai_credits = db.get_user_property(user_id, "daily_ai_credits")
