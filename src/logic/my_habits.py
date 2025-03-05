@@ -162,16 +162,22 @@ def show_habit_info(text, user_id, chat_id, message_id, message_info, timestamp)
 			reply = reply.replace('[streak]', current_streak_str)
 			reply = reply.replace('[max_streak]', max_streak_str)
 		elif habit_type == "one-time":
+			keyboard = get_button('scr_3_1_one_time')
 			single_notif_time = habits[habit_idx].get("single_notif_time", None)
 			reply = replies['3_1']['one-time'].replace('[habit]', habit_name)
 			reply = reply.replace('[type]', "Одноразовая")
 			if single_notif_time is None:
 				reply = reply.replace('[datetime]', '_не указано_')
+				new_button = [{"text": "Добавить напоминание", "callback_data": "scr_3_6"}]
+				updated_keyboard = insert_inline_keyboard_row(json.loads(keyboard), new_button, 1)
+				keyboard = json.dumps(updated_keyboard)
 			else:
 				single_notif_time = datetime.fromtimestamp(single_notif_time)
 				single_notif_time = single_notif_time.strftime("%d.%m.%Y %H:%M")
 				reply = reply.replace('[datetime]', single_notif_time)
-			keyboard = get_button('scr_3_1_one_time')
+				new_button = [{"text": "Изменить время напоминания", "callback_data": "scr_3_6_proxy"}]
+				updated_keyboard = insert_inline_keyboard_row(json.loads(keyboard), new_button, 1)
+				keyboard = json.dumps(updated_keyboard)
 
 		if aspiration is None or aspiration=="None":
 			reply = reply.replace('[aspiration]', '_не указано_')
@@ -973,6 +979,29 @@ def show_one_time_habit_completed(user_id, chat_id, message_id):
 	habit_id = cache.get_updating_habit_info(user_id, "habit_id")
 	db.delete_habit(habit_id)
 	switch_screen(replies['3_2_one_time_completed'], chat_id, message_id, keyboard=get_button('scr_3_2_one_time_completed'))
+
+def show_one_time_habit_change_reminder(text, user_id, chat_id, message_id, timestamp, message_info):
+	reminder_date = text
+	try:
+		validate_datetime(reminder_date)
+		formatted_reminder_date = datetime.strptime(reminder_date, "%d.%m.%y %H:%M")
+		formatted_reminder_date = formatted_reminder_date.strftime("%Y-%m-%dT%H:%M:%SZ")
+		habit_id = cache.get_updating_habit_info(user_id, "habit_id")
+		db.update_habit(habit_id, "single_notif_time", f"CAST('{formatted_reminder_date}' AS Datetime)")
+		db.update_habit(habit_id, "last_updated", f"CAST('{timestamp}'AS Timestamp)")
+
+		reply = replies['3_6_done'].replace('[datetime]', reminder_date)
+		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_3_6_done'))
+	except ValueError as e:
+		reply = replies['incorrect_datetime_error']
+		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_38'))
+		message_info["callback_data"]="scr_3_6"
+
+def show_one_time_habit_reminder_removed(user_id, chat_id, message_id, timestamp):
+	habit_id = cache.get_updating_habit_info(user_id, "habit_id")
+	db.update_habit_with_null(habit_id, "single_notif_time")
+	db.update_habit(habit_id, "last_updated", f"CAST('{timestamp}'AS Timestamp)")
+	switch_screen(replies['3_6_no_reminder'], chat_id, message_id, keyboard=get_button('scr_3_6_no_reminder'))
 
 def show_habits_to_delete(user_id, chat_id, message_id):
 	user_habits = db.view_habits(user_id)

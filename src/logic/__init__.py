@@ -61,6 +61,8 @@ from .my_habits import (
 	show_one_time_habit_created,
     show_one_time_habit_created_no_reminder,
 	show_one_time_habit_completed,
+    show_one_time_habit_change_reminder,
+    show_one_time_habit_reminder_removed,
 	show_habits_to_delete,
 	show_updated_habits_after_deletion
 	)
@@ -194,6 +196,8 @@ __all__ = [
 "show_one_time_habit_created",
 "show_one_time_habit_created_no_reminder",
 "show_one_time_habit_completed",
+"show_one_time_habit_change_reminder",
+"show_one_time_habit_reminder_removed",
 "show_habits_to_delete",
 "show_updated_habits_after_deletion",
 

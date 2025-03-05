@@ -1960,6 +1960,96 @@
     ]
   },
 
+  "scr_3_6_proxy":{
+    "inline_keyboard":[
+        [
+          {
+            "text":"Изменить время",
+            "callback_data":"scr_3_6"
+          }
+        ],
+
+        [
+          {
+            "text":"Отключить напоминания",
+            "callback_data":"scr_3_6_no_reminder"
+          }
+        ],
+
+        [
+          {
+            "text":"Назад",
+            "callback_data":"scr_3_1"
+          }
+        ],
+
+        [
+          {
+            "text":"В главное меню",
+            "callback_data":"scr_1"
+          }
+      ]
+        
+    ]
+  },
+
+  "scr_3_6":{
+    "inline_keyboard":[
+        [
+          {
+            "text":"Назад",
+            "callback_data":"scr_3_1"
+          }
+      ],
+
+        [
+          {
+            "text":"В главное меню",
+            "callback_data":"scr_1"
+          }
+      ]
+        
+    ]
+  },
+
+  "scr_3_6_no_reminder":{
+    "inline_keyboard":[
+        [
+          {
+            "text":"Вернуться к привычке",
+            "callback_data":"scr_3_1"
+          }
+      ],
+
+        [
+          {
+            "text":"В главное меню",
+            "callback_data":"scr_1"
+          }
+      ]
+        
+    ]
+  },
+
+  "scr_3_6_done":{
+    "inline_keyboard":[
+        [
+          {
+            "text":"Вернуться к привычке",
+            "callback_data":"scr_3_1"
+          }
+      ],
+
+        [
+          {
+            "text":"В главное меню",
+            "callback_data":"scr_1"
+          }
+      ]
+        
+    ]
+  },
+
   "scr_3_7":{
     "inline_keyboard":[
         [
