@@ -124,7 +124,7 @@ def show_habit_info(text, user_id, chat_id, message_id, message_info, timestamp)
 			elif trigger_type=="behavior":
 				trigger_desc = habits[habit_idx].get("trigger_action_desc")
 				trigger_reminder = habits[habit_idx].get("trigger_reminder_period", None)
-				if trigger_reminder:
+				if trigger_reminder and trigger_reminder!="None":
 					new_button = [{"text": "Изменить напоминания о триггере", "callback_data": "scr_3_5_proxy"}]
 					updated_keyboard = insert_inline_keyboard_row(json.loads(keyboard), new_button, 3)
 					keyboard = json.dumps(updated_keyboard)
