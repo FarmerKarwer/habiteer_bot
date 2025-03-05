@@ -152,9 +152,15 @@ def show_aspiration_confirmation(chat_id, message_id, user_id, callback_data=Non
 		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_11'))
 
 def show_magic_wanding_start(user_id, chat_id, message_id):
+	previous_screen = cache.get_previous_message(user_id).get("callback_data", None)
+	if previous_screen and (previous_screen.startswith("hab_") or previous_screen=="scr_9"):
+		cache.update_picking_habit_info(user_id, {"behavior_options":json.dumps([])})
+		keyboard = get_button('9_scr_12')
+	else:
+		keyboard = get_button('scr_12')
 	aspiration = cache.get_picking_habit_info(user_id)['aspiration']
 	reply = replies['12'].replace("[aspiration]", aspiration)
-	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_12'))
+	switch_screen(reply, chat_id, message_id, keyboard=keyboard)
 
 def show_magic_wanding_return_back_to_start(chat_id, message_id, user_id, keyboard_name):
 	behavior_options = None
@@ -166,11 +172,12 @@ def show_magic_wanding_return_back_to_start(chat_id, message_id, user_id, keyboa
 def show_magic_wanding(text, chat_id, message_id, user_id, message_info):
 	ai_credits = db.get_user_property(user_id, "daily_ai_credits")
 	behavior_options = cache.get_picking_habit_info(user_id).get('behavior_options', None)
+	aspiration = cache.get_picking_habit_info(user_id)['aspiration']
 	if behavior_options is None:
 		behaviors = [text]
 		behaviors_str = format_numbered_list(behaviors)
 		cache.update_picking_habit_info(user_id, {"behavior_options":json.dumps(behaviors)})
-		main_message = replies['12_proxy']['main_message'].replace('[behaviors]', behaviors_str)
+		main_message = replies['12_proxy']['main_message'].replace('[behaviors]', behaviors_str).replace("[aspiration]", aspiration)
 		praise = random.choice(replies['12_proxy']['praises'])
 		reply = main_message + praise
 		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_12_proxy_1'))
@@ -187,7 +194,7 @@ def show_magic_wanding(text, chat_id, message_id, user_id, message_info):
 				behavior_options.append(text)
 			behaviors_str = format_numbered_list(behavior_options)
 			cache.update_picking_habit_info(user_id, {"behavior_options": json.dumps(behavior_options)})
-			main_message = replies['12_proxy']['main_message'].replace('[behaviors]', behaviors_str)
+			main_message = replies['12_proxy']['main_message'].replace('[behaviors]', behaviors_str).replace("[aspiration]", aspiration)
 			praise = random.choice(replies['12_proxy']['praises'])
 			reply = main_message + praise
 			keyboard = change_button(get_button('scr_12_proxy_5_less'), 0, 0, {"callback_data":lambda old: old.replace("[n]", str(entered_options_cnt-1))})
@@ -199,10 +206,10 @@ def show_magic_wanding(text, chat_id, message_id, user_id, message_info):
 				behavior_options.append(text)
 			behaviors_str = format_numbered_list(behavior_options)
 			cache.update_picking_habit_info(user_id, {"behavior_options": json.dumps(behavior_options)})
-			main_message = replies['12_proxy']['main_message'].replace('[behaviors]', behaviors_str)
+			main_message = replies['12_proxy']['main_message'].replace('[behaviors]', behaviors_str).replace("[aspiration]", aspiration)
 			praise = replies['12_proxy']['5_options']
 			reply = main_message + praise
-			if ai_credits <5 and text is not None:
+			if ai_credits <3 and text is not None:
 				reply = reply + replies['12_proxy']['5_options_tease']
 			keyboard = change_button(get_button('scr_12_proxy_5_more'), 1, 0, {"callback_data":lambda old: old.replace("[n]", str(entered_options_cnt-1))})
 			switch_screen(reply, chat_id, message_id, keyboard=keyboard)
@@ -213,11 +220,11 @@ def show_magic_wanding(text, chat_id, message_id, user_id, message_info):
 				behavior_options.append(text)
 			behaviors_str = format_numbered_list(behavior_options)
 			cache.update_picking_habit_info(user_id, {"behavior_options": json.dumps(behavior_options)})
-			main_message = replies['12_proxy']['main_message'].replace('[behaviors]', behaviors_str)
+			main_message = replies['12_proxy']['main_message'].replace('[behaviors]', behaviors_str).replace("[aspiration]", aspiration)
 			praise = random.choice(replies['12_proxy']['praises'])
 			reply = main_message + praise
-			if ai_credits <5 and text is not None:
-				if random.random() < 0.15:
+			if ai_credits <3 and text is not None:
+				if random.random() <= 0.1:
 					ai_credits+=1
 					db.update_user_credits(user_id, ai_credits)
 					reply = main_message+replies['12_proxy']['bonus'].replace("[credits]", str(ai_credits))
@@ -231,6 +238,7 @@ def show_magic_wanding(text, chat_id, message_id, user_id, message_info):
 			switch_screen(reply, chat_id, message_id)
 
 def show_magic_wanding_return_back(callback_data, user_id, chat_id, message_id):
+	aspiration = cache.get_picking_habit_info(user_id)['aspiration']
 	# Updating behavior options to allow changing an option
 	behavior_options = cache.get_picking_habit_info(user_id).get('behavior_options', None)
 	behavior_options = json.loads(behavior_options)
@@ -240,7 +248,7 @@ def show_magic_wanding_return_back(callback_data, user_id, chat_id, message_id):
 	behaviors_str = format_numbered_list(behavior_options)
 	cache.update_picking_habit_info(user_id, {"behavior_options":json.dumps(behavior_options)})
 	# Updating message
-	main_message = replies['12_proxy']['main_message'].replace('[behaviors]', behaviors_str)
+	main_message = replies['12_proxy']['main_message'].replace('[behaviors]', behaviors_str).replace("[aspiration]", aspiration)
 	reply = main_message
 	if len(behavior_options)>=5:
 		keyboard = change_button(get_button('scr_12_proxy_5_more'), 1, 0, {"callback_data":lambda old: old.replace("[n]", str(len(behavior_options)))})
