@@ -53,10 +53,10 @@ class DatabaseClient:
 		"""
 		self.execute_query(query)
 
-	def add_user(self, user_id, username, first_name, last_name, language, created_at):
+	def add_user(self, user_id, username, first_name, last_name, language, created_at, daily_ai_credits):
 		query = f"""
-		INSERT INTO users (id, username, first_name, last_name, language, created_at)
-		VALUES ({user_id}, {username}, {first_name}, {last_name}, {language}, {created_at});
+		INSERT INTO users (id, username, first_name, last_name, language, created_at, daily_ai_credits)
+		VALUES ({user_id}, {username}, {first_name}, {last_name}, {language}, {created_at}, {daily_ai_credits});
 		"""
 		self.execute_query(query)
 
