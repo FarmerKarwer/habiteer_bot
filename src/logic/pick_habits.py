@@ -154,8 +154,11 @@ def show_aspiration_confirmation(chat_id, message_id, user_id, callback_data=Non
 def show_magic_wanding_start(user_id, chat_id, message_id):
 	previous_screen = cache.get_previous_message(user_id).get("callback_data", None)
 	if previous_screen and (previous_screen.startswith("hab_") or previous_screen=="scr_9"):
-		cache.update_picking_habit_info(user_id, {"behavior_options":json.dumps([])})
-		keyboard = get_button('9_scr_12')
+		show_magic_wanding_return_back_to_start(chat_id, message_id, user_id, '9_scr_12')
+		return
+	elif previous_screen and previous_screen == "scr_12_proxy_1":
+		show_magic_wanding_return_back_to_start(chat_id, message_id, user_id, 'scr_12')
+		return
 	else:
 		keyboard = get_button('scr_12')
 	aspiration = cache.get_picking_habit_info(user_id)['aspiration']
@@ -237,7 +240,7 @@ def show_magic_wanding(text, chat_id, message_id, user_id, message_info):
 			reply = "Что-то пошло не так\n\nSomething went wrong"
 			switch_screen(reply, chat_id, message_id)
 
-def show_magic_wanding_return_back(callback_data, user_id, chat_id, message_id):
+def show_magic_wanding_return_back(user_id, chat_id, message_id):
 	aspiration = cache.get_picking_habit_info(user_id)['aspiration']
 	# Updating behavior options to allow changing an option
 	behavior_options = cache.get_picking_habit_info(user_id).get('behavior_options', None)

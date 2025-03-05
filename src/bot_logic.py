@@ -268,8 +268,6 @@ def handle_callback_query(message):
 		"scr_44": lambda: show_habits_to_delete(user_id, chat_id, message_id),
 		"no_scr": lambda: delete_message(message_id, chat_id),
 		("scr_12_1", "scr_12"): lambda: show_magic_wanding_return_back_to_start(chat_id, message_id, user_id, 'scr_12'),
-		("scr_9", "scr_12"): lambda: switch_screen(replies['12'], chat_id, message_id, keyboard=get_button('9_scr_12')),
-		("scr_11", "scr_12"): lambda: switch_screen(replies['12'], chat_id, message_id, keyboard=get_button('scr_12')),
 		("scr_12", "scr_9"): lambda: show_getting_back_to_predefined_habits(user_id, chat_id, message_id),
 	}
 	SPECIAL_CALLBACK_SCREENS = SPECIAL_CALLBACK_HANDLERS.keys()
@@ -280,7 +278,7 @@ def handle_callback_query(message):
 		"scr_srbai_report_4_": lambda: show_srbai_question_4(user_id, chat_id, message_id, callback_data),
 		"scr_srbai_finish_": lambda: show_srbai_result(user_id, chat_id, message_id, timestamp, callback_data),
 
-		"scr_12_proxy_": lambda: show_magic_wanding_return_back(callback_data, user_id, chat_id, message_id),
+		"scr_12_proxy_": lambda: show_magic_wanding_return_back(user_id, chat_id, message_id),
 		"hab_": lambda: show_predefined_habits(callback_data, user_id, chat_id, message_id),
 		"suitability_": lambda: show_evaluation(callback_data, user_id, chat_id, message_id, type="suitability"),
 		"scr_13_proxy_": lambda: show_evaluation(callback_data, user_id, chat_id, message_id, type="suitability"),
