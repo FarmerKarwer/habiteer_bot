@@ -212,7 +212,7 @@ def show_magic_wanding(text, chat_id, message_id, user_id, message_info):
 			main_message = replies['12_proxy']['main_message'].replace('[behaviors]', behaviors_str).replace("[aspiration]", aspiration)
 			praise = replies['12_proxy']['5_options']
 			reply = main_message + praise
-			if ai_credits <3 and text is not None:
+			if ai_credits is not None and ai_credits <3 and text is not None:
 				reply = reply + replies['12_proxy']['5_options_tease']
 			keyboard = change_button(get_button('scr_12_proxy_5_more'), 1, 0, {"callback_data":lambda old: old.replace("[n]", str(entered_options_cnt-1))})
 			switch_screen(reply, chat_id, message_id, keyboard=keyboard)
@@ -226,7 +226,7 @@ def show_magic_wanding(text, chat_id, message_id, user_id, message_info):
 			main_message = replies['12_proxy']['main_message'].replace('[behaviors]', behaviors_str).replace("[aspiration]", aspiration)
 			praise = random.choice(replies['12_proxy']['praises'])
 			reply = main_message + praise
-			if ai_credits <3 and text is not None:
+			if ai_credits is not None and ai_credits <3 and text is not None:
 				if random.random() <= 0.1:
 					ai_credits+=1
 					db.update_user_credits(user_id, ai_credits)
