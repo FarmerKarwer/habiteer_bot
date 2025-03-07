@@ -489,7 +489,7 @@
     "inline_keyboard":[
         [
           {
-            "text":"Назад",
+            "text":"В главное меню",
             "callback_data":"scr_1"
           }
       ]
@@ -2134,7 +2134,7 @@
     "inline_keyboard":[
         [
           {
-            "text":"Назад",
+            "text":"В главное меню",
             "callback_data":"scr_1"
           }
       ]
@@ -2145,7 +2145,7 @@
     "inline_keyboard":[
         [
           {
-            "text":"Назад",
+            "text":"В главное меню",
             "callback_data":"scr_1"
           }
       ]
@@ -2195,7 +2195,7 @@
       ],
       [
         {
-          "text": "Назад",
+          "text": "В главное меню",
           "callback_data": "scr_1"
         }
       ]
@@ -4203,6 +4203,16 @@
     ]
   },
   "scr_account_deleted":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "OK!",
+          "callback_data": "no_scr"
+        }
+      ]
+    ]
+  },
+  "scr_unknown_message":{
     "inline_keyboard": [
       [
         {

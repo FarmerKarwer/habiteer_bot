@@ -49,14 +49,28 @@ callback_screens_weekdays_and_time = {
 	}
 
 def use_logic(message):
-	if button_is_pressed(message):
-		message_info = handle_callback_query(message)
-		cache.save_previous_message(message_info)
-	elif text_message_is_entered(message):
-		message_info = handle_text_message(message)
-		cache.save_previous_message(message_info)
-	else:
-		message_info = handle_unknown_message(message)
+	try:
+		if button_is_pressed(message):
+			message_info = handle_callback_query(message)
+			cache.save_previous_message(message_info)
+		elif text_message_is_entered(message):
+			message_info = handle_text_message(message)
+			cache.save_previous_message(message_info)
+		else:
+			message_info = handle_unknown_message(message)
+	except Exception as e:
+		print(e)
+		if 'callback_query' in message:
+			chat_id = message['callback_query']['message']['chat']['id']
+			message_id = message['callback_query']['message']['message_id']
+			unix_timestamp = message['callback_query']['message']['date']
+		else:
+			chat_id = message['message']['chat']['id']
+			message_id = message['message']['message_id']
+			unix_timestamp = message['message']['date']
+		timestamp = unix_to_timestamp(unix_timestamp)
+		switch_screen(replies['general_error'], chat_id, message_id, keyboard=get_button('scr_plug'))
+		db.record_user_action(chat_id, "error", timestamp, metadata=json.dumps({"traceback":e}))
 
 def handle_callback_query(message):
 
@@ -415,6 +429,17 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 	elif previous_screen.startswith(CONDITIONAL_INPUT_SCREENS):
 		handle_conditional_input(CONDITIONAL_INPUT_HANDLERS, CONDITIONAL_INPUT_SCREENS, previous_screen)
 
+	else:
+		if previous_screen and previous_screen!="None":
+			keyboard = {
+				"inline_keyboard": [
+					[{"text": "Вернуться назад", "callback_data": previous_screen}]
+				]
+			}
+			switch_screen(replies['unknown_message'], chat_id, message_id, keyboard=json.dumps(keyboard))
+		else:
+			switch_screen(replies['unknown_message'], chat_id, message_id, keyboard=get_button('scr_plug'))
+
 def handle_text_message(message):
 	"""Handles the text message from the user."""
 	# Extract common data
@@ -450,7 +475,9 @@ def handle_unknown_message(message):
 	message_id = message['message']['message_id']
 	user_id = message['message']['from']['id']
 
-	delete_message(message_id, chat_id)
+	delete_message(message_id-1, chat_id)
+	switch_screen(replies['unknown_message'], chat_id, message_id, keyboard=get_button('scr_unknown_message'))
+
 	return {
 	"user_id": user_id,
 	"chat_id": chat_id,

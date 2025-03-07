@@ -50,6 +50,12 @@ def show_user_habits(user_id, chat_id, message_id):
 
 def show_habit_info(text, user_id, chat_id, message_id, message_info, timestamp):
 	habits = db.view_habits(user_id)
+	no_habits = len(habits)==0
+	if no_habits:
+		reply = replies['3_no_habits']
+		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_3_no_habits'))
+		message_info["callback_data"]="scr_3"
+		return
 	weekdays_rus_dict = {
 			"mon":"понедельник",
 			"tue":"вторник",

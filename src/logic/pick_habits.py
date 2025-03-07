@@ -136,6 +136,10 @@ def show_picked_predefined_habits(text, chat_id, message_id, user_id, timestamp,
 		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_9'))
 		message_info["callback_data"]="scr_9"
 
+	except Exception as e:
+		reply = replies['general_error']
+		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_plug'))
+
 def show_aspiration_confirmation(chat_id, message_id, user_id, callback_data=None, text=None):
 	if callback_data:
 		aspiration = cache.get_picking_habit_info(user_id)['aspiration']
