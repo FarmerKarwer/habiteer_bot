@@ -17,35 +17,35 @@
           "callback_data": "utc+3"
         },
         {
-          "text": "Самара (МСК+1)",
+          "text": "МСК+1",
           "callback_data": "utc+4"
         },
         {
-          "text": "Екатеринбург (МСК+2)",
+          "text": "МСК+2",
           "callback_data": "utc+5"
         }
       ],
       [
         {
-          "text": "Омск (МСК+3)",
+          "text": "МСК+3",
           "callback_data": "utc+6"
         },
         {
-          "text": "Красноярск (МСК+4)",
+          "text": "МСК+4",
           "callback_data": "utc+7"
         },
         {
-          "text": "Иркутск (МСК+5)",
+          "text": "МСК+5",
           "callback_data": "utc+8"
         }
       ],
       [
         {
-          "text": "Якутск (МСК+6)",
+          "text": "МСК+6",
           "callback_data": "utc+9"
         },
         {
-          "text": "Владивосток (МСК+7)",
+          "text": "МСК+7",
           "callback_data": "utc+10"
         },
         {
@@ -71,30 +71,25 @@
     "inline_keyboard": [
       [
         {
-          "text": "➡️ Конечно, вперёд!",
-          "callback_data": "scr_0_2"
+          "text": "➡️ Я в деле!",
+          "callback_data": "scr_0_1_habit"
         }
       ],
       [
         {
-          "text": "А у меня уже есть эта привычка...",
+          "text": "Мне нужно что-то другое...",
           "callback_data": "scr_0_11"
         }
       ]
     ]
   },
-  "scr_0_11": {
+
+  "scr_0_1_habit": {
     "inline_keyboard": [
       [
         {
-          "text": "Да, давайте что-нибудь подберём",
-          "callback_data": "scr_4"
-        }
-      ],
-      [
-        {
-          "text": "Нет, я пока пас",
-          "callback_data": "scr_1"
+          "text": "➡️ Конечно, вперёд!",
+          "callback_data": "scr_0_2"
         }
       ],
       [
@@ -105,12 +100,59 @@
       ]
     ]
   },
+
+  "scr_0_11": {
+    "inline_keyboard": [
+      [
+        {
+          "text": "Да, давайте!",
+          "callback_data": "scr_4"
+        }
+      ],
+      [
+        {
+          "text": "Нет, я пока пас",
+          "callback_data": "scr_0_12"
+        }
+      ],
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_0_1"
+        }
+      ]
+    ]
+  },
+  "scr_0_12":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ],
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_0_11"
+        }
+      ]   
+    ]
+  },
+
   "scr_0_2": {
     "inline_keyboard": [
       [
         {
           "text": "Какой? 🤔",
           "callback_data": "scr_0_3"
+        }
+      ]
+      ,
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_0_1_habit"
         }
       ]
     ]
@@ -121,6 +163,12 @@
         {
           "text": "Есть еще второй секрет? 🤨",
           "callback_data": "scr_0_4"
+        }
+      ],
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_0_2"
         }
       ]
     ]
@@ -137,6 +185,12 @@
         {
           "text": "У меня нет возможности...",
           "callback_data": "scr_0_41"
+        }
+      ],
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_0_3"
         }
       ]
     ]
@@ -3699,35 +3753,35 @@
           "callback_data": "utc+3"
         },
         {
-          "text": "Самара (МСК+1)",
+          "text": "МСК+1",
           "callback_data": "utc+4"
         },
         {
-          "text": "Екатеринбург (МСК+2)",
+          "text": "МСК+2",
           "callback_data": "utc+5"
         }
       ],
       [
         {
-          "text": "Омск (МСК+3)",
+          "text": "МСК+3",
           "callback_data": "utc+6"
         },
         {
-          "text": "Красноярск (МСК+4)",
+          "text": "МСК+4",
           "callback_data": "utc+7"
         },
         {
-          "text": "Иркутск (МСК+5)",
+          "text": "МСК+5",
           "callback_data": "utc+8"
         }
       ],
       [
         {
-          "text": "Якутск (МСК+6)",
+          "text": "МСК+6",
           "callback_data": "utc+9"
         },
         {
-          "text": "Владивосток (МСК+7)",
+          "text": "МСК+7",
           "callback_data": "utc+10"
         },
         {

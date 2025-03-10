@@ -163,7 +163,7 @@ def handle_callback_query(message):
 
 	# Actual logic
 	DEFAULT_CALLBACK_SCREENS = (
-		"scr_0_timezone", "scr_0_timezone_1", "scr_0_1", "scr_0_11", "scr_0_3", "scr_0_4", "scr_0_42", 
+		"scr_0_timezone", "scr_0_timezone_1", "scr_0_1", "scr_0_1_habit", "scr_0_11", "scr_0_12", "scr_0_3", "scr_0_4", "scr_0_42", 
 		"scr_0_5", "scr_0_5_add_1", "scr_0_7", "scr_0_421", "scr_0_422", "scr_0_413", "scr_0_412",
 		"scr_2", "scr_3_2_proxy", "scr_3_1_trigger_type", "scr_3_1_reminder_1",
 		"scr_3_1_bad_habit_fighting_method", "scr_3_1_bad_habit_avoid_trigger", "scr_3_1_bad_habit_avoid_trigger_1",
