@@ -59,7 +59,6 @@ def use_logic(message):
 		else:
 			message_info = handle_unknown_message(message)
 	except Exception as e:
-		print(e)
 		if 'callback_query' in message:
 			chat_id = message['callback_query']['message']['chat']['id']
 			message_id = message['callback_query']['message']['message_id']
@@ -70,7 +69,7 @@ def use_logic(message):
 			unix_timestamp = message['message']['date']
 		timestamp = unix_to_timestamp(unix_timestamp)
 		switch_screen(replies['general_error'], chat_id, message_id, keyboard=get_button('scr_plug'))
-		db.record_user_action(chat_id, "error", timestamp, metadata=json.dumps({"traceback":e}))
+		db.record_user_action(chat_id, "error", timestamp, metadata=json.dumps({"traceback":"Error"}))
 
 def handle_callback_query(message):
 
@@ -163,14 +162,15 @@ def handle_callback_query(message):
 
 	# Actual logic
 	DEFAULT_CALLBACK_SCREENS = (
-		"scr_0_timezone", "scr_0_timezone_1", "scr_0_1", "scr_0_1_habit", "scr_0_11", "scr_0_12", "scr_0_3", "scr_0_4", "scr_0_42", 
+		"scr_0_timezone", "scr_0_timezone_1", "scr_0_1", "scr_0_1_habit", "scr_0_11", "scr_0_12", 
+		"scr_0_3", "scr_0_4", "scr_0_4_explanation", "scr_0_42", 
 		"scr_0_5", "scr_0_5_add_1", "scr_0_7", "scr_0_421", "scr_0_422", "scr_0_413", "scr_0_412",
 		"scr_2", "scr_3_2_proxy", "scr_3_1_trigger_type", "scr_3_1_reminder_1",
 		"scr_3_1_bad_habit_fighting_method", "scr_3_1_bad_habit_avoid_trigger", "scr_3_1_bad_habit_avoid_trigger_1",
 		"scr_3_2_proxy_reset", "scr_3_2_bad_habit_proxy_reset", "scr_3_2_proxy_resume", "scr_3_2_one_time_proxy",
 		"scr_3_2_one_time_proxy_from_reminder", "scr_3_2_bad_habit_proxy", "scr_3_2_forbidden", "scr_3_4_change_1", 
 		"scr_9", "scr_10", "scr_13", "scr_3_3", "scr_3_5_time_1", "scr_3_6_proxy", "scr_3_6",
-		"scr_16", "scr_17", "scr_19", "scr_22", "scr_22_1",
+		"scr_16", "scr_17", "scr_19", "scr_22", "scr_22_1", "scr_24_explanation", "scr_24_resume_explanation",
 		"scr_review", "scr_25", "scr_26", "scr_26_1", "scr_28", 
 		"scr_29_add_1", "scr_32", "scr_33", "scr_33_1", "scr_38", "scr_39",
 		"scr_40_1", "scr_41_add_1", "scr_41_1_conf_deletion", "scr_41_1_change_1", "scr_plug"

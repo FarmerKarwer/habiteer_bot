@@ -183,6 +183,12 @@
       ],
       [
         {
+          "text": "❓Как это — репетировать?",
+          "callback_data": "scr_0_4_explanation"
+        }
+      ],
+      [
+        {
           "text": "У меня нет возможности...",
           "callback_data": "scr_0_41"
         }
@@ -191,6 +197,16 @@
         {
           "text": "Назад",
           "callback_data": "scr_0_3"
+        }
+      ]
+    ]
+  },
+  "scr_0_4_explanation": {
+    "inline_keyboard": [
+      [
+        {
+          "text": "Понятно🙂",
+          "callback_data": "scr_0_4"
         }
       ]
     ]
@@ -308,6 +324,12 @@
         {
           "text": "💪Я отрепетировал!",
           "callback_data": "scr_0_5"
+        }
+      ],
+      [
+        {
+          "text": "❓Как это — репетировать?",
+          "callback_data": "scr_0_4_explanation"
         }
       ],
       [
@@ -3025,8 +3047,14 @@
     "inline_keyboard": [
       [
         {
-          "text": "Я отрепетировал!",
+          "text": "💪Я отрепетировал!",
           "callback_data": "scr_29"
+        }
+      ],
+      [
+        {
+          "text": "❓Как это — репетировать?",
+          "callback_data": "scr_24_explanation"
         }
       ],
       [
@@ -3049,12 +3077,38 @@
       ]
     ]
   },
+  "scr_24_explanation": {
+    "inline_keyboard": [
+      [
+        {
+          "text": "Понятно🙂",
+          "callback_data": "scr_24"
+        }
+      ]
+    ]
+  },
+  "scr_24_resume_explanation": {
+    "inline_keyboard": [
+      [
+        {
+          "text": "Понятно🙂",
+          "callback_data": "scr_24_resume"
+        }
+      ]
+    ]
+  },
   "scr_24_resume":{
     "inline_keyboard": [
       [
         {
-          "text": "Я отрепетировал!",
+          "text": "💪Я отрепетировал!",
           "callback_data": "scr_29"
+        }
+      ],
+      [
+        {
+          "text": "❓Как это — репетировать?",
+          "callback_data": "scr_24_resume_explanation"
         }
       ],
       [
