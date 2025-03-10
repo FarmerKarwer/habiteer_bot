@@ -177,7 +177,7 @@
     "inline_keyboard": [
       [
         {
-          "text": "💪Я отрепетировал!",
+          "text": "💪Я отрепетировал(а)!",
           "callback_data": "scr_0_5"
         }
       ],
@@ -322,7 +322,7 @@
     "inline_keyboard": [
       [
         {
-          "text": "💪Я отрепетировал!",
+          "text": "💪Я отрепетировал(а)!",
           "callback_data": "scr_0_5"
         }
       ],
@@ -388,7 +388,7 @@
     "inline_keyboard": [
       [
         {
-          "text": "💪Я отрепетировал!",
+          "text": "💪Я отрепетировал(а)!",
           "callback_data": "scr_0_5"
         }
       ]
@@ -3047,7 +3047,7 @@
     "inline_keyboard": [
       [
         {
-          "text": "💪Я отрепетировал!",
+          "text": "💪Я отрепетировал(а)!",
           "callback_data": "scr_29"
         }
       ],
@@ -3101,7 +3101,7 @@
     "inline_keyboard": [
       [
         {
-          "text": "💪Я отрепетировал!",
+          "text": "💪Я отрепетировал(а)!",
           "callback_data": "scr_29"
         }
       ],
@@ -3130,7 +3130,7 @@
     "inline_keyboard": [
       [
         {
-          "text": "Я отрепетировал!",
+          "text": "Я отрепетировал(а)!",
           "callback_data": "scr_29"
         }
       ],
