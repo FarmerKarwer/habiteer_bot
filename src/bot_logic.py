@@ -293,7 +293,7 @@ def handle_callback_query(message):
 		"scr_srbai_finish_": lambda: show_srbai_result(user_id, chat_id, message_id, timestamp, callback_data),
 
 		"scr_12_proxy_": lambda: show_magic_wanding_return_back(user_id, chat_id, message_id),
-		"hab_": lambda: show_predefined_habits(callback_data, user_id, chat_id, message_id),
+		"hab_": lambda: show_predefined_habits(callback_data, user_id, chat_id, message_id, unix_timestamp),
 		"suitability_": lambda: show_evaluation(callback_data, user_id, chat_id, message_id, type="suitability"),
 		"scr_13_proxy_": lambda: show_evaluation(callback_data, user_id, chat_id, message_id, type="suitability"),
 		"effectiveness_": lambda: show_evaluation(callback_data, user_id, chat_id, message_id, type="effectiveness"),

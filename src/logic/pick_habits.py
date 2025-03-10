@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 import random
 import re
 
@@ -20,10 +21,10 @@ def show_aspirations(chat_id, message_id):
 	reply = replies['4'].replace("[aspirations]", aspirations_str)
 	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_4'))
 
-def show_predefined_habits(callback_data, user_id, chat_id, message_id):
+def show_predefined_habits(callback_data, user_id, chat_id, message_id, unix_timestamp):
 	"""After clicking on aspiration, this func sends a message to a user with predefined habits"""
 	aspiration = get_aspiration_from_callback(callback_data)
-	random_habits = get_predefined_habits_for_aspiration(aspiration, size=10)
+	random_habits = get_predefined_habits_for_aspiration(aspiration, unix_timestamp, size=10)
 	random_habits_str = format_numbered_list(random_habits)
 	reply = replies['9'].replace("[habits]", random_habits_str)
 
@@ -388,8 +389,13 @@ def get_aspiration_from_callback(callback_data):
 	aspiration = aspirations[aspiration_idx]
 	return aspiration
 
-def get_predefined_habits_for_aspiration(aspiration, size=10):
+def get_predefined_habits_for_aspiration(aspiration, unix_timestamp, size=10):
 	"""Returns a list of randomly selected predefined habits."""
 	habits = list(premade_habits[aspiration])
+
+	date_obj = datetime.fromtimestamp(unix_timestamp)
+	date_int = int(date_obj.strftime("%Y%m%d"))
+	random.seed(date_int)
+
 	habits = random.sample(habits, k=size)
 	return habits

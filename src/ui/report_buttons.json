@@ -122,7 +122,7 @@
     "inline_keyboard": [
       [
         {
-          "text": "⏳Уведомления никак не помогают",
+          "text": "⏳Уведомления не помогают",
           "callback_data": "scr_report_keep_skipping_notif"
         }
       ],
@@ -145,7 +145,7 @@
     "inline_keyboard": [
       [
         {
-          "text": "💪Я отрепетировал!",
+          "text": "💪Я отрепетировал(а)!",
           "callback_data": "scr_report_skipped_finish"
         }
       ],
@@ -260,7 +260,7 @@
     "inline_keyboard": [
       [
         {
-          "text": "💪Я отрепетировал!",
+          "text": "💪Я отрепетировал(а)!",
           "callback_data": "scr_report_skipped_finish"
         }
       ],
