@@ -2397,6 +2397,18 @@
     "inline_keyboard": [
       [
         {
+          "text": "❓Что такое 'поведение'?",
+          "callback_data": "scr_12_help"
+        }
+      ],
+      [
+        {
+          "text": "🪄У меня нет идей...",
+          "callback_data": "scr_12_1"
+        }
+      ],
+      [
+        {
           "text": "Назад",
           "callback_data": "scr_11"
         }
@@ -2406,17 +2418,17 @@
           "text": "В главное меню",
           "callback_data": "scr_1"
         }
-      ],
-      [
-        {
-          "text": "У меня нет идей...",
-          "callback_data": "scr_12_1"
-        }
       ]
     ]
   },
   "9_scr_12":{
     "inline_keyboard": [
+      [
+        {
+          "text": "❓Что такое 'поведение'?",
+          "callback_data": "scr_12_help"
+        }
+      ],
       [
         {
           "text": "Назад",
@@ -2427,6 +2439,16 @@
         {
           "text": "В главное меню",
           "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+  "scr_12_help": {
+    "inline_keyboard": [
+      [
+        {
+          "text": "Понятно🙂",
+          "callback_data": "scr_12"
         }
       ]
     ]

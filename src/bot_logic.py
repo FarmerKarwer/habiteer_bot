@@ -1,6 +1,7 @@
 import json
 import random
 import re
+import traceback
 
 from logic import *
 from cache_manager import CacheManager
@@ -59,7 +60,7 @@ def use_logic(message):
 		else:
 			message_info = handle_unknown_message(message)
 	except Exception as e:
-		print(e)
+		print(traceback.format_exc())
 		if 'callback_query' in message:
 			chat_id = message['callback_query']['message']['chat']['id']
 			message_id = message['callback_query']['message']['message_id']
@@ -170,7 +171,7 @@ def handle_callback_query(message):
 		"scr_3_1_bad_habit_fighting_method", "scr_3_1_bad_habit_avoid_trigger", "scr_3_1_bad_habit_avoid_trigger_1",
 		"scr_3_2_proxy_reset", "scr_3_2_bad_habit_proxy_reset", "scr_3_2_proxy_resume", "scr_3_2_one_time_proxy",
 		"scr_3_2_one_time_proxy_from_reminder", "scr_3_2_bad_habit_proxy", "scr_3_2_forbidden", "scr_3_4_change_1", 
-		"scr_9", "scr_10", "scr_13", "scr_3_3", "scr_3_5_time_1", "scr_3_6_proxy", "scr_3_6",
+		"scr_9", "scr_10", "scr_12_help", "scr_13", "scr_3_3", "scr_3_5_time_1", "scr_3_6_proxy", "scr_3_6",
 		"scr_16", "scr_17", "scr_19", "scr_22", "scr_22_1", "scr_24_explanation", "scr_24_resume_explanation",
 		"scr_review", "scr_25", "scr_26", "scr_26_1", "scr_28", 
 		"scr_29_add_1", "scr_32", "scr_33", "scr_33_1", "scr_38", "scr_39",
@@ -283,7 +284,7 @@ def handle_callback_query(message):
 		"scr_44": lambda: show_habits_to_delete(user_id, chat_id, message_id),
 		"no_scr": lambda: delete_message(message_id, chat_id),
 		("scr_12_1", "scr_12"): lambda: show_magic_wanding_return_back_to_start(chat_id, message_id, user_id, 'scr_12'),
-		("scr_12", "scr_9"): lambda: show_getting_back_to_predefined_habits(user_id, chat_id, message_id),
+		("scr_12", "scr_9"): lambda: show_getting_back_to_predefined_habits(user_id, chat_id, message_id, unix_timestamp),
 	}
 	SPECIAL_CALLBACK_SCREENS = SPECIAL_CALLBACK_HANDLERS.keys()
 
