@@ -12,7 +12,7 @@ from common import (
 	get_button, 
 	unix_to_timestamp
 	)
-from tg_methods import edit_message_reply_markup, delete_message
+from tg_methods import edit_message_reply_markup, delete_message, confirm_pre_checkout_query
 from config import REPLIES_FILEPATH, REPORT_REPLIES_FILEPATH, REPORT_BUTTONS_FILEPATH
 
 # Load cache manager
@@ -57,6 +57,10 @@ def use_logic(message):
 		elif text_message_is_entered(message):
 			message_info = handle_text_message(message)
 			cache.save_previous_message(message_info)
+		elif invoice_is_sent(message):
+			message_info = handle_invoice(message)
+		elif payment_was_successful(message):
+			message_info = handle_payment(message)
 		else:
 			message_info = handle_unknown_message(message)
 	except Exception as e:
@@ -174,7 +178,7 @@ def handle_callback_query(message):
 		"scr_9", "scr_10", "scr_12_help", "scr_13", "scr_3_3", "scr_3_5_time_1", "scr_3_6_proxy", "scr_3_6",
 		"scr_16", "scr_17", "scr_19", "scr_22", "scr_22_1", "scr_24_explanation", "scr_24_resume_explanation",
 		"scr_review", "scr_25", "scr_26", "scr_26_1", "scr_28", 
-		"scr_29_add_1", "scr_32", "scr_33", "scr_33_1", "scr_38", "scr_39",
+		"scr_29_add_1", "scr_32", "scr_33", "scr_33_1", "scr_38", "scr_39", "scr_donate",
 		"scr_40_1", "scr_41_add_1", "scr_41_1_conf_deletion", "scr_41_1_change_1", "scr_plug"
 		)
 
@@ -274,6 +278,10 @@ def handle_callback_query(message):
 		"scr_38_reminder_question": lambda: show_one_time_habit_reminder_question(user_id, chat_id, message_id),
 		"scr_38_no_reminder": lambda: show_one_time_habit_created_no_reminder(user_id, chat_id, message_id, timestamp),
 		"scr_review_sent": lambda: show_review_sent(user_id, chat_id, message_id, timestamp),
+		"scr_donate_100": lambda: show_donate_screen(chat_id, message_id, sum=100),
+		"scr_donate_500": lambda: show_donate_screen(chat_id, message_id, sum=500),
+		"scr_donate_1000": lambda: show_donate_screen(chat_id, message_id, sum=1000),
+		"scr_donate_5000": lambda: show_donate_screen(chat_id, message_id, sum=5000),
 		"scr_40": lambda: show_user_timezone(user_id, chat_id, message_id),
 		"scr_41": lambda: show_all_reports_in_settings(user_id, chat_id, message_id),
 		"scr_41_1": lambda: show_choose_report(callback_data, user_id, chat_id, message_id),
@@ -471,6 +479,27 @@ def handle_text_message(message):
 
 	return message_info
 
+def handle_invoice(message):
+	"""Handles the invoice sent to the user."""
+	pre_checkout_query_id = message['pre_checkout_query']['id']
+	confirm_pre_checkout_query(pre_checkout_query_id)
+
+def handle_payment(message):
+	"""Handles the successful payment made by the user."""
+	chat_id = message['message']['chat']['id']
+	message_id = message['message']['message_id']
+	user_id = message['message']['from']['id']
+	unix_timestamp = message['message']['date']
+	total_amount_rub = message['message']['successful_payment']['total_amount'] // 100
+	timestamp = unix_to_timestamp(unix_timestamp)
+
+	replies_for_amount = replies['donate_finish']
+	replies_for_amount = replies_for_amount.get(f"{total_amount_rub}")
+	reply = random.choice(replies_for_amount)
+	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_donate_finish'))
+	delete_message(message_id-1, chat_id)
+	db.record_user_action(user_id, "payment_made", timestamp, metadata=json.dumps({"payment":message['message']['successful_payment']}))
+
 def handle_unknown_message(message):
 	"""Handles messages that are neither text nor button presses."""
 	chat_id = message['message']['chat']['id']
@@ -494,3 +523,9 @@ def text_message_is_entered(message):
 
 def button_is_pressed(message):
 	return 'callback_query' in message.keys()
+
+def invoice_is_sent(message):
+    return 'pre_checkout_query' in message.keys()
+
+def payment_was_successful(message):
+    return 'message' in message and 'successful_payment' in message['message']

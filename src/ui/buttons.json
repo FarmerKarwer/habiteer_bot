@@ -2247,6 +2247,12 @@
     "inline_keyboard": [
       [
         {
+          "text": "❤Поддержать проект❤",
+          "callback_data": "scr_donate"
+        }
+      ],
+      [
+        {
           "text": "Изменить часовой пояс",
           "callback_data": "scr_40"
         }
@@ -4280,6 +4286,82 @@
       ]
     ]
   },
+
+  "scr_donate":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "☕100₽",
+          "callback_data": "scr_donate_100"
+        }
+      ],
+      [
+        {
+          "text": "🍽️500₽",
+          "callback_data": "scr_donate_500"
+        }
+      ],
+      [
+        {
+          "text": "📶1000₽",
+          "callback_data": "scr_donate_1000"
+        }
+      ],
+      [
+        {
+          "text": "🎤5000₽",
+          "callback_data": "scr_donate_5000"
+        }
+      ],
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_6"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+
+  "scr_donate_proceed":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "Назад",
+          "callback_data": "scr_donate"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+
+  "scr_donate_finish":{
+    "inline_keyboard": [
+      [
+        {
+          "text": "🎁 Поддержать еще раз",
+          "callback_data": "scr_donate"
+        }
+      ],
+      [
+        {
+          "text": "В главное меню",
+          "callback_data": "scr_1"
+        }
+      ]
+    ]
+  },
+
   "scr_review":{
     "inline_keyboard": [
       [

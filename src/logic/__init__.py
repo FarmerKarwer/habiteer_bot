@@ -87,6 +87,7 @@ from .stats import show_user_stats, show_return_habit_back
 
 from .settings import (
     show_settings_screen,
+    show_donate_screen,
 	show_user_timezone,
 	change_user_timezone,
 	show_all_reports_in_settings,
@@ -220,6 +221,7 @@ __all__ = [
 "show_return_habit_back",
 
 "show_settings_screen",
+"show_donate_screen",
 "show_user_timezone",
 "change_user_timezone",
 "show_all_reports_in_settings",

@@ -1,6 +1,9 @@
 import json
+import os
 import random
 import re
+from dotenv import load_dotenv
+load_dotenv()
 
 from ._common_imports import *
 from ._common_imports import callback_weekdays
@@ -10,9 +13,11 @@ from common import (
 	numbers_to_weekdays,
 	parse_time_from_string,
 	weekdays_to_numbers,
+	insert_inline_keyboard_row
 	)
 from common.exceptions import InvalidTimezoneFormat, TimezoneOutOfRangeError
 from config import TIMEZONE_DICT
+from tg_methods import send_invoice, delete_message
 
 def show_settings_screen(user_id, chat_id, message_id):
 	user_credits = db.get_user_property(user_id, "daily_ai_credits")
@@ -20,6 +25,29 @@ def show_settings_screen(user_id, chat_id, message_id):
 		user_credits = 0
 	reply = replies['6'].replace('[credits]', str(user_credits))
 	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_6'))
+
+def show_donate_screen(chat_id, message_id, sum):
+	donate_replies = {
+		100: replies['donate_100'],
+		500: replies['donate_500'],
+		1000: replies['donate_1000'],
+		5000: replies['donate_5000']
+	}
+	title = "Поддержать проект"
+	description = donate_replies[sum]
+	payload = "donate"
+	provider_token = os.getenv("PAYMENT_PROVIDER_TOKEN")
+	currency = "RUB"
+	prices = [
+		{"label": "Поддержка Habiteer", "amount": sum*100}
+	]
+	keyboard = get_button('scr_donate_proceed')
+	keyboard = json.loads(keyboard)
+	payment_row = [{"text": "💳 Поддержать", "pay": True}]
+	keyboard = insert_inline_keyboard_row(keyboard, payment_row, position=0)
+	response = send_invoice(chat_id, title, description, payload, provider_token, currency, prices, keyboard=json.dumps(keyboard))
+	print(response)
+	delete_message(message_id, chat_id)
 
 def show_user_timezone(user_id, chat_id, message_id):
 	current_timezone = db.select_user(user_id)[0]['timezone']
