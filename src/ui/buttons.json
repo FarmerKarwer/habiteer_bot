@@ -2457,14 +2457,8 @@
     "inline_keyboard": [
       [
         {
-          "text": "Выбрать все и перейти к оценке",
-          "callback_data": "scr_13"
-        }
-      ],
-      [
-        {
           "text": "Ничего не подходит",
-          "callback_data": "scr_12"
+          "callback_data": "scr_12_proxy_[n]"
         }
       ],
       [
@@ -2481,7 +2475,7 @@
       [
         {
           "text": "Назад",
-          "callback_data": "scr_12"
+          "callback_data": "scr_12_proxy_[n]"
         }
       ],
       [
@@ -2495,6 +2489,12 @@
 
   "scr_12_proxy_1":{
     "inline_keyboard": [
+      [
+        {
+          "text": "🪄У меня нет идей...",
+          "callback_data": "scr_12_1"
+        }
+      ],
       [
         {
           "text": "Назад",
@@ -2511,6 +2511,12 @@
   },
   "scr_12_proxy_5_less":{
     "inline_keyboard": [
+      [
+        {
+          "text": "🪄У меня нет идей...",
+          "callback_data": "scr_12_1"
+        }
+      ],
       [
         {
           "text": "Назад",
