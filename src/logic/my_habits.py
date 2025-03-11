@@ -83,8 +83,11 @@ def show_habit_info(text, user_id, chat_id, message_id, message_info, timestamp)
 			keyboard = get_button('scr_3_1_not_tracked')
 		elif habit_type =='regular':
 			if status=="tracked":
+				if should_habit_be_marked_in_future(habit_id, timestamp):
+					keyboard = get_button('scr_3_1_mark_prevented')
+				else:
+					keyboard = get_button('scr_3_1_tracked')
 				reply = replies['3_1']['tracked'].replace('[habit]', habit_name)
-				keyboard = get_button('scr_3_1_tracked')
 			elif status=="pending":
 				reply = replies['3_1']['pending'].replace('[habit]', habit_name)
 				keyboard = get_button('scr_3_1_pending')

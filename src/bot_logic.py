@@ -59,6 +59,7 @@ def use_logic(message):
 		else:
 			message_info = handle_unknown_message(message)
 	except Exception as e:
+		print(e)
 		if 'callback_query' in message:
 			chat_id = message['callback_query']['message']['chat']['id']
 			message_id = message['callback_query']['message']['message_id']
