@@ -75,7 +75,7 @@ def use_logic(message):
 			unix_timestamp = message['message']['date']
 		timestamp = unix_to_timestamp(unix_timestamp)
 		switch_screen(replies['general_error'], chat_id, message_id, keyboard=get_button('scr_plug'))
-		db.record_user_action(chat_id, "error", timestamp, metadata=json.dumps({"traceback":"Error"}))
+		db.record_user_action(chat_id, "error", timestamp, metadata="Error")
 
 def handle_callback_query(message):
 
@@ -362,7 +362,7 @@ def handle_callback_query(message):
 
 	# Saving data
 	data = {"user_id":user_id,"chat_id":chat_id, "message_id":message_id, "callback_data":callback_data, "text":None}
-	db.record_user_action(user_id, "button_pressed", timestamp, metadata=json.dumps({"callback_data":callback_data}))
+	db.record_user_action(user_id, "button_pressed", timestamp, metadata=callback_data)
 	return data
 
 def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_info, message):
@@ -472,10 +472,10 @@ def handle_text_message(message):
 
 	if text=="/start":
 		show_start_screen(user_id, chat_id, message_id, unix_timestamp)
-		db.record_user_action(user_id, "pressed_start", timestamp, metadata=json.dumps({"text":text}))
+		db.record_user_action(user_id, "pressed_start", timestamp, metadata=text)
 	else:
 		handle_text_input(text, chat_id, message_id, user_id, timestamp, message_info, message)
-		db.record_user_action(user_id, "text_entered", timestamp, metadata=json.dumps({"text":text}))
+		db.record_user_action(user_id, "text_entered", timestamp, metadata=text)
 
 	return message_info
 
@@ -498,7 +498,7 @@ def handle_payment(message):
 	reply = random.choice(replies_for_amount)
 	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_donate_finish'))
 	delete_message(message_id-1, chat_id)
-	db.record_user_action(user_id, "payment_made", timestamp, metadata=json.dumps({"payment":message['message']['successful_payment']}))
+	db.record_user_action(user_id, "payment_made", timestamp, metadata=f"{total_amount_rub}RUB")
 
 def handle_unknown_message(message):
 	"""Handles messages that are neither text nor button presses."""

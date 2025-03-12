@@ -49,7 +49,7 @@ class DatabaseClient:
 		unique_id = self.autoincrement_id("id", "bot_usage")
 		query = f"""
 		INSERT INTO bot_usage (id, user_id, action, timestamp, metadata)
-		VALUES ({unique_id}, {user_id}, '{action}', CAST('{timestamp}' AS Timestamp), CAST('{metadata}' AS JsonDocument));
+		VALUES ({unique_id}, {user_id}, '{action}', CAST('{timestamp}' AS Timestamp), '{metadata}');
 		"""
 		self.execute_query(query)
 
