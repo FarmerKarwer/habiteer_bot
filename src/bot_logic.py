@@ -155,12 +155,15 @@ def handle_callback_query(message):
 	timestamp = unix_to_timestamp(unix_timestamp)
 
 	# Retrieve previous screen info
-	previous_screen = cache.get_previous_message(user_id)['callback_data']
+	previous_screen = cache.get_previous_message(user_id)
+	if previous_screen:
+		previous_screen = previous_screen.get('callback_data', None)
 	previous_screen_button_selection = cache.get_button_selection(user_id, "previous_screen")
 	transition = (previous_screen, callback_data)
 	
 	# Determine current callback type
-	is_previous_screen_in_magic_wanding = bool(re.match(r"^scr_12_proxy_\d+$", previous_screen))
+	if previous_screen:
+		is_previous_screen_in_magic_wanding = bool(re.match(r"^scr_12_proxy_\d+$", previous_screen))
 	is_callback_in_screens_weekdays_and_time_report = any(callback_data in sublist or previous_screen_button_selection in sublist for sublist in callback_screens_weekdays_and_time['report']) or callback_data in callback_weekdays
 	is_callback_in_screens_weekdays_and_time_habit = any(callback_data in sublist or previous_screen_button_selection in sublist for sublist in callback_screens_weekdays_and_time['habit']) or callback_data in callback_weekdays
 	is_callback_in_screens_weekdays_and_time_habit_report = any(callback_data in sublist or previous_screen_button_selection in sublist for sublist in callback_screens_weekdays_and_time['daily_report']) or callback_data in callback_weekdays
@@ -376,7 +379,9 @@ def handle_text_input(text, chat_id, message_id, user_id, timestamp, message_inf
 		action = conditional_handlers_dict.get(matching_prefix)
 		action()
 
-	previous_screen = cache.get_previous_message(user_id)['callback_data']
+	previous_screen = cache.get_previous_message(user_id)
+	if previous_screen:
+		previous_screen = previous_screen.get('callback_data', None)
 
 	SPECIAL_INPUT_HANDLERS = {
 		"scr_report_keep_forgetting": lambda: show_report_forgetting_repetition(user_id, chat_id, message_id, text),
