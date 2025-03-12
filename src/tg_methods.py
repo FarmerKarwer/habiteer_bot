@@ -38,8 +38,68 @@ def answer_callback_query(callback_query_id):
 	url = URL+"answerCallbackQuery"
 	requests.post(url, data=data)
 
-def send_picture():
-	pass
+def send_picture(image_url, chat_id, caption=None, parse_mode='Markdown', disable_notification=None, 
+                 protect_content=None, reply_parameters=None, keyboard=None):
+    """
+    Sends a picture to a specified chat on Telegram.
+    
+    :param image_url: URL of the image to be sent (can be a direct URL to an image).
+    :param chat_id: The chat ID to which the image will be sent.
+    :param caption: Optional caption for the image.
+    :param parse_mode: The parse mode for the caption.
+    :param disable_notification: Whether to send the message silently.
+    :param protect_content: Whether to protect the content of the message.
+    :param reply_parameters: Additional reply parameters.
+    :param keyboard: Optional custom keyboard for the message.
+    """
+    data = {
+        'chat_id': chat_id,
+        'photo': image_url,  # The URL or file ID of the image
+        'caption': caption,
+        'parse_mode': parse_mode,
+        'disable_notification': disable_notification,
+        'protect_content': protect_content,
+        'reply_parameters': reply_parameters,
+        'reply_markup': keyboard
+    }
+    
+    url = URL + "sendPhoto"
+    response = requests.post(url, data=data)
+    
+    if response.status_code != 200:
+        print(f"Error sending image to Telegram: {response.text}")
+        
+def send_gif(animation_url, chat_id, caption=None, parse_mode='Markdown', disable_notification=None, 
+             protect_content=None, reply_parameters=None, keyboard=None):
+    """
+    Sends a gif to a specified chat on Telegram.
+    
+    :param animation_url: URL of the gif to be sent.
+    :param chat_id: The chat ID to which the gif will be sent.
+    :param caption: Optional caption for the gif.
+    :param parse_mode: The parse mode for the caption.
+    :param disable_notification: Whether to send the message silently.
+    :param protect_content: Whether to protect the content of the message.
+    :param reply_parameters: Additional reply parameters.
+    :param keyboard: Optional custom keyboard for the message.
+    """
+    data = {
+        'chat_id': chat_id,
+        'animation': animation_url,  # The URL or file ID of the gif
+        'caption': caption,
+        'parse_mode': parse_mode,
+        'disable_notification': disable_notification,
+        'protect_content': protect_content,
+        'reply_parameters': reply_parameters,
+        'reply_markup': keyboard
+    }
+    
+    url = URL + "sendAnimation"
+    response = requests.post(url, data=data)
+    
+    if response.status_code != 200:
+        print(f"Error sending gif to Telegram: {response.text}")
+
 
 def edit_message_reply_markup(chat_id, message_id, reply_markup):
 	"""

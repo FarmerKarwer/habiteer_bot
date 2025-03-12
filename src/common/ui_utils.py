@@ -12,6 +12,8 @@ def switch_screen(
     chat_id: int,
     message_id: int,
     delete_previous: bool = True,
+    ui_mode: str = 'message',
+    image_url: Optional[str] = None,
     parse_mode: str = 'Markdown',
     disable_notification: Optional[bool] = None,
     protect_content: bool = True,
@@ -19,15 +21,38 @@ def switch_screen(
     keyboard: Optional[str] = None,
 ) -> None:
     """Sends a message and optionally deletes the previous one."""
-    tg_methods.send_text_message(
-        reply,
-        chat_id,
-        parse_mode=parse_mode,
-        disable_notification=disable_notification,
-        protect_content=protect_content,
-        reply_parameters=reply_parameters,
-        keyboard=keyboard,
-    )
+    if ui_mode == 'message':
+        tg_methods.send_text_message(
+            reply,
+            chat_id,
+            parse_mode=parse_mode,
+            disable_notification=disable_notification,
+            protect_content=protect_content,
+            reply_parameters=reply_parameters,
+            keyboard=keyboard,
+        )
+    elif ui_mode == 'photo':
+        tg_methods.send_picture(
+            image_url=image_url,
+            chat_id=chat_id,
+            caption=reply,
+            disable_notification=disable_notification,
+            protect_content=protect_content,
+            reply_parameters=reply_parameters,
+            keyboard=keyboard,
+        )
+    elif ui_mode == 'gif':
+        tg_methods.send_gif(
+            animation_url=image_url,
+            chat_id=chat_id,
+            caption=reply,
+            disable_notification=disable_notification,
+            protect_content=protect_content,
+            reply_parameters=reply_parameters,
+            keyboard=keyboard,
+        )
+    else:
+        raise ValueError(f"Invalid UI mode: {ui_mode}")
     if delete_previous:
         tg_methods.delete_message(message_id, chat_id)
 

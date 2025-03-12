@@ -7,6 +7,7 @@ import random
 
 from database import DatabaseClient
 from cache_manager import CacheManager
+from objstorage_manager import StorageManager
 from common import (switch_screen, 
 					get_button, 
 					load_json, 
@@ -22,6 +23,7 @@ from common import select_multiple_days
 replies = load_json(REPORT_REPLIES_FILEPATH)
 db = DatabaseClient()
 cache = CacheManager() 
+storage = StorageManager()
 
 callback_weekdays = ("mon", "tue", "wed", "thu", "fri", "sat", "sun")
 
@@ -70,7 +72,11 @@ def show_report_done(user_id, chat_id, message_id, timestamp):
 		
 	reply = reply.replace('[habit]', habit_name)
 	reply = reply.replace('[days]', days_string)
-	switch_screen(reply, chat_id, message_id, keyboard=keyboard)		   
+
+	# Getting random gif from praises folder and sending it to the user
+	praises = storage.list_gif_images('praises/')
+	gif_url = storage.get_image_url(random.choice(praises))
+	switch_screen(reply, chat_id, message_id, ui_mode="gif", image_url=gif_url, keyboard=keyboard)		   
 
 def show_report_skipped(user_id, chat_id, message_id, timestamp):
 	"""

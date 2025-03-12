@@ -282,4 +282,4 @@ def is_habit_already_marked(habit_id, datetime_obj):
     return False
 
 if __name__=="__main__":
-	send_trigger_reminder()
+	send_daily_report()
