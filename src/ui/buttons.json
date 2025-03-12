@@ -4349,7 +4349,7 @@
     "inline_keyboard": [
       [
         {
-          "text": "🎁 Поддержать еще раз",
+          "text": "🎁 Хочу помочь еще",
           "callback_data": "scr_donate"
         }
       ],
