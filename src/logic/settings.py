@@ -27,6 +27,12 @@ def show_settings_screen(user_id, chat_id, message_id):
 	if user_credits is None:
 		user_credits = 0
 
+	if user_id==940985788:
+		reply = replies['6_user'].replace('[credits]', str(user_credits))
+		reply = reply.replace('[support_level]', "Основатель").replace('[support_emoji]', "🌟")
+		switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_6'))
+		return
+
 	user_level = db.get_user_level(donated_sum)[0]
 	level_id = user_level['id']
 	level_name = user_level['name']
@@ -45,13 +51,13 @@ def show_settings_screen(user_id, chat_id, message_id):
 			progress_bar = "▓" * filled_blocks + "░" * (10 - filled_blocks)
 
 			reply = replies['6'].replace('[credits]', str(user_credits))
-			reply = reply.replace('[support_level]', level_name).replace('[support_emoji]', level_emoji)
+			reply = reply.replace('[support_level]', level_name).replace('[support_emoji]', level_emoji).replace('[level_num]', str(level_id))
 			reply = reply.replace('[progress_bar]', progress_bar).replace('[progress]', str(int(progress)))
 			reply = reply.replace('[next_level]', next_level_name).replace('[remaining_donations]', str(remaining_amount))
 			reply = reply.replace('[total_sum]', str(int(donated_sum)))
 		else:
 			reply = replies['6_max_level'].replace('[credits]', str(user_credits))
-			reply = reply.replace('[support_level]', level_name).replace('[support_emoji]', level_emoji)
+			reply = reply.replace('[support_level]', level_name).replace('[support_emoji]', level_emoji).replace('[level_num]', str(level_id))
 			reply = reply.replace('[total_sum]', str(int(donated_sum)))
 	else:
 		reply = replies['6_user'].replace('[credits]', str(user_credits))
