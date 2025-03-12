@@ -103,7 +103,8 @@ def add_user_from_onboarding(user_id, message, timestamp, text):
 		"language":f"'{message['from']['language_code']}'",
 		"last_name":last_name,
 		"created_at":f"CAST('{timestamp}' AS Timestamp)",
-		"daily_ai_credits":1
+		"daily_ai_credits":1,
+		"donated_sum":0
 	}
 
 	db.add_user(user_data['id'], 
@@ -112,4 +113,5 @@ def add_user_from_onboarding(user_id, message, timestamp, text):
 			 user_data['last_name'], 
 			 user_data['language'], 
 			 user_data['created_at'],
-			 user_data['daily_ai_credits'])
+			 user_data['daily_ai_credits'],
+			 user_data['donated_sum'])

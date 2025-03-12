@@ -65,17 +65,17 @@ def use_logic(message):
 			message_info = handle_unknown_message(message)
 	except Exception as e:
 		print(traceback.format_exc())
-		if 'callback_query' in message:
-			chat_id = message['callback_query']['message']['chat']['id']
-			message_id = message['callback_query']['message']['message_id']
-			unix_timestamp = message['callback_query']['message']['date']
-		else:
-			chat_id = message['message']['chat']['id']
-			message_id = message['message']['message_id']
-			unix_timestamp = message['message']['date']
-		timestamp = unix_to_timestamp(unix_timestamp)
-		switch_screen(replies['general_error'], chat_id, message_id, keyboard=get_button('scr_plug'))
-		db.record_user_action(chat_id, "error", timestamp, metadata="Error")
+		# if 'callback_query' in message:
+		# 	chat_id = message['callback_query']['message']['chat']['id']
+		# 	message_id = message['callback_query']['message']['message_id']
+		# 	unix_timestamp = message['callback_query']['message']['date']
+		# else:
+		# 	chat_id = message['message']['chat']['id']
+		# 	message_id = message['message']['message_id']
+		# 	unix_timestamp = message['message']['date']
+		# timestamp = unix_to_timestamp(unix_timestamp)
+		# switch_screen(replies['general_error'], chat_id, message_id, keyboard=get_button('scr_plug'))
+		# db.record_user_action(chat_id, "error", timestamp, metadata="Error")
 
 def handle_callback_query(message):
 
@@ -498,6 +498,12 @@ def handle_payment(message):
 	reply = random.choice(replies_for_amount)
 	switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_donate_finish'))
 	delete_message(message_id-1, chat_id)
+	
+	#Update donating sum
+	donated_sum = db.get_user_property(user_id, "donated_sum")
+	donated_sum += total_amount_rub
+	db.update_user_donated_sum(user_id, int(donated_sum))
+
 	db.record_user_action(user_id, "payment_made", timestamp, metadata=f"{total_amount_rub}RUB")
 
 def handle_unknown_message(message):

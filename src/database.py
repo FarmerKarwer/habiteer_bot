@@ -45,6 +45,28 @@ class DatabaseClient:
 		result = self.execute_query(query)[0].rows
 		return result[0][property_name]
 	
+	def get_user_level(self, donation_sum):
+		query = f"""
+		SELECT id, name, emoji, donation_required
+		FROM support_levels 
+		WHERE {donation_sum} >= donation_required
+		ORDER BY donation_required DESC 
+		LIMIT 1;
+		"""
+		result = self.execute_query(query)[0].rows
+		return result
+	
+	def get_next_user_level(self, donation_sum):
+		query = f"""
+		SELECT name, emoji, donation_required 
+		FROM support_levels 
+		WHERE donation_required > {donation_sum}
+		ORDER BY donation_required ASC 
+		LIMIT 1;
+		"""
+		result = self.execute_query(query)
+		return result[0].rows if result else None  # Return None if user is at max level
+	
 	def record_user_action(self, user_id, action, timestamp, metadata=None):
 		unique_id = self.autoincrement_id("id", "bot_usage")
 		query = f"""
@@ -53,10 +75,10 @@ class DatabaseClient:
 		"""
 		self.execute_query(query)
 
-	def add_user(self, user_id, username, first_name, last_name, language, created_at, daily_ai_credits):
+	def add_user(self, user_id, username, first_name, last_name, language, created_at, daily_ai_credits, donated_sum):
 		query = f"""
-		INSERT INTO users (id, username, first_name, last_name, language, created_at, daily_ai_credits)
-		VALUES ({user_id}, {username}, {first_name}, {last_name}, {language}, {created_at}, {daily_ai_credits});
+		INSERT INTO users (id, username, first_name, last_name, language, created_at, daily_ai_credits, donated_sum)
+		VALUES ({user_id}, {username}, {first_name}, {last_name}, {language}, {created_at}, {daily_ai_credits}, {donated_sum});
 		"""
 		self.execute_query(query)
 
@@ -72,6 +94,14 @@ class DatabaseClient:
 		query = f"""
 		UPDATE users
 		SET daily_ai_credits = {credits}
+		WHERE id={user_id};
+		"""
+		self.execute_query(query)
+
+	def update_user_donated_sum(self, user_id, donated_sum):
+		query = f"""
+		UPDATE users
+		SET donated_sum = {donated_sum}
 		WHERE id={user_id};
 		"""
 		self.execute_query(query)
