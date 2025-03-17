@@ -119,8 +119,8 @@ def edit_message_reply_markup(chat_id, message_id, reply_markup):
 
 def send_invoice(chat_id, title, description, payload, provider_token, currency, prices, start_parameter=None,
                  provider_data=None, photo_url=None, photo_size=None, photo_width=None, photo_height=None,
-                 need_name=None, need_phone_number=None, need_email=None, need_shipping_address=None, 
-                 send_email_to_provider=None, is_flexible=None, keyboard=None):
+                 need_name=None, need_phone_number=None, need_email=True, need_shipping_address=None, 
+                 send_email_to_provider=True, is_flexible=None, keyboard=None):
     
     data = {
         'chat_id': chat_id,
