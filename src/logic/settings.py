@@ -83,8 +83,28 @@ def show_donate_screen(chat_id, message_id, sum):
 	keyboard = get_button('scr_donate_proceed')
 	keyboard = json.loads(keyboard)
 	payment_row = [{"text": "💳 Поддержать", "pay": True}]
+
+	provider_data = {
+		"receipt":{
+			"items":[
+				{
+					"description":"Поддержка Habiteer",
+					"quantity" : 1,
+					"amount":{
+						"value":sum,
+						"currency":"RUB"
+					},
+					"vat_code" : 1,
+                    "payment_mode" : "full_payment",
+                    "payment_subject" : "commodity"
+				}
+			],
+            "tax_system_code" : 1
+		}
+	}
+
 	keyboard = insert_inline_keyboard_row(keyboard, payment_row, position=0)
-	send_invoice(chat_id, title, description, payload, provider_token, currency, prices, keyboard=json.dumps(keyboard))
+	send_invoice(chat_id, title, description, payload, provider_token, currency, prices, provider_data=json.dumps(provider_data), keyboard=json.dumps(keyboard))
 	delete_message(message_id, chat_id)
 
 def show_user_timezone(user_id, chat_id, message_id):
