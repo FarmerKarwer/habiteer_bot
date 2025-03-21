@@ -2829,6 +2829,12 @@
     "inline_keyboard": [
       [
         {
+          "text": "К списку привычек",
+          "callback_data": "scr_3"
+        }
+      ],
+      [
+        {
           "text": "В главное меню",
           "callback_data": "scr_1"
         }
