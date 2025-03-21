@@ -82,7 +82,7 @@ def show_ai_recommended_habits(user_id, chat_id, message_id):
 		# Update cache
 		if behavior_options is None or len(behavior_options) == 0:
 			cache.update_picking_habit_info(user_id, {"ai_options":json.dumps(ai_options_list)})
-			cache.update_picking_habit_info(user_id, {"behavior_options":json.dumps([])})
+			cache.update_picking_habit_info(user_id, {"behavior_options":None})
 			keyboard=get_button('scr_12_1')
 			keyboard = change_button(keyboard, 0, 0, {"callback_data":"scr_12"})
 		else:
