@@ -97,8 +97,10 @@ def show_ai_recommended_habits(user_id, chat_id, message_id):
 def show_magic_wanding_from_ai_recommended_habits(user_id, chat_id, message_id, text, message_info):
 	try:
 		# Getting cache data
-		behavior_options = cache.get_picking_habit_info(user_id)['behavior_options']
-		behavior_options = json.loads(behavior_options)
+		behavior_options = cache.get_picking_habit_info(user_id).get('behavior_options', None)
+		if behavior_options:
+			behavior_options = json.loads(behavior_options)
+		
 		ai_options = cache.get_picking_habit_info(user_id)['ai_options']
 		ai_options = json.loads(ai_options)
 		
@@ -113,8 +115,11 @@ def show_magic_wanding_from_ai_recommended_habits(user_id, chat_id, message_id, 
 		
 		# Updating behavior options with AI habits
 		selected_habits = [ai_options[i-1] for i in entered_numbers]
-		behavior_options.extend(selected_habits)
-		cache.update_picking_habit_info(user_id, {"behavior_options":json.dumps(behavior_options)})
+		if behavior_options:
+			behavior_options.extend(selected_habits)
+			cache.update_picking_habit_info(user_id, {"behavior_options":json.dumps(behavior_options)})
+		else:
+			cache.update_picking_habit_info(user_id, {"behavior_options":json.dumps(selected_habits)})
 
 		# Switch screen
 		show_magic_wanding(text=None, chat_id=chat_id, message_id=message_id, user_id=user_id, message_info=message_info)
@@ -239,7 +244,15 @@ def show_magic_wanding(text, chat_id, message_id, user_id, message_info):
 			entered_options_cnt = len(behavior_options)+1
 		else:
 			entered_options_cnt = len(behavior_options)
-		if entered_options_cnt<5:
+		if entered_options_cnt == 1 and text is None:
+			behaviors_str = format_numbered_list(behavior_options)
+			main_message = replies['12_proxy']['main_message'].replace('[behaviors]', behaviors_str).replace("[aspiration]", aspiration)
+			main_message = main_message.replace("[n]", "1")
+			praise = random.choice(replies['12_proxy']['praises'])
+			reply = main_message + praise
+			switch_screen(reply, chat_id, message_id, keyboard=get_button('scr_12_proxy_1'))
+			message_info["callback_data"]="scr_12_proxy_1"
+		elif entered_options_cnt<5:
 			if text is not None:
 				behavior_options.append(text)
 			behaviors_str = format_numbered_list(behavior_options)
